@@ -1,5 +1,3 @@
 /.vs
-/Core
-/Tests
-/UI
-/Wasp.sln
+**/obj/**/*.*
+**/bin/**/*.*
