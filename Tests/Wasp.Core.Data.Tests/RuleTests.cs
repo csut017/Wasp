@@ -11,7 +11,7 @@
 </rule>";
 
             // Act
-            var rule = Rule.FromXml(xml);
+            var rule = Rule.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(rule);

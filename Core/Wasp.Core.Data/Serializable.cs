@@ -14,12 +14,12 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> containing the definition.</param>
         /// <returns>An entity instance if successful; null otherwise.</returns>
-        public static TEntity? FromXml(Stream stream)
+        public static SerializationResult<TEntity> FromXml(Stream stream)
         {
+            var result = new SerializationResult<TEntity>();
             using var reader = new StreamReader(stream);
-            var serializer = new XmlSerializer(typeof(TEntity));
-            var entity = serializer.Deserialize(reader) as TEntity;
-            return entity;
+            DeserializeEntity(result, reader);
+            return result;
         }
 
         /// <summary>
@@ -27,24 +27,42 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="xml">The XML containing the definition.</param>
         /// <returns>An entity instance if successful; null otherwise.</returns>
-        public static TEntity? FromXml(string xml)
+        public static SerializationResult<TEntity> FromXml(string xml)
         {
+            var result = new SerializationResult<TEntity>();
             using var reader = new StringReader(xml);
-            var serializer = new XmlSerializer(typeof(TEntity));
-            var entity = serializer.Deserialize(reader) as TEntity;
-            return entity;
+            DeserializeEntity(result, reader);
+            return result;
         }
 
         /// <summary>
-        /// Saves the entity as an XML definition.
+        /// Generates the entity as an XML definition.
         /// </summary>
         /// <returns>A string containing the XML.</returns>
-        public string AsXml()
+        public string GenerateXml()
         {
             using var writer = new StringWriter();
             var serializer = new XmlSerializer(typeof(TEntity));
             serializer.Serialize(writer, this);
             return writer.ToString();
+        }
+
+        /// <summary>
+        /// Saves the entity as an XML definition.
+        /// </summary>
+        /// <param name="stream">The stream to save to.</param>
+        public void SaveXml(Stream stream)
+        {
+            using var writer = new StreamWriter(stream);
+            var serializer = new XmlSerializer(typeof(TEntity));
+            serializer.Serialize(writer, this);
+        }
+
+        private static void DeserializeEntity(SerializationResult<TEntity> result, TextReader reader)
+        {
+            var serializer = new XmlSerializer(typeof(TEntity));
+            serializer.UnknownNode += (o, e) => result.UnknownNodes.Add(new UnknownNode(e.LocalName, e.LineNumber, e.LinePosition));
+            result.Entity = serializer.Deserialize(reader) as TEntity;
         }
     }
 }

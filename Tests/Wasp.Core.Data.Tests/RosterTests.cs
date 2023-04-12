@@ -15,7 +15,7 @@
 </roster>";
 
             // Act
-            var roster = Roster.FromXml(xml);
+            var roster = Roster.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(roster);
@@ -40,7 +40,7 @@
 </roster>";
 
             // Act
-            var roster = Roster.FromXml(xml);
+            var roster = Roster.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(roster);
@@ -59,7 +59,7 @@
             const string xml = @"<roster id=""2fc0-37ba-c765-ba82"" name=""Test roster"" battleScribeVersion=""2.03"" gameSystemId=""28ec-711c-d87f-3aeb"" gameSystemName=""Warhammer 40,000 9th Edition"" gameSystemRevision=""248"" xmlns=""http://www.battlescribe.net/schema/rosterSchema""></roster>";
 
             // Act
-            var roster = Roster.FromXml(xml);
+            var roster = Roster.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(roster);
@@ -68,6 +68,7 @@
             Assert.Equal("2.03", roster.BattleScribeVersion);
             Assert.Equal("28ec-711c-d87f-3aeb", roster.GameSystemId);
             Assert.Equal("Warhammer 40,000 9th Edition", roster.GameSystemName);
+            Assert.Equal("248", roster.GameSystemRevision);
         }
     }
 }

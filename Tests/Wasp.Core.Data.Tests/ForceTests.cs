@@ -15,7 +15,7 @@
 </force>";
 
             // Act
-            var force = Force.FromXml(xml);
+            var force = Force.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(force);
@@ -40,7 +40,7 @@
 </force>";
 
             // Act
-            var force = Force.FromXml(xml);
+            var force = Force.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(force);
@@ -59,7 +59,7 @@
             const string xml = @"<force id=""f142-9b68-fca9-be91"" name=""Order of Battle"" entryId=""7986-68a6-9e59-faac"" catalogueId=""c0bb-c0cd-a715-99c6"" catalogueRevision=""146"" catalogueName=""T&apos;au Empire"" xmlns=""http://www.battlescribe.net/schema/rosterSchema""></force>";
 
             // Act
-            var force = Force.FromXml(xml);
+            var force = Force.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(force);
@@ -83,7 +83,7 @@
 </force>";
 
             // Act
-            var force = Force.FromXml(xml);
+            var force = Force.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(force);
@@ -93,6 +93,34 @@
                     "Another test rule[28ec-711c-pubN73170]=112",
                 },
                 force.Rules.Select(c => $"{c.Name}[{c.Id}]={c.Page}").ToArray());
+        }
+
+        [Fact]
+        public void DefinitionHandlesSelections()
+        {
+            // Arrange
+            const string xml = @"<force xmlns=""http://www.battlescribe.net/schema/rosterSchema"">
+    <selections>
+        <selection id=""6c42-8858-a7ae-c66e"" name=""Narrative (Crusade)"" entryId=""4bcc-b0f4-b425-f38e::2aee-51b0-2b2b-218d"" entryGroupId=""4bcc-b0f4-b425-f38e::c702-d73b-dccf-5617"" number=""1"" type=""upgrade"">
+            <costs>
+                <cost name="" PL"" typeId=""e356-c769-5920-6e14"" value=""0.0""/>
+                <cost name=""CP"" typeId=""2d3b-b544-ad49-fb75"" value=""0.0""/>
+                <cost name=""pts"" typeId=""points"" value=""0.0""/>
+            </costs>
+        </selection>
+    </selections>
+</force>";
+
+            // Act
+            var force = Force.FromXml(xml).Entity;
+
+            // Assert
+            Assert.NotNull(force?.Selections);
+            Assert.Equal(
+                new[] {
+                    "Narrative (Crusade)[6c42-8858-a7ae-c66e]=upgrade(3)",
+                },
+                force.Selections.Select(s => $"{s.Name}[{s.Id}]={s.Type}({s.Costs.Count})").ToArray());
         }
     }
 }

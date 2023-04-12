@@ -13,7 +13,7 @@
 </profile>";
 
             // Act
-            var profile = Profile.FromXml(xml);
+            var profile = Profile.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(profile);

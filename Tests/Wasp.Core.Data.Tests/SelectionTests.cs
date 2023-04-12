@@ -18,7 +18,7 @@
 </selection>";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection);
@@ -43,7 +43,7 @@
             const string xml = @"<selection id=""1240-f481-a3f3-cd99"" name=""Cadre Fireblade"" entryId=""6824-74af-c876-deea::fc98-45a1-95bf-d267"" customName=""Suun&apos;yo"" page="""" number=""1"" type=""model"" xmlns=""http://www.battlescribe.net/schema/rosterSchema"" />";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection);
@@ -73,7 +73,7 @@
 </selection>";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection?.Selections);
@@ -117,7 +117,7 @@
 </selection>";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection?.Profiles);
@@ -141,7 +141,7 @@
             const string xml = @"<selection id=""a676-78a5-0c69-fdb7"" name=""Sept Choice"" entryId=""bcb6-b88a-d3e5-48d5::36d6-7bcd-f258-e86d"" number=""1"" type=""upgrade"" xmlns=""http://www.battlescribe.net/schema/rosterSchema"" />";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection);
@@ -166,7 +166,7 @@
 </selection>";
 
             // Act
-            var selection = Selection.FromXml(xml);
+            var selection = Selection.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(selection?.Rules);

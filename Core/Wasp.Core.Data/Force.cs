@@ -30,7 +30,7 @@ namespace Wasp.Core.Data
         /// <summary>
         /// Gets the categories in the force.
         /// </summary>
-        [XmlArray("categories", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArray("categories", Namespace = BattleScribeConstants.XmlNamespace, Order = 40)]
         [XmlArrayItem("category", Namespace = BattleScribeConstants.XmlNamespace)]
         public List<Category> Categories { get; } = new List<Category>();
 
@@ -55,15 +55,22 @@ namespace Wasp.Core.Data
         /// <summary>
         /// Gets the publications references by this force.
         /// </summary>
-        [XmlArray("publications", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArray("publications", Namespace = BattleScribeConstants.XmlNamespace, Order = 30)]
         [XmlArrayItem("publication", Namespace = BattleScribeConstants.XmlNamespace)]
         public List<Publication> Publications { get; } = new List<Publication>();
 
         /// <summary>
         /// Gets the force level rules.
         /// </summary>
-        [XmlArray("rules", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArray("rules", Namespace = BattleScribeConstants.XmlNamespace, Order = 10)]
         [XmlArrayItem("rule", Namespace = BattleScribeConstants.XmlNamespace)]
         public List<Rule> Rules { get; } = new List<Rule>();
+
+        /// <summary>
+        /// Gets or sets the child selections.
+        /// </summary>
+        [XmlArray("selections", Namespace = BattleScribeConstants.XmlNamespace, Order = 20)]
+        [XmlArrayItem("selection", Namespace = BattleScribeConstants.XmlNamespace)]
+        public List<Selection>? Selections { get; set; }
     }
 }

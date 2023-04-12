@@ -42,6 +42,12 @@ namespace Wasp.Core.Data
         public string? GameSystemName { get; set; }
 
         /// <summary>
+        /// Gets or sets the revision of the game system this roster is for.
+        /// </summary>
+        [XmlAttribute("gameSystemRevision", Namespace = BattleScribeConstants.XmlNamespace)]
+        public string? GameSystemRevision { get; set; }
+
+        /// <summary>
         /// Gets or sets the id of the roster.
         /// </summary>
         [XmlAttribute("id", Namespace = BattleScribeConstants.XmlNamespace)]

@@ -11,7 +11,7 @@
 </characteristic>";
 
             // Act
-            var characteristic = Characteristic.FromXml(xml);
+            var characteristic = Characteristic.FromXml(xml).Entity;
 
             // Assert
             Assert.NotNull(characteristic);
