@@ -24,6 +24,12 @@ namespace Wasp.Core.Data
         public List<ItemCost> Costs { get; } = new List<ItemCost>();
 
         /// <summary>
+        /// Gets or sets the custom name of the selection.
+        /// </summary>
+        [XmlAttribute("customName", Namespace = BattleScribeConstants.XmlNamespace)]
+        public string? CustomName { get; set; }
+
+        /// <summary>
         /// Gets or sets the entry id.
         /// </summary>
         [XmlAttribute("entryId", Namespace = BattleScribeConstants.XmlNamespace)]
@@ -46,6 +52,33 @@ namespace Wasp.Core.Data
         /// </summary>
         [XmlAttribute("number", Namespace = BattleScribeConstants.XmlNamespace)]
         public int Number { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page number of the selection.
+        /// </summary>
+        [XmlAttribute("page", Namespace = BattleScribeConstants.XmlNamespace)]
+        public string? Page { get; set; }
+
+        /// <summary>
+        /// Gets or sets the child profiles.
+        /// </summary>
+        [XmlArray("profiles", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArrayItem("profile", Namespace = BattleScribeConstants.XmlNamespace)]
+        public List<Profile>? Profiles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the child rules.
+        /// </summary>
+        [XmlArray("rules", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArrayItem("rule", Namespace = BattleScribeConstants.XmlNamespace)]
+        public List<Rule>? Rules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the child selections.
+        /// </summary>
+        [XmlArray("selections", Namespace = BattleScribeConstants.XmlNamespace)]
+        [XmlArrayItem("selection", Namespace = BattleScribeConstants.XmlNamespace)]
+        public List<Selection>? Selections { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the selection.
