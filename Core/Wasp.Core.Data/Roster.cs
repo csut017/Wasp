@@ -12,6 +12,11 @@
         public string? BattleScribeVersion { get; set; }
 
         /// <summary>
+        /// Gets or sets the cost limits of the roster.
+        /// </summary>
+        public List<ItemCost>? CostLimits { get; set; }
+
+        /// <summary>
         /// Gets the costs of the roster.
         /// </summary>
         public List<ItemCost>? Costs { get; set; }

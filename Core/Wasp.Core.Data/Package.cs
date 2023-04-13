@@ -44,7 +44,7 @@ namespace Wasp.Core.Data
 
                 var entry = archive.Entries[0];
                 using var zipStream = entry.Open();
-                package.Roster = await settings.Format.DeserializeAsync(stream);
+                package.Roster = await settings.Format.DeserializeAsync(zipStream);
             }
 
             return package;

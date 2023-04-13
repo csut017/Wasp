@@ -370,6 +370,16 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await DeserializeSingleItemAsync(reader, roster.Costs, "cost", costAttributes));
                                 break;
 
+                            case "costLimits":
+                                roster.CostLimits ??= new List<ItemCost>();
+                                await DeserializeArrayAsync(
+                                    xmlReader,
+                                    roster,
+                                    "costLimits",
+                                    "costLimit",
+                                    async (reader, _) => await DeserializeSingleItemAsync(reader, roster.CostLimits, "costLimit", costAttributes));
+                                break;
+
                             case "forces":
                                 await DeserializeArrayAsync(xmlReader, roster, "forces", "force", DeserializeForceAsync);
                                 break;
@@ -476,6 +486,10 @@ namespace Wasp.Core.Data.Xml
                                     "costs",
                                     "cost",
                                     async (reader, _) => await DeserializeSingleItemAsync(reader, selection.Costs, "cost", costAttributes));
+                                break;
+
+                            case "customNotes":
+                                selection.CustomNotes = await xmlReader.ReadElementContentAsStringAsync();
                                 break;
 
                             case "profiles":

@@ -31,7 +31,8 @@ namespace Wasp.Core.Data.Xml
             await WriteAttributeAsync(xmlWriter, "gameSystemRevision", roster.GameSystemRevision);
             await xmlWriter.WriteAttributeStringAsync(null, "xmlns", null, Constants.XmlNamespace);
 
-            await WriteCostsAsync(xmlWriter, roster);
+            await WriteCostsAsync(xmlWriter, roster.Costs);
+            await WriteCostsAsync(xmlWriter, roster.CostLimits, "costLimit");
             await WriteForcesAsync(xmlWriter, roster);
 
             await xmlWriter.WriteEndElementAsync();
@@ -46,7 +47,7 @@ namespace Wasp.Core.Data.Xml
         /// <param name="value">The value of the attribute.</param>
         private static async Task WriteAttributeAsync(XmlWriter xmlWriter, string name, string? value)
         {
-            if (string.IsNullOrEmpty(value)) return;
+            if (value == null) return;
 
             await xmlWriter.WriteAttributeStringAsync(null, name, null, value);
         }
@@ -102,7 +103,7 @@ namespace Wasp.Core.Data.Xml
                 await xmlWriter.WriteStartElementAsync(null, "characteristic", null);
                 await WriteAttributeAsync(xmlWriter, "name", characteristic.Name);
                 await WriteAttributeAsync(xmlWriter, "typeId", characteristic.TypeId);
-                if (!string.IsNullOrEmpty(characteristic.Value))
+                if (characteristic.Value != null)
                 {
                     await xmlWriter.WriteStringAsync(characteristic.Value);
                 }
@@ -116,15 +117,16 @@ namespace Wasp.Core.Data.Xml
         /// Writes the costs for an item.
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="costable">The element containing the costs.</param>
-        private static async Task WriteCostsAsync(XmlWriter xmlWriter, ICostsParent? costable)
+        /// <param name="costs">The element containing the costs.</param>
+        /// <param name="itemName">The name of the item.</param>
+        private static async Task WriteCostsAsync(XmlWriter xmlWriter, List<ItemCost>? costs, string itemName = "cost")
         {
-            if (costable?.Costs == null) return;
+            if (costs == null) return;
 
-            await xmlWriter.WriteStartElementAsync(null, "costs", null);
-            foreach (var cost in costable.Costs)
+            await xmlWriter.WriteStartElementAsync(null, itemName + "s", null);
+            foreach (var cost in costs)
             {
-                await xmlWriter.WriteStartElementAsync(null, "cost", null);
+                await xmlWriter.WriteStartElementAsync(null, itemName, null);
                 await WriteAttributeAsync(xmlWriter, "name", cost.Name);
                 await WriteAttributeAsync(xmlWriter, "typeId", cost.TypeId);
                 await WriteAttributeAsync(xmlWriter, "value", cost.Value);
@@ -229,7 +231,7 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "publicationId", rule.PublicationId);
                 await WriteAttributeAsync(xmlWriter, "page", rule.Page);
                 await WriteAttributeAsync(xmlWriter, "hidden", rule.IsHidden);
-                if (!string.IsNullOrEmpty(rule.Description))
+                if (rule.Description != null)
                 {
                     await xmlWriter.WriteElementStringAsync(null, "description", null, rule.Description);
                 }
@@ -259,10 +261,12 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "number", selection.Number);
                 await WriteAttributeAsync(xmlWriter, "type", selection.Type);
 
+                if (selection.CustomNotes != null) await xmlWriter.WriteElementStringAsync(null, "customNotes", null, selection.CustomNotes);
+
                 await WriteRulesAsync(xmlWriter, selection);
                 await WriteProfilesAsync(xmlWriter, selection);
                 await WriteSelectionsAsync(xmlWriter, selection);
-                await WriteCostsAsync(xmlWriter, selection);
+                await WriteCostsAsync(xmlWriter, selection.Costs);
                 await WriteCategoriesAsync(xmlWriter, selection);
 
                 await xmlWriter.WriteEndElementAsync();

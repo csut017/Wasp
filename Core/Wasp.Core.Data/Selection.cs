@@ -22,6 +22,11 @@
         public string? CustomName { get; set; }
 
         /// <summary>
+        /// Gets or sets the custom notes on the selection.
+        /// </summary>
+        public string? CustomNotes { get; set; }
+
+        /// <summary>
         /// Gets or sets the entry group id.
         /// </summary>
         public string? EntryGroupId { get; set; }
