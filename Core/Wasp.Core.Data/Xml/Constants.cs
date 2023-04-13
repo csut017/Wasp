@@ -1,9 +1,9 @@
-﻿namespace Wasp.Core.Data
+﻿namespace Wasp.Core.Data.Xml
 {
     /// <summary>
     /// Defines constants to use with BattleScribe.
     /// </summary>
-    public class BattleScribeConstants
+    internal class Constants
     {
         /// <summary>
         /// The XML namespace to use for serializing and deserializing the BattleScribe format.
