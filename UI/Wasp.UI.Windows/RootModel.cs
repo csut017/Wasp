@@ -1,12 +1,16 @@
-﻿using System;
+﻿using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Wasp.Core.Data;
+using Wasp.Reports.Warhammer40K;
 
 namespace Wasp.UI.Windows
 {
@@ -45,6 +49,15 @@ namespace Wasp.UI.Windows
             (item.Parent?.Items ?? this.AvailableUnits).Add(item);
             this.SelectedUnits.Remove(item);
             this.CalculatePoints();
+        }
+
+        public void GenerateReport<TReport>(string fileName)
+            where TReport : IDocument
+        {
+            var generator = new CrusadeForce(GenerateRoster());
+            using var stream = File.Create(fileName);
+            generator.GeneratePdf(stream);
+            Process.Start("explorer.exe", fileName);
         }
 
         public async Task ImportAsync(string path)
@@ -94,23 +107,8 @@ namespace Wasp.UI.Windows
             }
 
             package.Settings.IsCompressed = Path.GetExtension(FilePath) == ".rosz";
-            var force = new Force
-            {
-                Name = "Order of Battle",
-                Selections = new List<Selection>(),
-            };
-            package.Roster = new()
-            {
-                Forces = new List<Force> { force },
-            };
-
-            foreach (var unit in SelectedUnits)
-            {
-                if (selectionMappings.TryGetValue(unit.Id!, out var selection))
-                {
-                    force.Selections.Add(selection);
-                }
-            }
+            Roster roster = GenerateRoster();
+            package.Roster = roster;
             await package.SaveAsync(FilePath);
         }
 
@@ -157,6 +155,29 @@ namespace Wasp.UI.Windows
         {
             this.AvailableUnits.Clear();
             this.SelectedUnits.Clear();
+        }
+
+        private Roster GenerateRoster()
+        {
+            var force = new Force
+            {
+                Name = "Order of Battle",
+                Selections = new List<Selection>(),
+            };
+            var roster = new Roster()
+            {
+                Forces = new List<Force> { force },
+            };
+
+            foreach (var unit in SelectedUnits)
+            {
+                if (selectionMappings.TryGetValue(unit.Id!, out var selection))
+                {
+                    force.Selections.Add(selection);
+                }
+            }
+
+            return roster;
         }
 
         private void Refresh(Roster? rosterToLoad = null)

@@ -28,6 +28,8 @@
     <None Remove="Images\new-order-of-battle.png" />
     <None Remove="Images\plus.png" />
     <None Remove="Images\remove-from-order.png" />
+    <None Remove="Images\report-datasheets.png" />
+    <None Remove="Images\report-order-of-battle.png" />
     <None Remove="Images\save-order-of-battle.png" />
   </ItemGroup>
 
@@ -53,6 +55,8 @@
     <Resource Include="Images\minimize.png" />
     <Resource Include="Images\new-order-of-battle.png" />
     <Resource Include="Images\remove-from-order.png" />
+    <Resource Include="Images\report-datasheets.png" />
+    <Resource Include="Images\report-order-of-battle.png" />
     <Resource Include="Images\save-order-of-battle.png" />
   </ItemGroup>
 

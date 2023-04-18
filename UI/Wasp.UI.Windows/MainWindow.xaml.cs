@@ -1,7 +1,10 @@
 ﻿using Microsoft.Win32;
+using QuestPDF.Infrastructure;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Wasp.Reports.Warhammer40K;
 
 namespace Wasp.UI.Windows
 {
@@ -18,6 +21,11 @@ namespace Wasp.UI.Windows
             this.DataContext = dataModel;
         }
 
+        private void AreUnitsSelected(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = dataModel.SelectedUnits.Any();
+        }
+
         private void OnClose(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -27,6 +35,15 @@ namespace Wasp.UI.Windows
         {
             if (((Button)e.OriginalSource).DataContext is not ItemModel item) return;
             this.dataModel.Deselect(item);
+        }
+
+        private void OnGenerateDataSheetsReport(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void OnGenerateOrderOfBattleReport(object sender, ExecutedRoutedEventArgs e)
+        {
+            PromptAndGenerateReport<CrusadeForce>("Order of Battle");
         }
 
         private async void OnImportRoster(object sender, ExecutedRoutedEventArgs e)
@@ -107,6 +124,26 @@ namespace Wasp.UI.Windows
         {
             if (((Button)e.OriginalSource).DataContext is not ItemModel item) return;
             this.dataModel.Select(item);
+        }
+
+        private void PromptAndGenerateReport<TReport>(string reportName)
+            where TReport : IDocument
+        {
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                CheckPathExists = true,
+                DefaultExt = ".pdf",
+                Filter = "PDF file (*.pdf)|*.pdf|All files (*.*)|*.*",
+                FilterIndex = 1,
+                OverwritePrompt = true,
+                Title = $"Generate {reportName}",
+                ValidateNames = true,
+            };
+            if (dialog.ShowDialog(this).GetValueOrDefault(false))
+            {
+                dataModel.GenerateReport<TReport>(dialog.FileName);
+            }
         }
     }
 }

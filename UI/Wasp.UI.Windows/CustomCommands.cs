@@ -24,6 +24,20 @@ namespace Wasp.UI.Windows
                         }
                     );
 
+        public static readonly RoutedUICommand ReportDataSheets = new(
+                        "ReportDataSheets",
+                        "ReportDataSheets",
+                        typeof(CustomCommands),
+                        new InputGestureCollection()
+                    );
+
+        public static readonly RoutedUICommand ReportOrderOfBattle = new(
+                        "ReportOrderOfBattle",
+                        "ReportOrderOfBattle",
+                        typeof(CustomCommands),
+                        new InputGestureCollection()
+                    );
+
         public static readonly RoutedUICommand SelectUnit = new(
                                 "SelectUnit",
                         "SelectUnit",
