@@ -9,7 +9,7 @@ namespace Wasp.Utility
     {
         private static async Task Main(string[] args)
         {
-            var input = "c:\\temp\\data-converted.ros";
+            var input = "C:\\Users\\csut017\\BattleScribe\\rosters\\Ay Eldi (T'au).rosz";
             var output = "c:\\temp\\data-converted.rosz";
             var report = "c:\\temp\\data-converted.pdf";
 

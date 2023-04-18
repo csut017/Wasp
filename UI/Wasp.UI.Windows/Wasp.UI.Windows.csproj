@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\arrow-down.png" />
+    <None Remove="Images\arrow-up.png" />
+    <None Remove="Images\clipboard.png" />
+    <None Remove="Images\close.png" />
+    <None Remove="Images\copy.png" />
+    <None Remove="Images\cut.png" />
+    <None Remove="Images\download.png" />
+    <None Remove="Images\edit.png" />
+    <None Remove="Images\file.png" />
+    <None Remove="Images\find.png" />
+    <None Remove="Images\home.png" />
+    <None Remove="Images\inside.png" />
+    <None Remove="Images\maximize.png" />
+    <None Remove="Images\minimize.png" />
+    <None Remove="Images\plus.png" />
+    <None Remove="Images\remove.png" />
+    <None Remove="Images\save.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Wasp.Core.Data\Wasp.Core.Data.csproj" />
+    <ProjectReference Include="..\..\Core\Wasp.Reports.Warhammer40K\Wasp.Reports.Warhammer40K.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\arrow-down.png" />
+    <Resource Include="Images\arrow-up.png" />
+    <Resource Include="Images\clipboard.png" />
+    <Resource Include="Images\close.png" />
+    <Resource Include="Images\copy.png" />
+    <Resource Include="Images\cut.png" />
+    <Resource Include="Images\download.png" />
+    <Resource Include="Images\edit.png" />
+    <Resource Include="Images\file.png" />
+    <Resource Include="Images\find.png" />
+    <Resource Include="Images\home.png" />
+    <Resource Include="Images\inside.png" />
+    <Resource Include="Images\maximize.png" />
+    <Resource Include="Images\minimize.png" />
+    <Resource Include="Images\plus.png" />
+    <Resource Include="Images\remove.png" />
+    <Resource Include="Images\save.png" />
+  </ItemGroup>
+
+</Project>

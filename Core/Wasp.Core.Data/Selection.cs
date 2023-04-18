@@ -62,6 +62,11 @@
         public List<Profile>? Profiles { get; set; }
 
         /// <summary>
+        /// Gets or sets the publication ID the selection is referencing.
+        /// </summary>
+        public string? PublicationId { get; set; }
+
+        /// <summary>
         /// Gets or sets the child rules.
         /// </summary>
         public List<Rule>? Rules { get; set; }

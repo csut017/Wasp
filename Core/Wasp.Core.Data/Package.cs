@@ -68,6 +68,15 @@ namespace Wasp.Core.Data
         }
 
         /// <summary>
+        /// Starts a new <see cref="Package"/> with the default settings.
+        /// </summary>
+        /// <returns>The new <see cref="Package"/> instance.</returns>
+        public static Package New()
+        {
+            return new Package(new PackageSettings());
+        }
+
+        /// <summary>
         /// Saves the package.
         /// </summary>
         /// <param name="path">The path to save the package to.</param>

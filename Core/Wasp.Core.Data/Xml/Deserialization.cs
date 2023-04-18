@@ -83,6 +83,7 @@ namespace Wasp.Core.Data.Xml
             { "name", async (reader, selection) => selection.Name = await reader.GetValueAsync() },
             { "number", async (reader, selection) => selection.Number = await reader.GetValueAsync() },
             { "page", async (reader, selection) => selection.Page = await reader.GetValueAsync() },
+            { "publicationId",  async (reader, selection) => selection.PublicationId = await reader.GetValueAsync() },
             { "type", async (reader, selection) => selection.Type = await reader.GetValueAsync() },
         };
 
