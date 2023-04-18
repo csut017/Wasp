@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -12,6 +13,10 @@ namespace Wasp.UI.Windows
     internal class RootModel
         : INotifyPropertyChanged
     {
+        private readonly Dictionary<string, ItemModel> itemMappings = new();
+        private readonly Dictionary<string, Selection> selectionMappings = new();
+        private readonly List<Roster> sourceRosters = new();
+        private Roster orderOfBattle = new();
         private Package? package;
 
         public RootModel()
@@ -29,21 +34,11 @@ namespace Wasp.UI.Windows
 
         public string? FilePath { get; set; }
 
-        public Roster? Main { get; set; }
-
         public double SelectedPoints { get; set; }
 
         public ObservableCollection<ItemModel> SelectedUnits { get; }
 
         public CollectionView SelectedUnitsView { get; }
-
-        public void CalculatePoints()
-        {
-            this.AvailablePoints = this.AvailableUnits.Sum(CalculateTotalCost);
-            this.SelectedPoints = this.SelectedUnits.Sum(CalculateTotalCost);
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AvailablePoints)));
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPoints)));
-        }
 
         public void Deselect(ItemModel item)
         {
@@ -52,56 +47,70 @@ namespace Wasp.UI.Windows
             this.CalculatePoints();
         }
 
+        public async Task ImportAsync(string path)
+        {
+            this.package = await Package.LoadAsync(path);
+            if (package.Roster == null) return;
+
+            this.sourceRosters.Add(package.Roster);
+            this.Refresh(package.Roster);
+        }
+
+        public void New()
+        {
+            this.ClearAll();
+            this.Refresh();
+            this.orderOfBattle = new();
+            this.package = null;
+        }
+
         public async Task OpenAsync(string path)
         {
             this.FilePath = path;
             this.package = await Package.LoadAsync(path);
-            this.Main = package.Roster;
-            this.SelectedUnits.Clear();
+            this.orderOfBattle = package.Roster ?? new();
+            this.sourceRosters.Add(this.orderOfBattle);
+            this.ClearAll();
             this.Refresh();
-        }
 
-        public void Refresh()
-        {
-            this.AvailableUnits.Clear();
-            if (Main?.Forces == null) return;
-            foreach (var force in Main.Forces)
+            if (this.orderOfBattle.Forces == null) return;
+            foreach (var unit in this.orderOfBattle.Forces.SelectMany(f => f.Selections ?? new List<Selection>()).Where(s => !string.IsNullOrEmpty(s.Id)))
             {
-                var forceItem = new ItemModel { Name = force.CatalogueName };
-                if (force.Selections != null)
+                if (this.itemMappings.TryGetValue(unit.Id!, out var item))
                 {
-                    foreach (var selection in force.Selections.Where(s => s.Type == "model" || s.Type == "unit"))
-                    {
-                        var cost = CalculateTotalCost(selection);
-                        forceItem.Items.Add(
-                            new CostedItemModel
-                            {
-                                Cost = cost,
-                                Name = selection.Name,
-                                Parent = forceItem,
-                            });
-                    }
+                    Select(item);
                 }
-                this.AvailableUnits.Add(forceItem);
             }
-
-            this.CalculatePoints();
         }
 
         public async Task SaveAsync(string? filePath = null)
         {
             this.FilePath = filePath ?? this.FilePath;
             if (string.IsNullOrEmpty(this.FilePath)) throw new ArgumentNullException(nameof(filePath));
-            if (this.package != null)
+            if (this.package == null)
             {
-                await this.package.SaveAsync(this.FilePath);
-                return;
+                package = Package.New();
+                package.Settings.Name = "data";
             }
 
-            package = Package.New();
             package.Settings.IsCompressed = Path.GetExtension(FilePath) == ".rosz";
-            package.Settings.Name = Main?.Name ?? "data";
+            var force = new Force
+            {
+                Name = "Order of Battle",
+                Selections = new List<Selection>(),
+            };
+            package.Roster = new()
+            {
+                Forces = new List<Force> { force },
+            };
 
+            foreach (var unit in SelectedUnits)
+            {
+                if (selectionMappings.TryGetValue(unit.Id!, out var selection))
+                {
+                    force.Selections.Add(selection);
+                }
+            }
             await package.SaveAsync(FilePath);
         }
 
@@ -134,6 +143,65 @@ namespace Wasp.UI.Windows
             }
 
             return childCosts + (item is CostedItemModel costedItem ? costedItem.Cost : 0);
+        }
+
+        private void CalculatePoints()
+        {
+            this.AvailablePoints = this.AvailableUnits.Sum(CalculateTotalCost);
+            this.SelectedPoints = this.SelectedUnits.Sum(CalculateTotalCost);
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AvailablePoints)));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPoints)));
+        }
+
+        private void ClearAll()
+        {
+            this.AvailableUnits.Clear();
+            this.SelectedUnits.Clear();
+        }
+
+        private void Refresh(Roster? rosterToLoad = null)
+        {
+            var loadList = new List<Force>();
+            if (rosterToLoad == null)
+            {
+                loadList.AddRange(sourceRosters.SelectMany(r => r.Forces ?? new List<Force>()));
+                this.itemMappings.Clear();
+                this.selectionMappings.Clear();
+            }
+            else
+            {
+                loadList.AddRange(rosterToLoad.Forces ?? new List<Force>());
+            }
+
+            foreach (var force in loadList)
+            {
+                var forceItem = new ItemModel(force.Id ?? string.Empty) { Name = force.CatalogueName };
+                if (force.Selections != null)
+                {
+                    foreach (var selection in force.Selections.Where(s => s.Type == "model" || s.Type == "unit"))
+                    {
+                        var cost = CalculateTotalCost(selection);
+                        var id = selection.Id ?? string.Empty;
+                        if (this.itemMappings.ContainsKey(id)) continue;
+
+                        var unitItem = new CostedItemModel(id)
+                        {
+                            Cost = cost,
+                            Name = selection.Name + (string.IsNullOrEmpty(selection.CustomName) ? string.Empty : $" [{selection.CustomName}]"),
+                            Parent = forceItem,
+                        };
+                        forceItem.Items.Add(unitItem);
+                        if (!string.IsNullOrEmpty(selection.Id))
+                        {
+                            this.itemMappings.Add(unitItem.Id, unitItem);
+                            this.selectionMappings.Add(selection.Id, selection);
+                        }
+                    }
+                }
+                this.AvailableUnits.Add(forceItem);
+            }
+
+            this.CalculatePoints();
         }
     }
 }

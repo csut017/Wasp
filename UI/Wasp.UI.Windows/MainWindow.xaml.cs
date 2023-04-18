@@ -29,6 +29,30 @@ namespace Wasp.UI.Windows
             this.dataModel.Deselect(item);
         }
 
+        private async void OnImportRoster(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                AddExtension = true,
+                CheckFileExists = true,
+                DefaultExt = ".rosz",
+                Filter = "Roster file (*.rosz;*.ros)|*.rosz;*.ros|All files (*.*)|*.*",
+                FilterIndex = 1,
+                Multiselect = false,
+                Title = "Open Roster",
+                ValidateNames = true,
+            };
+            if (dialog.ShowDialog(this).GetValueOrDefault(false))
+            {
+                await dataModel.ImportAsync(dialog.FileName);
+            }
+        }
+
+        private void OnNewOrderOfBattle(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.dataModel.New();
+        }
+
         private async void OnOpenRoster(object sender, ExecutedRoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
@@ -53,7 +77,7 @@ namespace Wasp.UI.Windows
             var dialog = new SaveFileDialog
             {
                 AddExtension = true,
-                CheckFileExists = true,
+                CheckPathExists = true,
                 DefaultExt = ".rosz",
                 Filter = "Compressed roster file (*.rosz)|*.rosz|Uncompressed roster file (*.ros)|*.ros|All files (*.*)|*.*",
                 FilterIndex = 1,

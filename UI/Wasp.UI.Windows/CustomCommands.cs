@@ -14,6 +14,16 @@ namespace Wasp.UI.Windows
                         }
                     );
 
+        public static readonly RoutedUICommand ImportRoster = new(
+                        "ImportRoster",
+                        "ImportRoster",
+                        typeof(CustomCommands),
+                        new InputGestureCollection
+                        {
+                            new KeyGesture(Key.O, ModifierKeys.Control | ModifierKeys.Shift)
+                        }
+                    );
+
         public static readonly RoutedUICommand SelectUnit = new(
                                 "SelectUnit",
                         "SelectUnit",

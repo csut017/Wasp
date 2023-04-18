@@ -6,12 +6,15 @@ namespace Wasp.UI.Windows
 {
     public class ItemModel
     {
-        public ItemModel()
+        public ItemModel(string id)
         {
             this.Items = new();
             this.ItemsView = (CollectionView)CollectionViewSource.GetDefaultView(this.Items);
             this.ItemsView.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            Id = id;
         }
+
+        public string Id { get; set; }
 
         public ObservableCollection<ItemModel> Items { get; }
 
