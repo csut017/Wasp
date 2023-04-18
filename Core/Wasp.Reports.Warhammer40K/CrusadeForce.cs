@@ -7,14 +7,9 @@ using Wasp.Core.Data;
 namespace Wasp.Reports.Warhammer40K
 {
     public class CrusadeForce
-        : IDocument
+        : IRosterDocument
     {
-        private readonly Roster roster;
-
-        public CrusadeForce(Roster roster)
-        {
-            this.roster = roster;
-        }
+        private Roster roster = new();
 
         public void Compose(IDocumentContainer container)
         {
@@ -27,7 +22,7 @@ namespace Wasp.Reports.Warhammer40K
                     page.Size(PageSizes.A4);
 
                     page.Content().Element(ComposeContent);
-                    page.Footer().Element(ComposeFooter);
+                    page.Footer().Element(ReportHelpers.ComposeFooter);
                 });
         }
 
@@ -37,6 +32,11 @@ namespace Wasp.Reports.Warhammer40K
             {
                 Title = roster.Name
             };
+        }
+
+        public void Initialise(Roster roster)
+        {
+            this.roster = roster;
         }
 
         private static void ComposeCrusadeCard(ColumnDescriptor column, Selection unit, ForceDetails details)
@@ -325,19 +325,6 @@ namespace Wasp.Reports.Warhammer40K
                             ComposeCrusadeCard(column, unit, details);
                         }
                     }
-                });
-            });
-        }
-
-        private void ComposeFooter(IContainer container)
-        {
-            container.PaddingBottom(-10).Row(row =>
-            {
-                row.RelativeItem().Text($"Generated {DateTime.Now:D}");
-                row.RelativeItem().AlignRight().Text(x =>
-                {
-                    x.Span("Page ");
-                    x.CurrentPageNumber();
                 });
             });
         }

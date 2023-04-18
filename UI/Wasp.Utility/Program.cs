@@ -21,7 +21,8 @@ namespace Wasp.Utility
             Console.WriteLine("Saved roster");
 
             if (package.Roster == null) return;
-            var generator = new CrusadeForce(package.Roster);
+            var generator = new DataSheets();
+            generator.Initialise(package.Roster);
             using var stream = File.Create(report);
             generator.GeneratePdf(stream);
             Console.WriteLine("Report generated");

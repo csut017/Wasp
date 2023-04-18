@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using QuestPDF.Infrastructure;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,6 +38,7 @@ namespace Wasp.UI.Windows
 
         private void OnGenerateDataSheetsReport(object sender, ExecutedRoutedEventArgs e)
         {
+            PromptAndGenerateReport<DataSheets>("Datasheets");
         }
 
         private void OnGenerateOrderOfBattleReport(object sender, ExecutedRoutedEventArgs e)
@@ -127,7 +127,7 @@ namespace Wasp.UI.Windows
         }
 
         private void PromptAndGenerateReport<TReport>(string reportName)
-            where TReport : IDocument
+            where TReport : IRosterDocument, new()
         {
             var dialog = new SaveFileDialog
             {

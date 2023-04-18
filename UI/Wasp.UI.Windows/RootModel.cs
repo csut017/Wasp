@@ -1,5 +1,4 @@
 ﻿using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -52,9 +51,10 @@ namespace Wasp.UI.Windows
         }
 
         public void GenerateReport<TReport>(string fileName)
-            where TReport : IDocument
+            where TReport : IRosterDocument, new()
         {
-            var generator = new CrusadeForce(GenerateRoster());
+            var generator = new TReport();
+            generator.Initialise(GenerateRoster());
             using var stream = File.Create(fileName);
             generator.GeneratePdf(stream);
             Process.Start("explorer.exe", fileName);
