@@ -42,7 +42,7 @@
         public string? Name { get; set; }
 
         /// <summary>
-        /// Gets the publications references by this force.
+        /// Gets the publications referenced by this force.
         /// </summary>
         public List<Publication>? Publications { get; set; }
 

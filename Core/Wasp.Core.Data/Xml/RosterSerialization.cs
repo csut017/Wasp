@@ -207,7 +207,7 @@ namespace Wasp.Core.Data.Xml
             {
                 await xmlWriter.WriteStartElementAsync(null, "publication", null);
                 await WriteAttributeAsync(xmlWriter, "id", publication.Id);
-                await WriteAttributeAsync(xmlWriter, "name", publication.Name);
+                await WriteAttributeAsync(xmlWriter, "name", publication.FullName);
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();

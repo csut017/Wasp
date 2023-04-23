@@ -89,7 +89,7 @@ namespace Wasp.Core.Data.Tests.Xml
                     "Psychic Awakening IX: Pariah[85df-1155-c986-4d71]",
                     "Psychic Awakening VIII: War of the Spider[c9fe-4431-b76d-267a]",
                 },
-                force.Publications.Select(p => $"{p.Name}[{p.Id}]").ToArray());
+                force.Publications.Select(p => $"{p.FullName}[{p.Id}]").ToArray());
         }
 
         [Fact]
