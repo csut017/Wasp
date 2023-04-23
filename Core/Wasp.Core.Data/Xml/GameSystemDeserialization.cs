@@ -13,6 +13,15 @@ namespace Wasp.Core.Data.Xml
             { "publicationId", async (reader, categoryEntry) => categoryEntry.PublicationId = await reader.GetValueAsync() },
         };
 
+        private static readonly Dictionary<string, Func<XmlReader, CategoryLink, Task>> categoryLinkAttributes = new()
+        {
+            { "hidden", async (reader, categoryLink) => categoryLink.IsHidden = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, categoryLink) => categoryLink.Id = await reader.GetValueAsync() },
+            { "name", async (reader, categoryLink) => categoryLink.Name = await reader.GetValueAsync() },
+            { "primary", async (reader, categoryLink) => categoryLink.IsPrimary = await reader.GetValueAsync() == "true" },
+            { "targetId", async (reader, categoryLink) => categoryLink.TargetId = await reader.GetValueAsync() },
+        };
+
         private static readonly Dictionary<string, Func<XmlReader, CharacteristicType, Task>> characteristicTypeAttributes = new()
         {
             { "id", async (reader, characteristicType) => characteristicType.Id = await reader.GetValueAsync() },
@@ -46,6 +55,17 @@ namespace Wasp.Core.Data.Xml
             { "hidden", async (reader, profile) => profile.IsHidden = await reader.GetValueAsync() == "true" },
             { "id", async (reader, cost) => cost.Id = await reader.GetValueAsync() },
             { "name", async (reader, cost) => cost.Name = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, EntryLink, Task>> entryLinkAttributes = new()
+        {
+            { "collective", async (reader, entryLink) => entryLink.IsCollective = await reader.GetValueAsync() == "true" },
+            { "hidden", async (reader, entryLink) => entryLink.IsHidden = await reader.GetValueAsync() == "true" },
+            { "import", async (reader, entryLink) => entryLink.IsImport = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, entryLink) => entryLink.Id = await reader.GetValueAsync() },
+            { "name", async (reader, entryLink) => entryLink.Name = await reader.GetValueAsync() },
+            { "targetId", async (reader, entryLink) => entryLink.TargetId = await reader.GetValueAsync() },
+            { "type", async (reader, entryLink) => entryLink.Type = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, ForceEntry, Task>> forceEntryAttributes = new()
@@ -116,10 +136,11 @@ namespace Wasp.Core.Data.Xml
         /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
         private static async Task DeserializeCategoryEntry(XmlReader xmlReader, GameSystem parent)
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var categoryEntry = new CategoryEntry();
-            await xmlReader.DeserializeAttributesAsync(categoryEntry, categoryEntryAttributes, "categoryEntry");
-            parent.CategoryEntries ??= new List<CategoryEntry>();
+            await xmlReader.DeserializeAttributesAsync(categoryEntry, categoryEntryAttributes);
+            if (parent.CategoryEntries == null) throw new Exception("CategoryEntries has not been initialised");
             parent.CategoryEntries.Add(categoryEntry);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -138,16 +159,14 @@ namespace Wasp.Core.Data.Xml
                                 categoryEntry.Constraints ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
                                     categoryEntry,
-                                    "constraints",
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(categoryEntry.Constraints, "constraint", constraintAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(categoryEntry.Constraints, constraintAttributes));
                                 break;
 
                             case "modifiers":
                                 categoryEntry.Modifiers ??= new List<Modifier>();
                                 await xmlReader.DeserializeArrayAsync(
                                     categoryEntry,
-                                    "modifiers",
                                     "modifier",
                                     DeserializeModifier);
                                 break;
@@ -160,7 +179,68 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != "categoryEntry") throw new Exception($"Unexpected end node: expected categoryEntry, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize a category link.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
+        private static async Task DeserializeCategoryLink(XmlReader xmlReader, ICategoryLinksParent parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var categoryLink = new CategoryLink();
+            await xmlReader.DeserializeAttributesAsync(categoryLink, categoryLinkAttributes);
+            if (parent.CategoryLinks == null) throw new Exception("CategoryLinks has not been initialised");
+            parent.CategoryLinks.Add(categoryLink);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                categoryLink.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "constraints":
+                                categoryLink.Constraints ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    categoryLink,
+                                    "constraint",
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(categoryLink.Constraints, constraintAttributes));
+                                break;
+
+                            case "modifiers":
+                                categoryLink.Modifiers ??= new List<Modifier>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    categoryLink,
+                                    "modifier",
+                                    DeserializeModifier);
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 
@@ -181,8 +261,8 @@ namespace Wasp.Core.Data.Xml
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var conditionGroup = new ConditionGroup();
-            await xmlReader.DeserializeAttributesAsync(conditionGroup, conditionGroupAttributes, "conditionGroup");
-            parent.ConditionGroups ??= new List<ConditionGroup>();
+            await xmlReader.DeserializeAttributesAsync(conditionGroup, conditionGroupAttributes);
+            if (parent.ConditionGroups == null) throw new Exception("ConditionGroups has not been initialised");
             parent.ConditionGroups.Add(conditionGroup);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -197,7 +277,6 @@ namespace Wasp.Core.Data.Xml
                                 conditionGroup.ConditionGroups ??= new List<ConditionGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     conditionGroup,
-                                    "conditionGroups",
                                     "conditionGroup",
                                     DeserializeConditionGroup);
                                 break;
@@ -206,9 +285,77 @@ namespace Wasp.Core.Data.Xml
                                 conditionGroup.Conditions ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
                                     conditionGroup,
-                                    "conditions",
                                     "condition",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(conditionGroup.Conditions, "condition", constraintAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(conditionGroup.Conditions, constraintAttributes));
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize an entry link.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
+        private static async Task DeserializeEntryLink(XmlReader xmlReader, GameSystem parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var entryLink = new EntryLink();
+            await xmlReader.DeserializeAttributesAsync(entryLink, entryLinkAttributes);
+            if (parent.EntryLinks == null) throw new Exception("EntryLinks has not been initialised");
+            parent.EntryLinks.Add(entryLink);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                entryLink.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "categoryLinks":
+                                entryLink.CategoryLinks ??= new List<CategoryLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    entryLink,
+                                    "categoryLink",
+                                    DeserializeCategoryLink);
+                                break;
+
+                            case "constraints":
+                                entryLink.Constraints ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    entryLink,
+                                    "constraint",
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(entryLink.Constraints, constraintAttributes));
+                                break;
+
+                            case "modifiers":
+                                entryLink.Modifiers ??= new List<Modifier>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    entryLink,
+                                    "modifier",
+                                    DeserializeModifier);
                                 break;
 
                             default:
@@ -237,10 +384,11 @@ namespace Wasp.Core.Data.Xml
         /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
         private static async Task DeserializeForceEntry(XmlReader xmlReader, IForceEntriesParent parent)
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var forceEntry = new ForceEntry();
-            await xmlReader.DeserializeAttributesAsync(forceEntry, forceEntryAttributes, "forceEntry");
-            parent.ForceEntries ??= new List<ForceEntry>();
+            await xmlReader.DeserializeAttributesAsync(forceEntry, forceEntryAttributes);
+            if (parent.ForceEntries == null) throw new Exception("ForceEntries has not been initialised");
             parent.ForceEntries.Add(forceEntry);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -251,20 +399,26 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
+                            case "categoryLinks":
+                                forceEntry.CategoryLinks ??= new List<CategoryLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    forceEntry,
+                                    "categoryLink",
+                                    DeserializeCategoryLink);
+                                break;
+
                             case "constraints":
                                 forceEntry.Constraints ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
                                     forceEntry,
-                                    "constraints",
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(forceEntry.Constraints, "constraint", constraintAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(forceEntry.Constraints, constraintAttributes));
                                 break;
 
                             case "forceEntries":
                                 parent.ForceEntries ??= new List<ForceEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     parent,
-                                    "forceEntries",
                                     "forceEntry",
                                     DeserializeForceEntry);
                                 break;
@@ -273,9 +427,15 @@ namespace Wasp.Core.Data.Xml
                                 forceEntry.Modifiers ??= new List<Modifier>();
                                 await xmlReader.DeserializeArrayAsync(
                                     forceEntry,
-                                    "modifiers",
                                     "modifier",
                                     DeserializeModifier);
+                                break;
+
+                            case "rules":
+                                await xmlReader.DeserializeArrayAsync(
+                                    forceEntry,
+                                    "rule",
+                                    CommonDeserialization.DeserializeRuleAsync);
                                 break;
 
                             default:
@@ -286,7 +446,7 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != "categoryEntry") throw new Exception($"Unexpected end node: expected categoryEntry, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 
@@ -299,8 +459,9 @@ namespace Wasp.Core.Data.Xml
 
         private static async Task DeserializeGameSystemAsync(XmlReader xmlReader, GameSystem gameSystem)
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
-            await xmlReader.DeserializeAttributesAsync(gameSystem, gameSystemAttributes, "gameSystem");
+            await xmlReader.DeserializeAttributesAsync(gameSystem, gameSystemAttributes);
 
             while (isReading && await xmlReader.ReadAsync())
             {
@@ -314,7 +475,6 @@ namespace Wasp.Core.Data.Xml
                                 gameSystem.CategoryEntries ??= new List<CategoryEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     gameSystem,
-                                    "categoryEntries",
                                     "categoryEntry",
                                     DeserializeCategoryEntry);
                                 break;
@@ -323,16 +483,22 @@ namespace Wasp.Core.Data.Xml
                                 gameSystem.CostTypes ??= new List<CostType>();
                                 await xmlReader.DeserializeArrayAsync(
                                     gameSystem,
-                                    "costTypes",
                                     "costType",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(gameSystem.CostTypes, "costType", costTypeAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(gameSystem.CostTypes, costTypeAttributes));
+                                break;
+
+                            case "entryLinks":
+                                gameSystem.EntryLinks ??= new List<EntryLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    gameSystem,
+                                    "entryLink",
+                                    DeserializeEntryLink);
                                 break;
 
                             case "forceEntries":
                                 gameSystem.ForceEntries ??= new List<ForceEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     gameSystem,
-                                    "forceEntries",
                                     "forceEntry",
                                     DeserializeForceEntry);
                                 break;
@@ -341,7 +507,6 @@ namespace Wasp.Core.Data.Xml
                                 gameSystem.ProfileTypes ??= new List<ProfileType>();
                                 await xmlReader.DeserializeArrayAsync(
                                     gameSystem,
-                                    "profileTypes",
                                     "profileType",
                                     DeserializeProfileType);
                                 break;
@@ -350,9 +515,8 @@ namespace Wasp.Core.Data.Xml
                                 gameSystem.Publications ??= new List<Publication>();
                                 await xmlReader.DeserializeArrayAsync(
                                     gameSystem,
-                                    "publications",
                                     "publication",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(gameSystem.Publications, "publication", CommonDeserialization.PublicationAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(gameSystem.Publications, CommonDeserialization.PublicationAttributes));
                                 break;
 
                             case "readme":
@@ -367,7 +531,7 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != "gameSystem") throw new Exception($"Unexpected end node: expected gameSystem, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 
@@ -385,10 +549,11 @@ namespace Wasp.Core.Data.Xml
         /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
         private static async Task DeserializeModifier(XmlReader xmlReader, IModifiersParent parent)
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var modifier = new Modifier();
-            await xmlReader.DeserializeAttributesAsync(modifier, modifierAttributes, "modifier");
-            parent.Modifiers ??= new List<Modifier>();
+            await xmlReader.DeserializeAttributesAsync(modifier, modifierAttributes);
+            if (parent.Modifiers == null) throw new Exception("Modifiers has not been initialised");
             parent.Modifiers.Add(modifier);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -403,7 +568,6 @@ namespace Wasp.Core.Data.Xml
                                 modifier.ConditionGroups ??= new List<ConditionGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     modifier,
-                                    "conditionGroups",
                                     "conditionGroup",
                                     DeserializeConditionGroup);
                                 break;
@@ -412,18 +576,16 @@ namespace Wasp.Core.Data.Xml
                                 modifier.Conditions ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
                                     modifier,
-                                    "conditions",
                                     "condition",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(modifier.Conditions, "condition", constraintAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(modifier.Conditions, constraintAttributes));
                                 break;
 
                             case "repeats":
                                 modifier.Repeats ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
                                     modifier,
-                                    "repeats",
                                     "repeat",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(modifier.Repeats, "repeat", constraintAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(modifier.Repeats, constraintAttributes));
                                 break;
 
                             default:
@@ -434,7 +596,7 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != "modifier") throw new Exception($"Unexpected end node: expected modifier, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 
@@ -452,10 +614,11 @@ namespace Wasp.Core.Data.Xml
         /// <param name="parent">The <see cref="GameSystem"/> to populate.</param>
         private static async Task DeserializeProfileType(XmlReader xmlReader, GameSystem parent)
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var profileType = new ProfileType();
-            await xmlReader.DeserializeAttributesAsync(profileType, profileTypeAttributes, "profileType");
-            parent.ProfileTypes ??= new List<ProfileType>();
+            await xmlReader.DeserializeAttributesAsync(profileType, profileTypeAttributes);
+            if (parent.ProfileTypes == null) throw new Exception("ProfileTypes has not been initialised");
             parent.ProfileTypes.Add(profileType);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -470,9 +633,8 @@ namespace Wasp.Core.Data.Xml
                                 profileType.CharacteristicTypes ??= new List<CharacteristicType>();
                                 await xmlReader.DeserializeArrayAsync(
                                     profileType,
-                                    "characteristicTypes",
                                     "characteristicType",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(profileType.CharacteristicTypes, "characteristicType", characteristicTypeAttributes));
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(profileType.CharacteristicTypes, characteristicTypeAttributes));
                                 break;
 
                             default:
@@ -483,7 +645,7 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != "profileType") throw new Exception($"Unexpected end node: expected profileType, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 

@@ -4,8 +4,13 @@
     /// Defines a force entry.
     /// </summary>
     public class ForceEntry
-        : IModifiersParent, IForceEntriesParent
+        : IModifiersParent, IForceEntriesParent, IRulesParent, ICategoryLinksParent
     {
+        /// <summary>
+        /// Gets or sets the category links.
+        /// </summary>
+        public List<CategoryLink>? CategoryLinks { get; set; }
+
         /// <summary>
         /// Gets or sets the constraints.
         /// </summary>
@@ -35,5 +40,10 @@
         /// Gets or sets the name of the force entry.
         /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the child rules.
+        /// </summary>
+        public List<Rule>? Rules { get; set; }
     }
 }

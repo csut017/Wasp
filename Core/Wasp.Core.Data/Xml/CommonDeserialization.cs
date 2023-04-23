@@ -17,17 +17,26 @@ namespace Wasp.Core.Data.Xml
             { "shortName", async (reader, publication) => publication.ShortName = await reader.GetValueAsync() },
         };
 
+        private static readonly Dictionary<string, Func<XmlReader, Rule, Task>> ruleAttributes = new()
+        {
+            { "hidden", async (reader, rule) => rule.IsHidden = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, rule) => rule.Id = await reader.GetValueAsync() },
+            { "name", async (reader, rule) => rule.Name = await reader.GetValueAsync() },
+            { "page", async (reader, rule) => rule.Page = await reader.GetValueAsync() },
+            { "publicationId", async (reader, rule) => rule.PublicationId = await reader.GetValueAsync() },
+        };
+
         /// <summary>
         /// Deserialize the items in an array.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
         /// <param name="item">The item to populate.</param>
-        /// <param name="arrayName">The name of the array.</param>
         /// <param name="itemName">The name of each item in the array.</param>
         /// <param name="itemLoader">The loader for populating the item.</param>
-        public static async Task DeserializeArrayAsync<TItem>(this XmlReader xmlReader, TItem item, string arrayName, string itemName, Func<XmlReader, TItem, Task> itemLoader)
+        public static async Task DeserializeArrayAsync<TItem>(this XmlReader xmlReader, TItem item, string itemName, Func<XmlReader, TItem, Task> itemLoader)
             where TItem : class
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             while (isReading && await xmlReader.ReadAsync())
             {
@@ -48,7 +57,7 @@ namespace Wasp.Core.Data.Xml
 
                     case XmlNodeType.EndElement:
                         // Make sure we've got the correct end element
-                        if (xmlReader.Name != arrayName) throw new Exception($"Unexpected end node: expected {arrayName}, found {xmlReader.Name}");
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
                         isReading = false;
                         break;
 
@@ -66,10 +75,10 @@ namespace Wasp.Core.Data.Xml
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
         /// <param name="item">The item to populate.</param>
         /// <param name="setters">The dictionary of setters.</param>
-        /// <param name="name">The name of the item.</param>
-        public static async Task DeserializeAttributesAsync<TItem>(this XmlReader xmlReader, TItem item, Dictionary<string, Func<XmlReader, TItem, Task>> setters, string name)
+        public static async Task DeserializeAttributesAsync<TItem>(this XmlReader xmlReader, TItem item, Dictionary<string, Func<XmlReader, TItem, Task>> setters)
             where TItem : class
         {
+            var name = xmlReader.Name;
             if (xmlReader.MoveToFirstAttribute())
             {
                 do
@@ -82,18 +91,63 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
+        /// Deserialize a rule.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="IRulesParent"/> to populate.</param>
+        public static async Task DeserializeRuleAsync(XmlReader xmlReader, IRulesParent parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var rule = new Rule();
+            await xmlReader.DeserializeAttributesAsync(rule, ruleAttributes);
+            parent.Rules ??= new List<Rule>();
+            parent.Rules.Add(rule);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "description":
+                                rule.Description = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
         /// Deserializes an item.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
         /// <param name="parent">The parent list.</param>
-        /// <param name="name">The name of the item to deserialize.</param>
         /// <param name="setters">The attribute setters to use.</param>
-        public static async Task DeserializeSingleItemAsync<TItem>(this XmlReader xmlReader, IList<TItem> parent, string name, Dictionary<string, Func<XmlReader, TItem, Task>> setters)
+        public static async Task DeserializeSingleItemAsync<TItem>(this XmlReader xmlReader, IList<TItem> parent, Dictionary<string, Func<XmlReader, TItem, Task>> setters)
             where TItem : class, new()
         {
+            var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var item = new TItem();
-            await xmlReader.DeserializeAttributesAsync(item, setters, name);
+            await xmlReader.DeserializeAttributesAsync(item, setters);
             parent.Add(item);
 
             while (isReading && await xmlReader.ReadAsync())

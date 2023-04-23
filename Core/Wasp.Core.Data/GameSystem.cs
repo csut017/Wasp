@@ -37,6 +37,11 @@
         public List<CostType>? CostTypes { get; set; }
 
         /// <summary>
+        /// Gets or sets the entry links.
+        /// </summary>
+        public List<EntryLink>? EntryLinks { get; set; }
+
+        /// <summary>
         /// Gets or sets the force entries for the game system.
         /// </summary>
         public List<ForceEntry>? ForceEntries { get; set; }
