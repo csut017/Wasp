@@ -4,7 +4,7 @@
     /// Defines a selection.
     /// </summary>
     public class Selection
-        : ISelectionParent, IRulesParent, ICostsParent, ICategoriesParent
+        : ISelectionParent, IRulesParent, ICostsParent, ICategoriesParent, IProfilesParent
     {
         /// <summary>
         /// Gets the categories in the selection.

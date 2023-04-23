@@ -75,5 +75,10 @@
         /// Gets or sets the revision of the game system.
         /// </summary>
         public string? Revision { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shared selection entries for the game system.
+        /// </summary>
+        public List<SelectionEntry>? SharedSelectionEntries { get; set; }
     }
 }

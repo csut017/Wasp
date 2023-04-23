@@ -86,6 +86,15 @@ namespace Wasp.Core.Data.Xml
             { "revision", async (reader, gameSystem) => gameSystem.Revision = await reader.GetValueAsync() },
         };
 
+        private static readonly Dictionary<string, Func<XmlReader, InformationLink, Task>> informationLinkAttributes = new()
+        {
+            { "hidden", async (reader, informationLink) => informationLink.IsHidden = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, informationLink) => informationLink.Id = await reader.GetValueAsync() },
+            { "name", async (reader, informationLink) => informationLink.Name = await reader.GetValueAsync() },
+            { "targetId", async (reader, informationLink) => informationLink.TargetId = await reader.GetValueAsync() },
+            { "type", async (reader, informationLink) => informationLink.Type = await reader.GetValueAsync() },
+        };
+
         private static readonly Dictionary<string, Func<XmlReader, Modifier, Task>> modifierAttributes = new()
         {
             { "field", async (reader, modifier) => modifier.Field = await reader.GetValueAsync() },
@@ -97,6 +106,17 @@ namespace Wasp.Core.Data.Xml
         {
             { "id", async (reader, profileType) => profileType.Id = await reader.GetValueAsync() },
             { "name", async (reader, profileType) => profileType.Name = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, SelectionEntry, Task>> selectionEntryAttributes = new()
+        {
+            { "collective", async (reader, selectionEntry) => selectionEntry.IsCollective = await reader.GetValueAsync() == "true" },
+            { "hidden", async (reader, selectionEntry) => selectionEntry.IsHidden = await reader.GetValueAsync() == "true" },
+            { "import", async (reader, selectionEntry) => selectionEntry.IsImport = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, selectionEntry) => selectionEntry.Id = await reader.GetValueAsync() },
+            { "name", async (reader, selectionEntry) => selectionEntry.Name = await reader.GetValueAsync() },
+            { "page", async (reader, selectionEntry) => selectionEntry.Page = await reader.GetValueAsync() },
+            { "type", async (reader, selectionEntry) => selectionEntry.Type = await reader.GetValueAsync() },
         };
 
         /// <summary>
@@ -523,6 +543,14 @@ namespace Wasp.Core.Data.Xml
                                 gameSystem.ReadMe = await xmlReader.ReadElementContentAsStringAsync();
                                 break;
 
+                            case "sharedSelectionEntries":
+                                gameSystem.SharedSelectionEntries ??= new List<SelectionEntry>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    gameSystem,
+                                    "selectionEntry",
+                                    async (reader, _) => await DeserializeSelectionEntry(reader, gameSystem.SharedSelectionEntries));
+                                break;
+
                             default:
                                 // Anything else is an error
                                 throw new Exception($"Unexpected element: {xmlReader.Name}");
@@ -635,6 +663,94 @@ namespace Wasp.Core.Data.Xml
                                     profileType,
                                     "characteristicType",
                                     async (reader, _) => await reader.DeserializeSingleItemAsync(profileType.CharacteristicTypes, characteristicTypeAttributes));
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize a selection entry.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="List{SelectionEntry}"/> to populate.</param>
+        private static async Task DeserializeSelectionEntry(XmlReader xmlReader, List<SelectionEntry> parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var selectionEntry = new SelectionEntry();
+            await xmlReader.DeserializeAttributesAsync(selectionEntry, selectionEntryAttributes);
+            parent.Add(selectionEntry);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "categoryLinks":
+                                selectionEntry.CategoryLinks ??= new List<CategoryLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "categoryLink",
+                                    DeserializeCategoryLink);
+                                break;
+
+                            case "constraints":
+                                selectionEntry.Constraints ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "constraint",
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(selectionEntry.Constraints, constraintAttributes));
+                                break;
+
+                            case "costs":
+                                selectionEntry.Costs ??= new List<ItemCost>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "cost",
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(selectionEntry.Costs, CommonDeserialization.CostAttributes));
+                                break;
+
+                            case "infoLinks":
+                                selectionEntry.InformationLinks ??= new List<InformationLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "infoLink",
+                                    async (reader, _) => await reader.DeserializeSingleItemAsync(selectionEntry.InformationLinks, informationLinkAttributes));
+                                break;
+
+                            case "profiles":
+                                selectionEntry.Profiles ??= new List<Profile>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "profile",
+                                    CommonDeserialization.DeserializeProfileAsync);
+                                break;
+
+                            case "selectionEntries":
+                                selectionEntry.SelectionEntries ??= new List<SelectionEntry>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    selectionEntry,
+                                    "selectionEntry",
+                                    async (reader, _) => await DeserializeSelectionEntry(reader, selectionEntry.SelectionEntries));
                                 break;
 
                             default:
