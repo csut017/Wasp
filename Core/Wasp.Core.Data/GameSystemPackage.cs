@@ -3,19 +3,19 @@
 namespace Wasp.Core.Data
 {
     /// <summary>
-    /// Defines a package for storing a roster.
+    /// Defines a package for storing a game system.
     /// </summary>
-    public class Package
+    public class GameSystemPackage
     {
-        private Package(PackageSettings settings)
+        private GameSystemPackage(PackageSettings settings)
         {
             this.Settings = settings;
         }
 
         /// <summary>
-        /// Gets or sets the roster in the package.
+        /// Gets or sets the game system in the package.
         /// </summary>
-        public Roster? Roster { get; set; }
+        public GameSystem? GameSystem { get; set; }
 
         /// <summary>
         /// Gets or sets the settings for this package.
@@ -27,13 +27,13 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
-        /// <returns>The new <see cref="Package"/> instance.</returns>
-        public static async Task<Package> LoadAsync(Stream stream, PackageSettings settings)
+        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
+        public static async Task<GameSystemPackage> LoadAsync(Stream stream, PackageSettings settings)
         {
-            var package = new Package(settings);
+            var package = new GameSystemPackage(settings);
             if (!settings.IsCompressed)
             {
-                package.Roster = await settings.Format.DeserializeAsync(stream);
+                package.GameSystem = await settings.Format.DeserializeGameSystemAsync(stream);
             }
             else
             {
@@ -44,7 +44,7 @@ namespace Wasp.Core.Data
 
                 var entry = archive.Entries[0];
                 using var zipStream = entry.Open();
-                package.Roster = await settings.Format.DeserializeAsync(zipStream);
+                package.GameSystem = await settings.Format.DeserializeGameSystemAsync(zipStream);
             }
 
             return package;
@@ -55,12 +55,12 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="path">The path to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
-        /// <returns>The new <see cref="Package"/> instance.</returns>
-        public static async Task<Package> LoadAsync(string path, PackageSettings? settings = null)
+        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
+        public static async Task<GameSystemPackage> LoadAsync(string path, PackageSettings? settings = null)
         {
             var settingsToUse = settings ?? new PackageSettings
             {
-                IsCompressed = Path.GetExtension(path) == ".rosz",
+                IsCompressed = Path.GetExtension(path) == ".gstz",
                 Name = Path.GetFileNameWithoutExtension(path),
             };
             using var stream = File.OpenRead(path);
@@ -68,12 +68,12 @@ namespace Wasp.Core.Data
         }
 
         /// <summary>
-        /// Starts a new <see cref="Package"/> with the default settings.
+        /// Starts a new <see cref="GameSystemPackage"/> with the default settings.
         /// </summary>
-        /// <returns>The new <see cref="Package"/> instance.</returns>
-        public static Package New()
+        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
+        public static GameSystemPackage New()
         {
-            return new Package(new PackageSettings());
+            return new GameSystemPackage(new PackageSettings());
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace Wasp.Core.Data
         /// <param name="stream">The <see cref="Stream"/> to use.</param>
         public async Task SaveAsync(Stream stream)
         {
-            if (this.Roster == null) throw new InvalidOperationException("Roster has not been set.");
+            if (this.GameSystem == null) throw new InvalidOperationException("Game system has not been set.");
             if (!this.Settings.IsCompressed)
             {
                 // Save directly to the stream
-                await this.Settings.Format.SerializeAsync(this.Roster, stream);
+                await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, stream);
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace Wasp.Core.Data
             var filename = this.Settings.Name ?? "data";
             var entry = archive.CreateEntry(filename + ".ros");
             using var zipStream = entry.Open();
-            await this.Settings.Format.SerializeAsync(this.Roster, zipStream);
+            await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, zipStream);
         }
     }
 }

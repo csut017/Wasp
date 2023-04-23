@@ -5,7 +5,7 @@ namespace Wasp.Core.Data.Xml
     /// <summary>
     /// Deserializes a definition from an XML format.
     /// </summary>
-    internal static class Deserialization
+    internal static class RosterDeserialization
     {
         private static readonly Dictionary<string, Func<XmlReader, Category, Task>> categoryAttributes = new()
         {

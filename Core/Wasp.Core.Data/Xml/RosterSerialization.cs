@@ -5,7 +5,7 @@ namespace Wasp.Core.Data.Xml
     /// <summary>
     /// Deserializes a definition from an XML format.
     /// </summary>
-    internal static class Serialization
+    internal static class RosterSerialization
     {
         /// <summary>
         /// Serializes the root level element.

@@ -20,7 +20,7 @@ namespace Wasp.UI.Windows
         private readonly Dictionary<string, Selection> selectionMappings = new();
         private readonly List<Roster> sourceRosters = new();
         private Roster orderOfBattle = new();
-        private Package? package;
+        private RosterPackage? package;
 
         public RootModel()
         {
@@ -62,7 +62,7 @@ namespace Wasp.UI.Windows
 
         public async Task ImportAsync(string path)
         {
-            this.package = await Package.LoadAsync(path);
+            this.package = await RosterPackage.LoadAsync(path);
             if (package.Roster == null) return;
 
             this.sourceRosters.Add(package.Roster);
@@ -80,7 +80,7 @@ namespace Wasp.UI.Windows
         public async Task OpenAsync(string path)
         {
             this.FilePath = path;
-            this.package = await Package.LoadAsync(path);
+            this.package = await RosterPackage.LoadAsync(path);
             this.orderOfBattle = package.Roster ?? new();
             this.sourceRosters.Add(this.orderOfBattle);
             this.ClearAll();
@@ -102,7 +102,7 @@ namespace Wasp.UI.Windows
             if (string.IsNullOrEmpty(this.FilePath)) throw new ArgumentNullException(nameof(filePath));
             if (this.package == null)
             {
-                package = Package.New();
+                package = RosterPackage.New();
                 package.Settings.Name = "data";
             }
 

@@ -23,7 +23,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var force = roster?.Forces?.FirstOrDefault();
@@ -50,7 +50,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             Assert.NotNull(roster.Forces);
@@ -79,7 +79,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var force = roster?.Forces?.FirstOrDefault();
@@ -106,7 +106,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             Assert.NotNull(roster?.Costs);
@@ -138,7 +138,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var force = roster?.Forces?.FirstOrDefault();
@@ -167,7 +167,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -202,7 +202,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var force = roster?.Forces?.FirstOrDefault();
@@ -239,7 +239,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -267,7 +267,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -317,7 +317,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -357,7 +357,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -395,7 +395,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             var selection = roster?.Forces?.FirstOrDefault()?.Selections?.FirstOrDefault();
@@ -416,7 +416,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(stream);
+            var roster = await deserializer.DeserializeRosterAsync(stream);
 
             // Assert
             Assert.NotNull(roster);
@@ -436,7 +436,7 @@ namespace Wasp.Core.Data.Tests.Xml
             var deserializer = new Format();
 
             // Act
-            var roster = await deserializer.DeserializeAsync(xml);
+            var roster = await deserializer.DeserializeRosterAsync(xml);
 
             // Assert
             Assert.NotNull(roster);
