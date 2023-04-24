@@ -4,7 +4,6 @@
     /// Defines a force in a roster.
     /// </summary>
     public class Force
-        : ISelectionParent, IRulesParent, ICategoriesParent
     {
         /// <summary>
         /// Gets or sets the catalogue id.

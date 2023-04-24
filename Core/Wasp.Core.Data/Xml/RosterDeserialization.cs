@@ -117,17 +117,19 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "rules":
+                                force.Rules ??= new List<Rule>();
                                 await xmlReader.DeserializeArrayAsync(
                                     force,
                                     "rule",
-                                    CommonDeserialization.DeserializeRuleAsync);
+                                    async (reader, _) => await CommonDeserialization.DeserializeRuleAsync(reader, force.Rules));
                                 break;
 
                             case "selections":
+                                force.Selections ??= new List<Selection>();
                                 await xmlReader.DeserializeArrayAsync(
                                     force,
                                     "selection",
-                                    DeserializeSelectionAsync);
+                                    async (reader, _) => await DeserializeSelectionAsync(reader, force.Selections));
                                 break;
 
                             default:
@@ -211,15 +213,15 @@ namespace Wasp.Core.Data.Xml
         /// Deserialize a selection.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
-        /// <param name="parent">The <see cref="ISelectionParent"/> to populate.</param>
-        private static async Task DeserializeSelectionAsync(XmlReader xmlReader, ISelectionParent parent)
+        /// <param name="parent">The <see cref="List{Selection}"/> to populate.</param>
+        private static async Task DeserializeSelectionAsync(XmlReader xmlReader, List<Selection>? parent)
         {
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
             var selection = new Selection();
             await xmlReader.DeserializeAttributesAsync(selection, selectionAttributes);
-            parent.Selections ??= new List<Selection>();
-            parent.Selections.Add(selection);
+            if (parent == null) throw new Exception("Selections has not been set");
+            parent.Add(selection);
 
             while (isReading && await xmlReader.ReadAsync())
             {
@@ -250,24 +252,27 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "profiles":
+                                selection.Profiles ??= new List<Profile>();
                                 await xmlReader.DeserializeArrayAsync(
                                     selection,
                                     "profile",
-                                    CommonDeserialization.DeserializeProfileAsync);
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfileAsync(reader, selection.Profiles));
                                 break;
 
                             case "rules":
+                                selection.Rules ??= new List<Rule>();
                                 await xmlReader.DeserializeArrayAsync(
                                     selection,
                                     "rule",
-                                    CommonDeserialization.DeserializeRuleAsync);
+                                    async (reader, _) => await CommonDeserialization.DeserializeRuleAsync(reader, selection.Rules));
                                 break;
 
                             case "selections":
+                                selection.Selections ??= new List<Selection>();
                                 await xmlReader.DeserializeArrayAsync(
                                     selection,
                                     "selection",
-                                    DeserializeSelectionAsync);
+                                    async (reader, _) => await DeserializeSelectionAsync(reader, selection.Selections));
                                 break;
 
                             default:

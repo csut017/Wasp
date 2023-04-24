@@ -3,11 +3,11 @@
 namespace Wasp.Core.Data
 {
     /// <summary>
-    /// Defines a package for storing a game system.
+    /// Defines a package for storing configuration about a game system.
     /// </summary>
-    public class GameSystemPackage
+    public class ConfigurationPackage
     {
-        private GameSystemPackage(PackageSettings settings)
+        private ConfigurationPackage(PackageSettings settings)
         {
             this.Settings = settings;
         }
@@ -15,7 +15,7 @@ namespace Wasp.Core.Data
         /// <summary>
         /// Gets or sets the game system in the package.
         /// </summary>
-        public GameSystem? GameSystem { get; set; }
+        public GameSystemConfiguration? GameSystem { get; set; }
 
         /// <summary>
         /// Gets or sets the settings for this package.
@@ -27,13 +27,13 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
-        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
-        public static async Task<GameSystemPackage> LoadAsync(Stream stream, PackageSettings settings)
+        /// <returns>The new <see cref="ConfigurationPackage"/> instance.</returns>
+        public static async Task<ConfigurationPackage> LoadAsync(Stream stream, PackageSettings settings)
         {
-            var package = new GameSystemPackage(settings);
+            var package = new ConfigurationPackage(settings);
             if (!settings.IsCompressed)
             {
-                package.GameSystem = await settings.Format.DeserializeGameSystemAsync(stream);
+                package.GameSystem = await settings.Format.DeserializeConfigurationAsync(stream, settings.ConfigurationType);
             }
             else
             {
@@ -44,7 +44,7 @@ namespace Wasp.Core.Data
 
                 var entry = archive.Entries[0];
                 using var zipStream = entry.Open();
-                package.GameSystem = await settings.Format.DeserializeGameSystemAsync(zipStream);
+                package.GameSystem = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
             }
 
             return package;
@@ -55,25 +55,36 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="path">The path to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
-        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
-        public static async Task<GameSystemPackage> LoadAsync(string path, PackageSettings? settings = null)
+        /// <returns>The new <see cref="ConfigurationPackage"/> instance.</returns>
+        public static async Task<ConfigurationPackage> LoadAsync(string path, PackageSettings? settings = null)
         {
+            var fileType = Path.GetExtension(path);
             var settingsToUse = settings ?? new PackageSettings
             {
-                IsCompressed = Path.GetExtension(path) == ".gstz",
+                IsCompressed = fileType.EndsWith("z"),
                 Name = Path.GetFileNameWithoutExtension(path),
             };
+
+            if (fileType.StartsWith(".gst"))
+            {
+                settingsToUse.ConfigurationType = ConfigurationType.GameSystem;
+            }
+            else if (fileType.StartsWith(".cat"))
+            {
+                settingsToUse.ConfigurationType = ConfigurationType.Catalogue;
+            }
+
             using var stream = File.OpenRead(path);
             return await LoadAsync(stream, settingsToUse);
         }
 
         /// <summary>
-        /// Starts a new <see cref="GameSystemPackage"/> with the default settings.
+        /// Starts a new <see cref="ConfigurationPackage"/> with the default settings.
         /// </summary>
-        /// <returns>The new <see cref="GameSystemPackage"/> instance.</returns>
-        public static GameSystemPackage New()
+        /// <returns>The new <see cref="ConfigurationPackage"/> instance.</returns>
+        public static ConfigurationPackage New()
         {
-            return new GameSystemPackage(new PackageSettings());
+            return new ConfigurationPackage(new PackageSettings());
         }
 
         /// <summary>

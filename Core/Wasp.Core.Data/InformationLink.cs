@@ -16,9 +16,24 @@
         public bool IsHidden { get; set; }
 
         /// <summary>
+        /// Gets or sets the modifiers.
+        /// </summary>
+        public List<Modifier>? Modifiers { get; set; }
+
+        /// <summary>
         /// Gets or sets the name.
         /// </summary>
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page.
+        /// </summary>
+        public string? Page { get; set; }
+
+        /// <summary>
+        /// Gets or sets the publication id.
+        /// </summary>
+        public string? PublicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the target id.

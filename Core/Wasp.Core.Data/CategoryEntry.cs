@@ -4,7 +4,6 @@
     /// Defines a category entry.
     /// </summary>
     public class CategoryEntry
-        : IModifiersParent
     {
         /// <summary>
         /// Gets or sets an optional comment on the entry.
@@ -20,6 +19,11 @@
         /// Gets or sets the id of the category entry.
         /// </summary>
         public string? Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the information links.
+        /// </summary>
+        public List<InformationLink>? InformationLinks { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this category entry is hidden or not.

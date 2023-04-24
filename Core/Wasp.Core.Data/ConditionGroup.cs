@@ -4,8 +4,12 @@
     /// Defines a condition group.
     /// </summary>
     public class ConditionGroup
-        : IConditionGroupsParent
     {
+        /// <summary>
+        /// Gets or sets an optional comment for the condition group.
+        /// </summary>
+        public string? Comment { get; set; }
+
         /// <summary>
         /// Gets or sets the condition groups.
         /// </summary>

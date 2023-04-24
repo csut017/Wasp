@@ -6,6 +6,11 @@
     public class PackageSettings
     {
         /// <summary>
+        /// Gets or sets the type of configuration that the package holds.
+        /// </summary>
+        public ConfigurationType ConfigurationType { get; set; }
+
+        /// <summary>
         /// Gets or sets the <see cref="IFormatProvider"/> to use.
         /// </summary>
         public IFormatProvider Format { get; set; } = Formats.Xml;

@@ -4,7 +4,6 @@
     /// Defines a roster (army list).
     /// </summary>
     public class Roster
-        : ICostsParent
     {
         /// <summary>
         /// Gets or sets the version of BattleScribe used to generate this roster.

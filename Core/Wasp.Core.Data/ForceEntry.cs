@@ -4,7 +4,6 @@
     /// Defines a force entry.
     /// </summary>
     public class ForceEntry
-        : IModifiersParent, IForceEntriesParent, IRulesParent, ICategoryLinksParent
     {
         /// <summary>
         /// Gets or sets the category links.

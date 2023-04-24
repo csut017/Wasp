@@ -4,7 +4,6 @@
     /// Defines a category link.
     /// </summary>
     public class CategoryLink
-        : IModifiersParent
     {
         /// <summary>
         /// Gets or sets an optional comment on the link.

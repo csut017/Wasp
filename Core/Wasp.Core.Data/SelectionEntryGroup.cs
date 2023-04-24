@@ -1,29 +1,19 @@
 ﻿namespace Wasp.Core.Data
 {
     /// <summary>
-    /// Defines an entry link.
+    /// Defines a selection entry group.
     /// </summary>
-    public class EntryLink
+    public class SelectionEntryGroup
     {
-        /// <summary>
-        /// Gets or sets the category links.
-        /// </summary>
-        public List<CategoryLink>? CategoryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets an optional comment on the link.
-        /// </summary>
-        public string? Comment { get; internal set; }
-
         /// <summary>
         /// Gets or sets the constraints.
         /// </summary>
         public List<Constraint>? Constraints { get; set; }
 
         /// <summary>
-        /// Gets or sets the costs.
+        /// Gets or sets the default selection entry id.
         /// </summary>
-        public List<ItemCost>? Costs { get; set; }
+        public string? DefaultSelectionEntryId { get; set; }
 
         /// <summary>
         /// Gets or sets the entry links.
@@ -31,29 +21,24 @@
         public List<EntryLink>? EntryLinks { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the entry link.
+        /// Gets or sets the id of the selection entry group.
         /// </summary>
         public string? Id { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag indicating whether this entry link is collective or not.
+        /// Gets or sets a flag indicating whether this selection entry group is collective or not.
         /// </summary>
         public bool IsCollective { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag indicating whether this entry link is hidden or not.
+        /// Gets or sets a flag indicating whether this selection entry group is hidden or not.
         /// </summary>
         public bool IsHidden { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag indicating whether this entry link is an import or not.
+        /// Gets or sets a flag indicating whether this selection entry group is an import or not.
         /// </summary>
         public bool IsImport { get; set; }
-
-        /// <summary>
-        /// Gets or sets the modifier groups.
-        /// </summary>
-        public List<ModifierGroup>? ModifierGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the modifiers.
@@ -61,28 +46,28 @@
         public List<Modifier>? Modifiers { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the entry link.
+        /// Gets or sets the name of the selection entry group.
         /// </summary>
         public string? Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the page.
+        /// Gets or sets the page number for finding this selection entry.
         /// </summary>
         public string? Page { get; set; }
 
         /// <summary>
-        /// Gets or sets the publication id.
+        /// Gets or sets the id of the publication this selection entry is from.
         /// </summary>
         public string? PublicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the target id.
+        /// Gets or sets the selection entries.
         /// </summary>
-        public string? TargetId { get; set; }
+        public List<SelectionEntry>? SelectionEntries { get; set; }
 
         /// <summary>
-        /// Gets or sets the type.
+        /// Gets or sets the selection entry groups.
         /// </summary>
-        public string? Type { get; set; }
+        public List<SelectionEntryGroup>? SelectionEntryGroups { get; set; }
     }
 }

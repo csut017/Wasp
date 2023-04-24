@@ -21,6 +21,11 @@
         public bool IsHidden { get; set; }
 
         /// <summary>
+        /// Gets or sets the modifiers.
+        /// </summary>
+        public List<Modifier>? Modifiers { get; set; }
+
+        /// <summary>
         /// Gets or sets the name of the profile.
         /// </summary>
         public string? Name { get; set; }
