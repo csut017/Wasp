@@ -15,7 +15,7 @@ namespace Wasp.Core.Data
         /// <summary>
         /// Gets or sets the game system in the package.
         /// </summary>
-        public GameSystemConfiguration? GameSystem { get; set; }
+        public GameSystemConfiguration? Definition { get; set; }
 
         /// <summary>
         /// Gets or sets the settings for this package.
@@ -33,7 +33,7 @@ namespace Wasp.Core.Data
             var package = new ConfigurationPackage(settings);
             if (!settings.IsCompressed)
             {
-                package.GameSystem = await settings.Format.DeserializeConfigurationAsync(stream, settings.ConfigurationType);
+                package.Definition = await settings.Format.DeserializeConfigurationAsync(stream, settings.ConfigurationType);
             }
             else
             {
@@ -44,7 +44,7 @@ namespace Wasp.Core.Data
 
                 var entry = archive.Entries[0];
                 using var zipStream = entry.Open();
-                package.GameSystem = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
+                package.Definition = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
             }
 
             return package;
@@ -103,19 +103,47 @@ namespace Wasp.Core.Data
         /// <param name="stream">The <see cref="Stream"/> to use.</param>
         public async Task SaveAsync(Stream stream)
         {
-            if (this.GameSystem == null) throw new InvalidOperationException("Game system has not been set.");
+            if (this.Definition == null) throw new InvalidOperationException("Game system has not been set.");
             if (!this.Settings.IsCompressed)
             {
                 // Save directly to the stream
-                await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, stream, this.Settings.ConfigurationType);
+                await this.Settings.Format.SerializeGameSystemAsync(this.Definition, stream, this.Settings.ConfigurationType);
                 return;
             }
 
             using var archive = new ZipArchive(stream, ZipArchiveMode.Create);
             var filename = this.Settings.Name ?? "data";
-            var entry = archive.CreateEntry(filename + ".ros");
+            var fileExtension = (this.Settings.ConfigurationType) switch
+            {
+                ConfigurationType.Catalogue => ".cat",
+                ConfigurationType.GameSystem => ".gst",
+                _ => throw new ApplicationException($"Unknown configuration type: {this.Settings.ConfigurationType}"),
+            };
+            var entry = archive.CreateEntry(filename + fileExtension);
             using var zipStream = entry.Open();
-            await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, zipStream, this.Settings.ConfigurationType);
+            await this.Settings.Format.SerializeGameSystemAsync(this.Definition, zipStream, this.Settings.ConfigurationType);
+        }
+
+        /// <summary>
+        /// Updates the settings to match the file path.
+        /// </summary>
+        /// <param name="path">The file path to use.</param>
+        public void UpdateSettings(string path)
+        {
+            var fileType = Path.GetExtension(path);
+            var settingsToUse = this.Settings ?? new PackageSettings();
+            settingsToUse.IsCompressed = fileType.EndsWith("z");
+            settingsToUse.Name = Path.GetFileNameWithoutExtension(path);
+            if (fileType.StartsWith(".gst"))
+            {
+                settingsToUse.ConfigurationType = ConfigurationType.GameSystem;
+            }
+            else if (fileType.StartsWith(".cat"))
+            {
+                settingsToUse.ConfigurationType = ConfigurationType.Catalogue;
+            }
+
+            this.Settings = settingsToUse;
         }
     }
 }
