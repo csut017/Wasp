@@ -7,7 +7,25 @@ namespace Wasp.Core.Data.Xml
     /// </summary>
     internal static class CommonDeserialization
     {
-        public static readonly Dictionary<string, Func<XmlReader, Constraint, Task>> ConstraintAttributes = new()
+        public static readonly Dictionary<string, Func<XmlReader, ItemCost, Task>> CostAttributes = new()
+        {
+            { "name", async (reader, cost) => cost.Name = await reader.GetValueAsync() },
+            { "typeId", async (reader, cost) => cost.TypeId = await reader.GetValueAsync() },
+            { "value", async (reader, cost) => cost.Value = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, Characteristic, Task>> characteristicAttributes = new()
+        {
+            { "name", async (reader, characteristic) => characteristic.Name = await reader.GetValueAsync() },
+            { "typeId", async (reader, characteristic) => characteristic.TypeId = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, ConditionGroup, Task>> conditionGroupAttributes = new()
+        {
+            { "type", async (reader, conditionGroup) => conditionGroup.Type = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, Constraint, Task>> constraintAttributes = new()
         {
             { "childId", async (reader, categoryEntry) => categoryEntry.ChildId = await reader.GetValueAsync() },
             { "field", async (reader, categoryEntry) => categoryEntry.Field = await reader.GetValueAsync() },
@@ -21,34 +39,6 @@ namespace Wasp.Core.Data.Xml
             { "shared", async (reader, categoryEntry) => categoryEntry.IsShared = await reader.GetValueAsync() == "true" },
             { "type", async (reader, categoryEntry) => categoryEntry.Type = await reader.GetValueAsync() },
             { "value", async (reader, categoryEntry) => categoryEntry.AbsoluteValue = await reader.GetValueAsync() },
-        };
-
-        public static readonly Dictionary<string, Func<XmlReader, ItemCost, Task>> CostAttributes = new()
-        {
-            { "name", async (reader, cost) => cost.Name = await reader.GetValueAsync() },
-            { "typeId", async (reader, cost) => cost.TypeId = await reader.GetValueAsync() },
-            { "value", async (reader, cost) => cost.Value = await reader.GetValueAsync() },
-        };
-
-        public static readonly Dictionary<string, Func<XmlReader, Publication, Task>> PublicationAttributes = new()
-        {
-            { "id", async (reader, publication) => publication.Id = await reader.GetValueAsync() },
-            { "name", async (reader, publication) => publication.FullName = await reader.GetValueAsync() },
-            { "publicationDate", async (reader, publication) => publication.PublicationDate = await reader.GetValueAsync() },
-            { "publisher", async (reader, publication) => publication.PublisherName = await reader.GetValueAsync() },
-            { "publisherUrl", async (reader, publication) => publication.PublisherUrl = await reader.GetValueAsync() },
-            { "shortName", async (reader, publication) => publication.ShortName = await reader.GetValueAsync() },
-        };
-
-        private static readonly Dictionary<string, Func<XmlReader, Characteristic, Task>> characteristicAttributes = new()
-        {
-            { "name", async (reader, characteristic) => characteristic.Name = await reader.GetValueAsync() },
-            { "typeId", async (reader, characteristic) => characteristic.TypeId = await reader.GetValueAsync() },
-        };
-
-        private static readonly Dictionary<string, Func<XmlReader, ConditionGroup, Task>> conditionGroupAttributes = new()
-        {
-            { "type", async (reader, conditionGroup) => conditionGroup.Type = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, Modifier, Task>> modifierAttributes = new()
@@ -67,6 +57,16 @@ namespace Wasp.Core.Data.Xml
             { "publicationId", async (reader, profile) => profile.PublicationId = await reader.GetValueAsync() },
             { "typeId", async (reader, profile) => profile.TypeId = await reader.GetValueAsync() },
             { "typeName", async (reader, profile) => profile.TypeName = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, Publication, Task>> publicationAttributes = new()
+        {
+            { "id", async (reader, publication) => publication.Id = await reader.GetValueAsync() },
+            { "name", async (reader, publication) => publication.FullName = await reader.GetValueAsync() },
+            { "publicationDate", async (reader, publication) => publication.PublicationDate = await reader.GetValueAsync() },
+            { "publisher", async (reader, publication) => publication.PublisherName = await reader.GetValueAsync() },
+            { "publisherUrl", async (reader, publication) => publication.PublisherUrl = await reader.GetValueAsync() },
+            { "shortName", async (reader, publication) => publication.ShortName = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, Rule, Task>> ruleAttributes = new()
@@ -143,6 +143,51 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
+        /// Deserialize a constraint.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="List{Constraint}"/> to populate.</param>
+        public static async Task DeserializeConstraint(XmlReader xmlReader, List<Constraint>? parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new Constraint();
+            await xmlReader.DeserializeAttributesAsync(item, constraintAttributes);
+            if (parent == null) throw new Exception("Constraints has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
         /// Deserialize a modifier.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
@@ -181,7 +226,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "condition",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Conditions, ConstraintAttributes));
+                                    async (reader, _) => await DeserializeConstraint(reader, item.Conditions));
                                 break;
 
                             case "repeats":
@@ -189,7 +234,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "repeat",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Repeats, ConstraintAttributes));
+                                    async (reader, _) => await DeserializeConstraint(reader, item.Repeats));
                                 break;
 
                             default:
@@ -251,6 +296,51 @@ namespace Wasp.Core.Data.Xml
                             default:
                                 // Anything else is an error
                                 throw new Exception($"Unexpected element: {xmlReader.Name}");
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize a publication.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="List{Publication}"/> to populate.</param>
+        public static async Task DeserializePublication(XmlReader xmlReader, List<Publication>? parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new Publication();
+            await xmlReader.DeserializeAttributesAsync(item, publicationAttributes);
+            if (parent == null) throw new Exception("Publications has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
                         }
                         break;
 
@@ -458,7 +548,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "condition",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Conditions, ConstraintAttributes));
+                                    async (reader, _) => await DeserializeConstraint(reader, item.Conditions));
                                 break;
 
                             default:

@@ -4,21 +4,12 @@
     /// Defines a category link.
     /// </summary>
     public class CategoryLink
+        : ConfigurationEntry
     {
-        /// <summary>
-        /// Gets or sets an optional comment on the link.
-        /// </summary>
-        public string? Comment { get; internal set; }
-
         /// <summary>
         /// Gets or sets the constraints in the category link.
         /// </summary>
         public List<Constraint>? Constraints { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the category link.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this category link is hidden or not.

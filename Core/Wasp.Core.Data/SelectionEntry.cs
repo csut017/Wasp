@@ -4,16 +4,12 @@
     /// Defines a selection entry.
     /// </summary>
     public class SelectionEntry
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets or sets the category links.
         /// </summary>
         public List<CategoryLink>? CategoryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets an optional comment on this selection entry.
-        /// </summary>
-        public string? Comment { get; set; }
 
         /// <summary>
         /// Gets or sets the constraints.
@@ -29,11 +25,6 @@
         /// Gets or sets the entry links.
         /// </summary>
         public List<EntryLink>? EntryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the selection entry.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the information links.

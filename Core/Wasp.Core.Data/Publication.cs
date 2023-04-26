@@ -4,16 +4,12 @@
     /// Defines a publication.
     /// </summary>
     public class Publication
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets or sets the full name of the publication.
         /// </summary>
         public string? FullName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the publication.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the date of publication.

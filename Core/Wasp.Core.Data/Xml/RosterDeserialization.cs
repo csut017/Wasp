@@ -113,7 +113,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     force,
                                     "publication",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(force.Publications, CommonDeserialization.PublicationAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializePublication(reader, force.Publications));
                                 break;
 
                             case "rules":

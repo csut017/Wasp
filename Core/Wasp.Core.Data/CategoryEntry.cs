@@ -4,21 +4,12 @@
     /// Defines a category entry.
     /// </summary>
     public class CategoryEntry
+        : ConfigurationEntry
     {
-        /// <summary>
-        /// Gets or sets an optional comment on the entry.
-        /// </summary>
-        public string? Comment { get; internal set; }
-
         /// <summary>
         /// Gets or sets the constraints.
         /// </summary>
         public List<Constraint>? Constraints { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the category entry.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the information links.

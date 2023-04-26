@@ -4,6 +4,7 @@
     /// Contains the configuration for a game system.
     /// </summary>
     public class GameSystemConfiguration
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets or sets the contact details for the author.
@@ -54,11 +55,6 @@
         /// Gets or sets the revision number of the owning game system.
         /// </summary>
         public string? GameSystemRevision { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the configuration.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this configuration is a library or not.

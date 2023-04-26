@@ -180,7 +180,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "infoLinks":
@@ -249,7 +249,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "modifiers":
@@ -318,7 +318,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "costs":
@@ -407,7 +407,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "forceEntries":
@@ -475,6 +475,10 @@ namespace Wasp.Core.Data.Xml
                                     DeserializeCategoryEntryAsync);
                                 break;
 
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             case "costTypes":
                                 item.CostTypes ??= new List<CostType>();
                                 await xmlReader.DeserializeArrayAsync(
@@ -512,7 +516,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "publication",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Publications, CommonDeserialization.PublicationAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializePublication(reader, item.Publications));
                                 break;
 
                             case "readme":
@@ -654,7 +658,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "condition",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Conditions, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Conditions));
                                 break;
 
                             case "modifiers":
@@ -714,6 +718,10 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await reader.DeserializeSingleItemAsync(item.CharacteristicTypes, characteristicTypeAttributes));
                                 break;
 
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             default:
                                 // Anything else is an error
                                 throw xmlReader.GenerateUnexpectedElementException();
@@ -771,7 +779,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "costs":
@@ -891,7 +899,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "constraint",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.Constraints, CommonDeserialization.ConstraintAttributes));
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Constraints));
                                 break;
 
                             case "entryLinks":
