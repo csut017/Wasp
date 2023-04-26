@@ -62,11 +62,6 @@
         public bool IsLibrary { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the configuration.
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
         /// Gets the profile types defined by this configuration.
         /// </summary>
         public List<ProfileType>? ProfileTypes { get; set; }

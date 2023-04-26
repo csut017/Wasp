@@ -27,11 +27,6 @@
         public List<Modifier>? Modifiers { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the category entry.
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
         /// Gets or sets the page.
         /// </summary>
         public string? Page { get; set; }

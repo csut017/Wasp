@@ -32,13 +32,13 @@ namespace Wasp.Core.Data.Xml
             { "id", async (reader, categoryEntry) => categoryEntry.Id = await reader.GetValueAsync() },
             { "includeChildForces", async (reader, categoryEntry) => categoryEntry.IncludeChildForces = await reader.GetValueAsync() == "true" },
             { "includeChildSelections", async (reader, categoryEntry) => categoryEntry.IncludeChildSelections = await reader.GetValueAsync() == "true" },
-            { "percentValue", async (reader, categoryEntry) => categoryEntry.PercentValue = await reader.GetValueAsync() },
+            { "percentValue", async (reader, categoryEntry) => categoryEntry.IsPercentage = await reader.GetValueAsync() == "true" },
             { "repeats", async (reader, categoryEntry) => categoryEntry.RepeatsValue = await reader.GetValueAsync() },
             { "roundUp", async (reader, categoryEntry) => categoryEntry.ShouldRoundUp = await reader.GetValueAsync() == "true" },
             { "scope", async (reader, categoryEntry) => categoryEntry.Scope = await reader.GetValueAsync() },
             { "shared", async (reader, categoryEntry) => categoryEntry.IsShared = await reader.GetValueAsync() == "true" },
             { "type", async (reader, categoryEntry) => categoryEntry.Type = await reader.GetValueAsync() },
-            { "value", async (reader, categoryEntry) => categoryEntry.AbsoluteValue = await reader.GetValueAsync() },
+            { "value", async (reader, categoryEntry) => categoryEntry.Value = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, Modifier, Task>> modifierAttributes = new()
@@ -135,7 +135,7 @@ namespace Wasp.Core.Data.Xml
             {
                 do
                 {
-                    if (!string.IsNullOrEmpty(xmlReader.NamespaceURI) && !string.Equals(xmlReader.NamespaceURI, Constants.XmlNamespace)) continue;
+                    if (!string.IsNullOrEmpty(xmlReader.NamespaceURI)) continue;
                     if (!setters.TryGetValue(xmlReader.Name, out var setter)) throw xmlReader.GenerateUnexpectedAttributeException(name);
                     await setter(xmlReader, item);
                 } while (xmlReader.MoveToNextAttribute());

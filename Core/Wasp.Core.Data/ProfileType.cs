@@ -10,10 +10,5 @@
         /// Gets or sets the characteristic types.
         /// </summary>
         public List<CharacteristicType>? CharacteristicTypes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the profile type.
-        /// </summary>
-        public string? Name { get; set; }
     }
 }

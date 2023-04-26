@@ -59,9 +59,12 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="gameSystem">The <see cref="GameSystemConfiguration"/> instance to serialize.</param>
         /// <returns>The serialized definition.</returns>
-        public Task<string> SerializeGameSystemAsync(GameSystemConfiguration gameSystem)
+        public async Task<string> SerializeGameSystemAsync(GameSystemConfiguration gameSystem)
         {
-            throw new NotImplementedException();
+            var builder = new StringBuilder();
+            using var writer = new StringWriter(builder);
+            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer);
+            return builder.ToString();
         }
 
         /// <summary>
@@ -70,9 +73,10 @@ namespace Wasp.Core.Data.Xml
         /// <param name="gameSystem">The <see cref="GameSystemConfiguration"/> instance to serialize.</param>
         /// <param name="stream">The <see cref="Stream"/> to serialize to.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        public Task SerializeGameSystemAsync(GameSystemConfiguration gameSystem, Stream stream)
+        public async Task SerializeGameSystemAsync(GameSystemConfiguration gameSystem, Stream stream)
         {
-            throw new NotImplementedException();
+            using var writer = new StreamWriter(stream);
+            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer);
         }
 
         /// <summary>

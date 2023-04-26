@@ -6,8 +6,13 @@
     internal class Constants
     {
         /// <summary>
-        /// The XML namespace to use for serializing and deserializing the BattleScribe format.
+        /// The XML namespace to use for serializing and deserializing the BattleScribe catalogue format.
         /// </summary>
-        public const string XmlNamespace = "http://www.battlescribe.net/schema/rosterSchema";
+        public const string CatalogueXmlNamespace = "http://www.battlescribe.net/schema/catalogueSchema";
+
+        /// <summary>
+        /// The XML namespace to use for serializing and deserializing the BattleScribe roster format.
+        /// </summary>
+        public const string RosterXmlNamespace = "http://www.battlescribe.net/schema/rosterSchema";
     }
 }

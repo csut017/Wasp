@@ -7,11 +7,6 @@
         : ConfigurationEntry
     {
         /// <summary>
-        /// Gets or sets the absolute value.
-        /// </summary>
-        public string? AbsoluteValue { get; set; }
-
-        /// <summary>
         /// Gets or sets the child id.
         /// </summary>
         public string? ChildId { get; set; }
@@ -32,14 +27,14 @@
         public bool IncludeChildSelections { get; set; }
 
         /// <summary>
+        /// Gets or sets the percentage value.
+        /// </summary>
+        public bool IsPercentage { get; set; }
+
+        /// <summary>
         /// Gets or sets a flag indicating whether this modifier or condition is shared.
         /// </summary>
         public bool IsShared { get; set; }
-
-        /// <summary>
-        /// Gets or sets the percentage value.
-        /// </summary>
-        public string? PercentValue { get; set; }
 
         /// <summary>
         /// Gets or sets the repeats value.
@@ -60,5 +55,10 @@
         /// Gets or sets the type.
         /// </summary>
         public string? Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the absolute value.
+        /// </summary>
+        public string? Value { get; set; }
     }
 }

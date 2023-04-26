@@ -4,15 +4,7 @@
     /// Defines a characteristic type.
     /// </summary>
     public class CharacteristicType
+        : ConfigurationEntry
     {
-        /// <summary>
-        /// Gets or sets the id of the characteristic type.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the characteristic type.
-        /// </summary>
-        public string? Name { get; set; }
     }
 }

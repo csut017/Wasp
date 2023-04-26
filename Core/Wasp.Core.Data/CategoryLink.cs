@@ -27,11 +27,6 @@
         public List<Modifier>? Modifiers { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the category link.
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
         /// Gets or sets the target id.
         /// </summary>
         public string? TargetId { get; set; }

@@ -4,12 +4,8 @@
     /// Defines an information link.
     /// </summary>
     public class InformationLink
+        : ConfigurationEntry
     {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        public string? Id { get; set; }
-
         /// <summary>
         /// Gets or sets a flag indicating whether this information link is hidden or not.
         /// </summary>
@@ -19,11 +15,6 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the page.
