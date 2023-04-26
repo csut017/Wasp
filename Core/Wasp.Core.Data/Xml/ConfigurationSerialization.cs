@@ -145,19 +145,20 @@ namespace Wasp.Core.Data.Xml
         /// Writes the costs for an item.
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="costs">The element containing the costs.</param>
-        private static async Task WriteCostTypesAsync(XmlWriter xmlWriter, List<CostType>? costs)
+        /// <param name="parent">The element containing the costs.</param>
+        private static async Task WriteCostTypesAsync(XmlWriter xmlWriter, List<CostType>? parent)
         {
-            if (costs == null) return;
+            if (parent == null) return;
 
             await xmlWriter.WriteStartElementAsync(null, "costTypes", null);
-            foreach (var cost in costs)
+            foreach (var item in parent)
             {
                 await xmlWriter.WriteStartElementAsync(null, "costType", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "id", cost.Id);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", cost.Name);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "defaultCostLimit", cost.DefaultCostLimit);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", cost.IsHidden);
+                await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
+                {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "defaultCostLimit", item.DefaultCostLimit);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
+                });
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();

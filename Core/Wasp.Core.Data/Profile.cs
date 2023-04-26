@@ -4,16 +4,12 @@
     /// Defines a profile.
     /// </summary>
     public class Profile
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets the characteristics for this profile.
         /// </summary>
         public List<Characteristic>? Characteristics { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the profile.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this rule is hidden or not.
@@ -24,11 +20,6 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the profile.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the page number for finding this rule.

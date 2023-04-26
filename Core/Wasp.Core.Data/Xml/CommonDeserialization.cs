@@ -285,6 +285,10 @@ namespace Wasp.Core.Data.Xml
                                     DeserializeCharacteristicAsync);
                                 break;
 
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             case "modifiers":
                                 item.Modifiers ??= new List<Modifier>();
                                 await xmlReader.DeserializeArrayAsync(
@@ -379,6 +383,10 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             case "description":
                                 item.Description = await xmlReader.ReadElementContentAsStringAsync();
                                 break;

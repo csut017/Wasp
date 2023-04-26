@@ -273,6 +273,46 @@ namespace Wasp.Core.Data.Xml
             }
         }
 
+        private static async Task DeserializeCostTypeAsync(XmlReader xmlReader, List<CostType> parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new CostType();
+            await xmlReader.DeserializeAttributesAsync(item, costTypeAttributes);
+            if (parent == null) throw new Exception("CostTypes has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
         /// <summary>
         /// Deserialize an entry link.
         /// </summary>
@@ -396,6 +436,10 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await DeserializeCategoryLinkAsync(reader, item.CategoryLinks));
                                 break;
 
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             case "constraints":
                                 item.Constraints ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
@@ -478,7 +522,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "costType",
-                                    async (reader, _) => await reader.DeserializeSingleItemAsync(item.CostTypes, costTypeAttributes));
+                                    async (reader, _) => await DeserializeCostTypeAsync(reader, item.CostTypes));
                                 break;
 
                             case "entryLinks":
@@ -888,6 +932,10 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
                             case "constraints":
                                 item.Constraints ??= new List<Constraint>();
                                 await xmlReader.DeserializeArrayAsync(
