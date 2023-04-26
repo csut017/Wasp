@@ -39,7 +39,7 @@
         /// <summary>
         /// Gets or sets the repeats value.
         /// </summary>
-        public string? RepeatsValue { get; set; }
+        public string? NumberOfRepeats { get; set; }
 
         /// <summary>
         /// Gets or sets the scope.
@@ -49,7 +49,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether should round up for the validations.
         /// </summary>
-        public bool ShouldRoundUp { get; set; }
+        public bool? ShouldRoundUp { get; set; }
 
         /// <summary>
         /// Gets or sets the type.

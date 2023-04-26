@@ -33,8 +33,8 @@ namespace Wasp.Core.Data.Xml
             { "includeChildForces", async (reader, categoryEntry) => categoryEntry.IncludeChildForces = await reader.GetValueAsync() == "true" },
             { "includeChildSelections", async (reader, categoryEntry) => categoryEntry.IncludeChildSelections = await reader.GetValueAsync() == "true" },
             { "percentValue", async (reader, categoryEntry) => categoryEntry.IsPercentage = await reader.GetValueAsync() == "true" },
-            { "repeats", async (reader, categoryEntry) => categoryEntry.RepeatsValue = await reader.GetValueAsync() },
-            { "roundUp", async (reader, categoryEntry) => categoryEntry.ShouldRoundUp = await reader.GetValueAsync() == "true" },
+            { "repeats", async (reader, categoryEntry) => categoryEntry.NumberOfRepeats = await reader.GetValueAsync() },
+            { "roundUp", async (reader, categoryEntry) => categoryEntry.ShouldRoundUp = HandleTrueFalse(await reader.GetValueAsync()) },
             { "scope", async (reader, categoryEntry) => categoryEntry.Scope = await reader.GetValueAsync() },
             { "shared", async (reader, categoryEntry) => categoryEntry.IsShared = await reader.GetValueAsync() == "true" },
             { "type", async (reader, categoryEntry) => categoryEntry.Type = await reader.GetValueAsync() },
@@ -568,6 +568,11 @@ namespace Wasp.Core.Data.Xml
                         throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
                 }
             }
+        }
+
+        private static bool? HandleTrueFalse(string value)
+        {
+            return string.IsNullOrEmpty(value) ? null : value == "true";
         }
     }
 }

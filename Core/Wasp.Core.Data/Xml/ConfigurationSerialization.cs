@@ -40,8 +40,11 @@ namespace Wasp.Core.Data.Xml
             await WriteProfileTypesAsync(xmlWriter, configuration.ProfileTypes);
             await WriteCategoryEntriesAsync(xmlWriter, configuration.CategoryEntries);
             await WriteEntryLinksAsync(xmlWriter, configuration.EntryLinks);
-            await CommonSerialization.WriteRulesAsync(xmlWriter, configuration.Rules);
+            await CommonSerialization.WriteRulesAsync(xmlWriter, configuration.Rules, "rules", "rule");
             await WriteSelectionEntriesAsync(xmlWriter, configuration.SharedSelectionEntries, "sharedSelectionEntries", "selectionEntry");
+            await WriteSelectionEntryGroupsAsync(xmlWriter, configuration.SharedSelectionEntryGroups, "sharedSelectionEntryGroups", "selectionEntryGroup");
+            await CommonSerialization.WriteRulesAsync(xmlWriter, configuration.SharedRules, "sharedRules", "rule");
+            await CommonSerialization.WriteProfilesAsync(xmlWriter, configuration.SharedProfiles, "sharedProfiles", "profile");
 
             await xmlWriter.WriteEndElementAsync();
             await xmlWriter.WriteEndDocumentAsync();
@@ -60,10 +63,15 @@ namespace Wasp.Core.Data.Xml
             foreach (var item in parent)
             {
                 await xmlWriter.WriteStartElementAsync(null, "categoryEntry", null);
-                await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) => await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden));
+                await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
+                {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", item.PublicationId);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", item.Page);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
+                });
                 await WriteInformationLinksAsync(xmlWriter, item.InformationLinks);
-                await WriteModifiersAsync(xmlWriter, item.Modifiers);
-                await WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
+                await CommonSerialization.WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
 
                 await xmlWriter.WriteEndElementAsync();
             }
@@ -90,8 +98,6 @@ namespace Wasp.Core.Data.Xml
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "targetId", item.TargetId);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "primary", item.IsPrimary);
                 });
-                //await WriteModifiersAsync(xmlWriter, item.Modifiers);
-                //await WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
 
                 await xmlWriter.WriteEndElementAsync();
             }
@@ -119,28 +125,6 @@ namespace Wasp.Core.Data.Xml
             await xmlWriter.FlushAsync();
         }
 
-        /// <summary>
-        /// Writes the condition groups.
-        /// </summary>
-        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="parent">The parent item containing the data to write.</param>
-        private static async Task WriteConditionGroupsAsync(XmlWriter xmlWriter, List<ConditionGroup>? parent)
-        {
-            if (parent == null) return;
-
-            await xmlWriter.WriteStartElementAsync(null, "conditionGroups", null);
-            foreach (var item in parent)
-            {
-                await xmlWriter.WriteStartElementAsync(null, "conditionGroup", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
-                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
-                await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
-                await xmlWriter.WriteEndElementAsync();
-            }
-            await xmlWriter.WriteEndElementAsync();
-            await xmlWriter.FlushAsync();
-        }
-
         private static async Task WriteConfigurationEntryAsync<TItem>(XmlWriter xmlWriter, TItem item, Action<XmlWriter, TItem>? writeAttributes = null)
                                                     where TItem : ConfigurationEntry
         {
@@ -148,37 +132,6 @@ namespace Wasp.Core.Data.Xml
             await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", item.Name);
             writeAttributes?.Invoke(xmlWriter, item);
             await CommonSerialization.WriteComment(xmlWriter, item);
-        }
-
-        /// <summary>
-        /// Writes the conditions.
-        /// </summary>
-        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="parent">The parent item containing the data to write.</param>
-        /// <param name="arrayName">The name of the list.</param>
-        /// <param name="itemName">The name of each item.</param>
-        private static async Task WriteConstraintsAsync(XmlWriter xmlWriter, List<Constraint>? parent, string arrayName, string itemName)
-        {
-            if (parent == null) return;
-
-            await xmlWriter.WriteStartElementAsync(null, arrayName, null);
-            foreach (var item in parent)
-            {
-                await xmlWriter.WriteStartElementAsync(null, itemName, null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "field", item.Field);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "scope", item.Scope);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "value", item.Value);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "percentValue", item.IsPercentage);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "shared", item.IsShared);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "includeChildSelections", item.IncludeChildSelections);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "includeChildForces", item.IncludeChildForces);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "childId", item.ChildId);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
-                await CommonSerialization.WriteComment(xmlWriter, item);
-                await xmlWriter.WriteEndElementAsync();
-            }
-            await xmlWriter.WriteEndElementAsync();
-            await xmlWriter.FlushAsync();
         }
 
         /// <summary>
@@ -196,15 +149,20 @@ namespace Wasp.Core.Data.Xml
                 await xmlWriter.WriteStartElementAsync(null, "entryLink", null);
                 await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
                 {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", item.PublicationId);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", item.Page);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "collective", item.IsCollective);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "import", item.IsImport);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "targetId", item.TargetId);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
                 });
-                await WriteModifiersAsync(xmlWriter, item.Modifiers);
-                await WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
+                await WriteModifierGroupsAsync(xmlWriter, item.ModifierGroups);
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
+                await CommonSerialization.WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
+                await WriteEntryLinksAsync(xmlWriter, item.EntryLinks);
                 await WriteCategoryLinksAsync(xmlWriter, item.CategoryLinks);
+                await CommonSerialization.WriteCostsAsync(xmlWriter, item.Costs);
 
                 await xmlWriter.WriteEndElementAsync();
             }
@@ -227,10 +185,13 @@ namespace Wasp.Core.Data.Xml
                 await xmlWriter.WriteStartElementAsync(null, "infoLink", null);
                 await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
                 {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", item.PublicationId);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", item.Page);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "targetId", item.TargetId);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
                 });
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
@@ -238,24 +199,20 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
-        /// Writes the modifiers.
+        /// Writes the modifier groups.
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
         /// <param name="parent">The parent item containing the data to write.</param>
-        private static async Task WriteModifiersAsync(XmlWriter xmlWriter, List<Modifier>? parent)
+        private static async Task WriteModifierGroupsAsync(XmlWriter xmlWriter, List<ModifierGroup>? parent)
         {
             if (parent == null) return;
 
-            await xmlWriter.WriteStartElementAsync(null, "modifiers", null);
+            await xmlWriter.WriteStartElementAsync(null, "modifierGroups", null);
             foreach (var item in parent)
             {
-                await xmlWriter.WriteStartElementAsync(null, "modifier", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "field", item.Field);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "value", item.Value);
-                await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
-                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
-                await WriteConstraintsAsync(xmlWriter, item.Repeats, "repeats", "repeat");
+                await xmlWriter.WriteStartElementAsync(null, "modifierGroup", null);
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
+
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
@@ -300,15 +257,59 @@ namespace Wasp.Core.Data.Xml
                 await xmlWriter.WriteStartElementAsync(null, itemName, null);
                 await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
                 {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", item.PublicationId);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", item.Page);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "collective", item.IsCollective);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "import", item.IsImport);
                     await CommonSerialization.WriteAttributeAsync(xmlWriter, "type", item.Type);
                 });
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
+                await CommonSerialization.WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
+                await CommonSerialization.WriteProfilesAsync(xmlWriter, item.Profiles, "profiles", "profile");
+                await CommonSerialization.WriteRulesAsync(xmlWriter, item.Rules, "rules", "rule");
                 await WriteInformationLinksAsync(xmlWriter, item.InformationLinks);
                 await WriteCategoryLinksAsync(xmlWriter, item.CategoryLinks);
+                await WriteSelectionEntriesAsync(xmlWriter, item.SelectionEntries, "selectionEntries", "selectionEntry");
+                await WriteSelectionEntryGroupsAsync(xmlWriter, item.SelectionEntryGroups, "selectionEntryGroups", "selectionEntryGroup");
                 await WriteEntryLinksAsync(xmlWriter, item.EntryLinks);
                 await CommonSerialization.WriteCostsAsync(xmlWriter, item.Costs);
+
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
+        }
+
+        /// <summary>
+        /// Writes the selection entry groups.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The parent item containing the data to write.</param>
+        /// <param name="arrayName">The name of the list.</param>
+        /// <param name="itemName">The name of each item.</param>
+        private static async Task WriteSelectionEntryGroupsAsync(XmlWriter xmlWriter, List<SelectionEntryGroup>? parent, string arrayName, string itemName)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, arrayName, null);
+            foreach (var item in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, itemName, null);
+                await WriteConfigurationEntryAsync(xmlWriter, item, async (_, _) =>
+                {
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", item.PublicationId);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", item.Page);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", item.IsHidden);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "collective", item.IsCollective);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "import", item.IsImport);
+                    await CommonSerialization.WriteAttributeAsync(xmlWriter, "defaultSelectionEntryId", item.DefaultSelectionEntryId);
+                });
+                await CommonSerialization.WriteModifiersAsync(xmlWriter, item.Modifiers);
+                await CommonSerialization.WriteConstraintsAsync(xmlWriter, item.Constraints, "constraints", "constraint");
+                await WriteSelectionEntriesAsync(xmlWriter, item.SelectionEntries, "selectionEntries", "selectionEntry");
+                await WriteSelectionEntryGroupsAsync(xmlWriter, item.SelectionEntryGroups, "selectionEntryGroups", "selectionEntryGroup");
+                await WriteEntryLinksAsync(xmlWriter, item.EntryLinks);
 
                 await xmlWriter.WriteEndElementAsync();
             }

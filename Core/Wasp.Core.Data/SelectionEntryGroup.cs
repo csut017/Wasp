@@ -4,6 +4,7 @@
     /// Defines a selection entry group.
     /// </summary>
     public class SelectionEntryGroup
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets or sets the constraints.
@@ -19,11 +20,6 @@
         /// Gets or sets the entry links.
         /// </summary>
         public List<EntryLink>? EntryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the selection entry group.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry group is collective or not.
@@ -44,11 +40,6 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the selection entry group.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the page number for finding this selection entry.

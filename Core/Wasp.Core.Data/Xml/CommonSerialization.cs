@@ -31,6 +31,32 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
+        /// Writes the characteristics for an item.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The element containing the characteristics.</param>
+        public static async Task WriteCharacteristicsAsync(XmlWriter xmlWriter, List<Characteristic>? parent)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, "characteristics", null);
+            foreach (var characteristic in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, "characteristic", null);
+                await WriteAttributeAsync(xmlWriter, "name", characteristic.Name);
+                await WriteAttributeAsync(xmlWriter, "typeId", characteristic.TypeId);
+                if (characteristic.Value != null)
+                {
+                    await xmlWriter.WriteStringAsync(characteristic.Value);
+                }
+
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
+        }
+
+        /// <summary>
         /// Writes the comment for an entry.
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
@@ -39,6 +65,62 @@ namespace Wasp.Core.Data.Xml
         {
             if (configuration.Comment == null) return;
             await xmlWriter.WriteElementStringAsync(null, "comment", null, configuration.Comment);
+        }
+
+        /// <summary>
+        /// Writes the condition groups.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The parent item containing the data to write.</param>
+        public static async Task WriteConditionGroupsAsync(XmlWriter xmlWriter, List<ConditionGroup>? parent)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, "conditionGroups", null);
+            foreach (var item in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, "conditionGroup", null);
+                await WriteAttributeAsync(xmlWriter, "type", item.Type);
+                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
+                await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
+        }
+
+        /// <summary>
+        /// Writes the conditions.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The parent item containing the data to write.</param>
+        /// <param name="arrayName">The name of the list.</param>
+        /// <param name="itemName">The name of each item.</param>
+        public static async Task WriteConstraintsAsync(XmlWriter xmlWriter, List<Constraint>? parent, string arrayName, string itemName)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, arrayName, null);
+            foreach (var item in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, itemName, null);
+                await WriteAttributeAsync(xmlWriter, "field", item.Field);
+                await WriteAttributeAsync(xmlWriter, "scope", item.Scope);
+                await WriteAttributeAsync(xmlWriter, "value", item.Value);
+                await WriteAttributeAsync(xmlWriter, "percentValue", item.IsPercentage);
+                await WriteAttributeAsync(xmlWriter, "shared", item.IsShared);
+                await WriteAttributeAsync(xmlWriter, "includeChildSelections", item.IncludeChildSelections);
+                await WriteAttributeAsync(xmlWriter, "includeChildForces", item.IncludeChildForces);
+                await WriteAttributeAsync(xmlWriter, "childId", item.ChildId);
+                await WriteAttributeAsync(xmlWriter, "repeats", item.NumberOfRepeats);
+                await WriteAttributeAsync(xmlWriter, "roundUp", item.ShouldRoundUp);
+                await WriteAttributeAsync(xmlWriter, "id", item.Id);
+                await WriteAttributeAsync(xmlWriter, "type", item.Type);
+                await WriteComment(xmlWriter, item);
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
         }
 
         /// <summary>
@@ -55,12 +137,70 @@ namespace Wasp.Core.Data.Xml
             foreach (var cost in costs)
             {
                 await xmlWriter.WriteStartElementAsync(null, itemName, null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", cost.Name);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "typeId", cost.TypeId);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "value", cost.Value);
+                await WriteAttributeAsync(xmlWriter, "name", cost.Name);
+                await WriteAttributeAsync(xmlWriter, "typeId", cost.TypeId);
+                await WriteAttributeAsync(xmlWriter, "value", cost.Value);
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
+        }
+
+        /// <summary>
+        /// Writes the modifiers.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The parent item containing the data to write.</param>
+        public static async Task WriteModifiersAsync(XmlWriter xmlWriter, List<Modifier>? parent)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, "modifiers", null);
+            foreach (var item in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, "modifier", null);
+                await WriteAttributeAsync(xmlWriter, "type", item.Type);
+                await WriteAttributeAsync(xmlWriter, "field", item.Field);
+                await WriteAttributeAsync(xmlWriter, "value", item.Value);
+                await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
+                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
+                await WriteConstraintsAsync(xmlWriter, item.Repeats, "repeats", "repeat");
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
+        }
+
+        /// <summary>
+        /// Writes the profiles for an item.
+        /// </summary>
+        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
+        /// <param name="parent">The element containing the profiles.</param>
+        /// <param name="arrayName">The name of the list.</param>
+        /// <param name="itemName">The name of each item.</param>
+        public static async Task WriteProfilesAsync(XmlWriter xmlWriter, List<Profile>? parent, string arrayName, string itemName)
+        {
+            if (parent == null) return;
+
+            await xmlWriter.WriteStartElementAsync(null, arrayName, null);
+            foreach (var profile in parent)
+            {
+                await xmlWriter.WriteStartElementAsync(null, itemName, null);
+                await WriteAttributeAsync(xmlWriter, "id", profile.Id);
+                await WriteAttributeAsync(xmlWriter, "name", profile.Name);
+                await WriteAttributeAsync(xmlWriter, "publicationId", profile.PublicationId);
+                await WriteAttributeAsync(xmlWriter, "page", profile.Page);
+                await WriteAttributeAsync(xmlWriter, "hidden", profile.IsHidden);
+                await WriteAttributeAsync(xmlWriter, "typeId", profile.TypeId);
+                await WriteAttributeAsync(xmlWriter, "typeName", profile.TypeName);
+
+                await WriteModifiersAsync(xmlWriter, profile.Modifiers);
+                await WriteCharacteristicsAsync(xmlWriter, profile.Characteristics);
+
+                await xmlWriter.WriteEndElementAsync();
+            }
+            await xmlWriter.WriteEndElementAsync();
+            await xmlWriter.FlushAsync();
         }
 
         /// <summary>
@@ -92,19 +232,21 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
         /// <param name="parent">The element containing the rules.</param>
-        public static async Task WriteRulesAsync(XmlWriter xmlWriter, List<Rule>? parent)
+        /// <param name="arrayName">The name of the list.</param>
+        /// <param name="itemName">The name of each item.</param>
+        public static async Task WriteRulesAsync(XmlWriter xmlWriter, List<Rule>? parent, string arrayName, string itemName)
         {
             if (parent == null) return;
 
-            await xmlWriter.WriteStartElementAsync(null, "rules", null);
+            await xmlWriter.WriteStartElementAsync(null, arrayName, null);
             foreach (var rule in parent)
             {
-                await xmlWriter.WriteStartElementAsync(null, "rule", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "id", rule.Id);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", rule.Name);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", rule.PublicationId);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", rule.Page);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", rule.IsHidden);
+                await xmlWriter.WriteStartElementAsync(null, itemName, null);
+                await WriteAttributeAsync(xmlWriter, "id", rule.Id);
+                await WriteAttributeAsync(xmlWriter, "name", rule.Name);
+                await WriteAttributeAsync(xmlWriter, "publicationId", rule.PublicationId);
+                await WriteAttributeAsync(xmlWriter, "page", rule.Page);
+                await WriteAttributeAsync(xmlWriter, "hidden", rule.IsHidden);
                 if (rule.Description != null)
                 {
                     await xmlWriter.WriteElementStringAsync(null, "description", null, rule.Description);

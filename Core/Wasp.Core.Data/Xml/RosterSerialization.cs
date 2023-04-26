@@ -63,31 +63,6 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
-        /// Writes the characteristics for an item.
-        /// </summary>
-        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="parent">The element containing the characteristics.</param>
-        private static async Task WriteCharacteristicsAsync(XmlWriter xmlWriter, Profile? parent)
-        {
-            if (parent?.Characteristics == null) return;
-
-            await xmlWriter.WriteStartElementAsync(null, "characteristics", null);
-            foreach (var characteristic in parent.Characteristics)
-            {
-                await xmlWriter.WriteStartElementAsync(null, "characteristic", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", characteristic.Name);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "typeId", characteristic.TypeId);
-                if (characteristic.Value != null)
-                {
-                    await xmlWriter.WriteStringAsync(characteristic.Value);
-                }
-
-                await xmlWriter.WriteEndElementAsync();
-            }
-            await xmlWriter.WriteEndElementAsync();
-        }
-
-        /// <summary>
         /// Writes the forces for a roster.
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
@@ -107,38 +82,10 @@ namespace Wasp.Core.Data.Xml
                 await CommonSerialization.WriteAttributeAsync(xmlWriter, "catalogueRevision", force.CatalogueRevision);
                 await CommonSerialization.WriteAttributeAsync(xmlWriter, "catalogueName", force.CatalogueName);
 
-                await CommonSerialization.WriteRulesAsync(xmlWriter, force.Rules);
+                await CommonSerialization.WriteRulesAsync(xmlWriter, force.Rules, "rules", "rule");
                 await WriteSelectionsAsync(xmlWriter, force.Selections);
                 await CommonSerialization.WritePublicationsAsync(xmlWriter, force.Publications);
                 await WriteCategoriesAsync(xmlWriter, force.Categories);
-
-                await xmlWriter.WriteEndElementAsync();
-            }
-            await xmlWriter.WriteEndElementAsync();
-        }
-
-        /// <summary>
-        /// Writes the profiles for an item.
-        /// </summary>
-        /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
-        /// <param name="parent">The element containing the profiles.</param>
-        private static async Task WriteProfilesAsync(XmlWriter xmlWriter, Selection? parent)
-        {
-            if (parent?.Profiles == null) return;
-
-            await xmlWriter.WriteStartElementAsync(null, "profiles", null);
-            foreach (var profile in parent.Profiles)
-            {
-                await xmlWriter.WriteStartElementAsync(null, "profile", null);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "id", profile.Id);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", profile.Name);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "publicationId", profile.PublicationId);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "page", profile.Page);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "hidden", profile.IsHidden);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "typeId", profile.TypeId);
-                await CommonSerialization.WriteAttributeAsync(xmlWriter, "typeName", profile.TypeName);
-
-                await WriteCharacteristicsAsync(xmlWriter, profile);
 
                 await xmlWriter.WriteEndElementAsync();
             }
@@ -167,8 +114,8 @@ namespace Wasp.Core.Data.Xml
 
                 if (selection.CustomNotes != null) await xmlWriter.WriteElementStringAsync(null, "customNotes", null, selection.CustomNotes);
 
-                await CommonSerialization.WriteRulesAsync(xmlWriter, selection.Rules);
-                await WriteProfilesAsync(xmlWriter, selection);
+                await CommonSerialization.WriteRulesAsync(xmlWriter, selection.Rules, "rules", "rule");
+                await CommonSerialization.WriteProfilesAsync(xmlWriter, selection.Profiles, "profiles", "profile");
                 await WriteSelectionsAsync(xmlWriter, selection.Selections);
                 await CommonSerialization.WriteCostsAsync(xmlWriter, selection.Costs);
                 await WriteCategoriesAsync(xmlWriter, selection.Categories);
