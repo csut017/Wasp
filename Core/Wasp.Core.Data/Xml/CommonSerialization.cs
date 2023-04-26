@@ -61,7 +61,7 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
         /// <param name="configuration">The element containing the comment.</param>
-        public static async Task WriteCommentAsync(XmlWriter xmlWriter, ConfigurationEntry configuration)
+        public static async Task WriteCommentAsync(XmlWriter xmlWriter, CommentedEntry configuration)
         {
             if (configuration.Comment == null) return;
             await xmlWriter.WriteElementStringAsync(null, "comment", null, configuration.Comment);

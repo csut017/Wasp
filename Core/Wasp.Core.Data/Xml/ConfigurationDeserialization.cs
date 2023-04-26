@@ -4,6 +4,15 @@ namespace Wasp.Core.Data.Xml
 {
     internal class ConfigurationDeserialization
     {
+        private static readonly Dictionary<string, Func<XmlReader, CatalogueLink, Task>> catalogueLinkAttributes = new()
+        {
+            { "id", async (reader, item) => item.Id = await reader.GetValueAsync() },
+            { "importRootEntries", async (reader, item) => item.ImportRootEntries = await reader.GetValueAsync() == "true" },
+            { "name", async (reader, item) => item.Name = await reader.GetValueAsync() },
+            { "targetId", async (reader, item) => item.TargetId = await reader.GetValueAsync() },
+            { "type", async (reader, item) => item.Type = await reader.GetValueAsync() },
+        };
+
         private static readonly Dictionary<string, Func<XmlReader, CategoryEntry, Task>> categoryEntryAttributes = new()
         {
             { "hidden", async (reader, item) => item.IsHidden = await reader.GetValueAsync() == "true" },
@@ -68,6 +77,15 @@ namespace Wasp.Core.Data.Xml
             { "library", async (reader, item) => item.IsLibrary = CommonDeserialization.HandleTrueFalse(await reader.GetValueAsync()) },
             { "name", async (reader, item) => item.Name = await reader.GetValueAsync() },
             { "revision", async (reader, item) => item.Revision = await reader.GetValueAsync() },
+        };
+
+        private static readonly Dictionary<string, Func<XmlReader, InformationGroup, Task>> informationGroupAttributes = new()
+        {
+            { "hidden", async (reader, item) => item.IsHidden = await reader.GetValueAsync() == "true" },
+            { "id", async (reader, item) => item.Id = await reader.GetValueAsync() },
+            { "name", async (reader, item) => item.Name = await reader.GetValueAsync() },
+            { "page", async (reader, item) => item.Page = await reader.GetValueAsync() },
+            { "publicationId", async (reader, item) => item.PublicationId = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, InformationLink, Task>> informationLinkAttributes = new()
@@ -144,6 +162,51 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
+        /// Deserialize a catalogue link.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="List{CatalogueLink}"/> to populate.</param>
+        private static async Task DeserializeCatalogueLinkAsync(XmlReader xmlReader, List<CatalogueLink>? parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new CatalogueLink();
+            await xmlReader.DeserializeAttributesAsync(item, catalogueLinkAttributes);
+            if (parent == null) throw new Exception("CatalogueLinks has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
         /// Deserialize a category entry.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
@@ -183,6 +246,14 @@ namespace Wasp.Core.Data.Xml
                                     item,
                                     "infoLink",
                                     async (reader, _) => await DeserializeInformationLinkAsync(reader, item.InformationLinks));
+                                break;
+
+                            case "modifierGroups":
+                                item.ModifierGroups ??= new List<ModifierGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "modifierGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
                                 break;
 
                             case "modifiers":
@@ -371,12 +442,28 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await DeserializeEntryLinkAsync(reader, item.EntryLinks));
                                 break;
 
+                            case "infoGroups":
+                                item.InformationGroups ??= new List<InformationGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "infoGroup",
+                                    async (reader, _) => await DeserializeInformationGroupsAsync(reader, item.InformationGroups));
+                                break;
+
+                            case "infoLinks":
+                                item.InformationLinks ??= new List<InformationLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "infoLink",
+                                    async (reader, _) => await DeserializeInformationLinkAsync(reader, item.InformationLinks));
+                                break;
+
                             case "modifierGroups":
                                 item.ModifierGroups ??= new List<ModifierGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "modifierGroup",
-                                    async (reader, _) => await DeserializeModifierGroupAsync(reader, item.ModifierGroups));
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
                                 break;
 
                             case "modifiers":
@@ -385,6 +472,22 @@ namespace Wasp.Core.Data.Xml
                                     item,
                                     "modifier",
                                     async (reader, _) => await CommonDeserialization.DeserializeModifierAsync(reader, item.Modifiers));
+                                break;
+
+                            case "profiles":
+                                item.Profiles ??= new List<Profile>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "profile",
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, item.Profiles));
+                                break;
+
+                            case "selectionEntries":
+                                item.SelectionEntries ??= new List<SelectionEntry>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "selectionEntry",
+                                    async (reader, _) => await DeserializeSelectionEntryAsync(reader, item.SelectionEntries));
                                 break;
 
                             default:
@@ -513,6 +616,14 @@ namespace Wasp.Core.Data.Xml
                                     DeserializeCategoryEntryAsync);
                                 break;
 
+                            case "catalogueLinks":
+                                item.CatalogueLinks ??= new List<CatalogueLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "catalogueLink",
+                                    async (reader, _) => await DeserializeCatalogueLinkAsync(reader, item.CatalogueLinks));
+                                break;
+
                             case "comment":
                                 item.Comment = await xmlReader.ReadElementContentAsStringAsync();
                                 break;
@@ -539,6 +650,14 @@ namespace Wasp.Core.Data.Xml
                                     item,
                                     "forceEntry",
                                     async (reader, _) => await DeserializeForceEntryAsync(reader, item.ForceEntries));
+                                break;
+
+                            case "infoLinks":
+                                item.InformationLinks ??= new List<InformationLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "infoLink",
+                                    async (reader, _) => await DeserializeInformationLinkAsync(reader, item.InformationLinks));
                                 break;
 
                             case "profileTypes":
@@ -569,12 +688,28 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await CommonDeserialization.DeserializeRuleAsync(reader, item.Rules));
                                 break;
 
+                            case "selectionEntries":
+                                item.SelectionEntries ??= new List<SelectionEntry>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "selectionEntry",
+                                    async (reader, _) => await DeserializeSelectionEntryAsync(reader, item.SelectionEntries));
+                                break;
+
+                            case "sharedInfoGroups":
+                                item.SharedInformationGroups ??= new List<InformationGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "infoGroup",
+                                    async (reader, _) => await DeserializeInformationGroupsAsync(reader, item.SharedInformationGroups));
+                                break;
+
                             case "sharedProfiles":
                                 item.SharedProfiles ??= new List<Profile>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "profile",
-                                    async (reader, _) => await CommonDeserialization.DeserializeProfileAsync(reader, item.SharedProfiles));
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, item.SharedProfiles));
                                 break;
 
                             case "sharedRules":
@@ -621,17 +756,17 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
-        /// Deserialize an information link.
+        /// Deserialize an information group.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
-        /// <param name="parent">The <see cref="List{InformationLink}"/> to populate.</param>
-        private static async Task DeserializeInformationLinkAsync(XmlReader xmlReader, List<InformationLink>? parent)
+        /// <param name="parent">The <see cref="List{InformationGroup}"/> to populate.</param>
+        private static async Task DeserializeInformationGroupsAsync(XmlReader xmlReader, List<InformationGroup>? parent)
         {
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
-            var item = new InformationLink();
-            await xmlReader.DeserializeAttributesAsync(item, informationLinkAttributes);
-            if (parent == null) throw new Exception("InformationLinks has not been initialised");
+            var item = new InformationGroup();
+            await xmlReader.DeserializeAttributesAsync(item, informationGroupAttributes);
+            if (parent == null) throw new Exception("informationGroups has not been initialised");
             parent.Add(item);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -642,12 +777,28 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
-                            case "modifiers":
-                                item.Modifiers ??= new List<Modifier>();
+                            case "infoLinks":
+                                item.InformationLinks ??= new List<InformationLink>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
-                                    "modifier",
-                                    async (reader, _) => await CommonDeserialization.DeserializeModifierAsync(reader, item.Modifiers));
+                                    "infoLink",
+                                    async (reader, _) => await DeserializeInformationLinkAsync(reader, item.InformationLinks));
+                                break;
+
+                            case "profiles":
+                                item.Profiles ??= new List<Profile>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "profile",
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, item.Profiles));
+                                break;
+
+                            case "rules":
+                                item.Rules ??= new List<Rule>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "rule",
+                                    async (reader, _) => await CommonDeserialization.DeserializeRuleAsync(reader, item.Rules));
                                 break;
 
                             default:
@@ -670,17 +821,17 @@ namespace Wasp.Core.Data.Xml
         }
 
         /// <summary>
-        /// Deserialize a modifier group.
+        /// Deserialize an information link.
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
-        /// <param name="parent">The <see cref="List{ModifierGroup}"/> to populate.</param>
-        private static async Task DeserializeModifierGroupAsync(XmlReader xmlReader, List<ModifierGroup>? parent)
+        /// <param name="parent">The <see cref="List{InformationLink}"/> to populate.</param>
+        private static async Task DeserializeInformationLinkAsync(XmlReader xmlReader, List<InformationLink>? parent)
         {
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
-            var item = new ModifierGroup();
-            // await xmlReader.DeserializeAttributesAsync(item, modifierGroupAttributes);
-            if (parent == null) throw new Exception("ModifierGroups has not been initialised");
+            var item = new InformationLink();
+            await xmlReader.DeserializeAttributesAsync(item, informationLinkAttributes);
+            if (parent == null) throw new Exception("InformationLinks has not been initialised");
             parent.Add(item);
 
             while (isReading && await xmlReader.ReadAsync())
@@ -691,12 +842,12 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
-                            case "conditions":
-                                item.Conditions ??= new List<Constraint>();
+                            case "modifierGroups":
+                                item.ModifierGroups ??= new List<ModifierGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
-                                    "condition",
-                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Conditions));
+                                    "modifierGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
                                 break;
 
                             case "modifiers":
@@ -836,6 +987,14 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await DeserializeEntryLinkAsync(reader, item.EntryLinks));
                                 break;
 
+                            case "infoGroups":
+                                item.InformationGroups ??= new List<InformationGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "infoGroup",
+                                    async (reader, _) => await DeserializeInformationGroupsAsync(reader, item.InformationGroups));
+                                break;
+
                             case "infoLinks":
                                 item.InformationLinks ??= new List<InformationLink>();
                                 await xmlReader.DeserializeArrayAsync(
@@ -849,7 +1008,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "modifierGroup",
-                                    async (reader, _) => await DeserializeModifierGroupAsync(reader, item.ModifierGroups));
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
                                 break;
 
                             case "modifiers":
@@ -865,7 +1024,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "profile",
-                                    async (reader, _) => await CommonDeserialization.DeserializeProfileAsync(reader, item.Profiles));
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, item.Profiles));
                                 break;
 
                             case "rules":
@@ -932,6 +1091,14 @@ namespace Wasp.Core.Data.Xml
                     case XmlNodeType.Element:
                         switch (xmlReader.Name)
                         {
+                            case "categoryLinks":
+                                item.CategoryLinks ??= new List<CategoryLink>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "categoryLink",
+                                    async (reader, _) => await DeserializeCategoryLinkAsync(reader, item.CategoryLinks));
+                                break;
+
                             case "comment":
                                 item.Comment = await xmlReader.ReadElementContentAsStringAsync();
                                 break;
@@ -952,12 +1119,28 @@ namespace Wasp.Core.Data.Xml
                                     async (reader, _) => await DeserializeEntryLinkAsync(reader, item.EntryLinks));
                                 break;
 
+                            case "modifierGroups":
+                                item.ModifierGroups ??= new List<ModifierGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "modifierGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
+                                break;
+
                             case "modifiers":
                                 item.Modifiers ??= new List<Modifier>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
                                     "modifier",
                                     async (reader, _) => await CommonDeserialization.DeserializeModifierAsync(reader, item.Modifiers));
+                                break;
+
+                            case "profiles":
+                                item.Profiles ??= new List<Profile>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "profile",
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, item.Profiles));
                                 break;
 
                             case "selectionEntries":

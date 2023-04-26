@@ -1,15 +1,25 @@
-﻿namespace Wasp.Core.Data
+﻿using Humanizer;
+
+namespace Wasp.Core.Data
 {
     /// <summary>
     /// Defines a constraint.
     /// </summary>
     public class Constraint
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the child id.
         /// </summary>
         public string? ChildId { get; set; }
+
+        /// <summary>
+        /// Gets the display name for this constraint.
+        /// </summary>
+        public string DisplayName
+        {
+            get => $"{Type.ApplyCase(LetterCasing.Title)} {Value:#,##0} {Field.ApplyCase(LetterCasing.Title)} in {Scope.ApplyCase(LetterCasing.Title)}";
+        }
 
         /// <summary>
         /// Gets or sets the field.

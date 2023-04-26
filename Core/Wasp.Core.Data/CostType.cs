@@ -4,7 +4,7 @@
     /// Defines a cost type in the game system.
     /// </summary>
     public class CostType
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the default cost limit.

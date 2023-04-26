@@ -1,10 +1,12 @@
-﻿namespace Wasp.Core.Data
+﻿using Wasp.Core.Data.Xml;
+
+namespace Wasp.Core.Data
 {
     /// <summary>
     /// Contains the configuration for a game system.
     /// </summary>
     public class GameSystemConfiguration
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the contact details for the author.
@@ -25,6 +27,11 @@
         /// Gets or sets the version of BattleScribe used to generate this configuration.
         /// </summary>
         public string? BattleScribeVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the catalogue links.
+        /// </summary>
+        public List<CatalogueLink>? CatalogueLinks { get; set; }
 
         /// <summary>
         /// Gets or sets the category entries for the configuration.
@@ -57,6 +64,11 @@
         public string? GameSystemRevision { get; set; }
 
         /// <summary>
+        /// Gets or sets the information links.
+        /// </summary>
+        public List<InformationLink>? InformationLinks { get; set; }
+
+        /// <summary>
         /// Gets or sets a flag indicating whether this configuration is a library or not.
         /// </summary>
         public bool? IsLibrary { get; set; }
@@ -85,6 +97,16 @@
         /// Gets or sets the rules.
         /// </summary>
         public List<Rule>? Rules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selection entries.
+        /// </summary>
+        public List<SelectionEntry>? SelectionEntries { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shared information groups.
+        /// </summary>
+        public List<InformationGroup>? SharedInformationGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the shared profiles.

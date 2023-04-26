@@ -4,17 +4,12 @@
     /// Defines a selection entry.
     /// </summary>
     public class SelectionEntry
-        : ConfigurationEntry
+        : ConfigurableNamedEntry
     {
         /// <summary>
         /// Gets or sets the category links.
         /// </summary>
         public List<CategoryLink>? CategoryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets the constraints.
-        /// </summary>
-        public List<Constraint>? Constraints { get; set; }
 
         /// <summary>
         /// Gets or sets the costs.
@@ -27,9 +22,9 @@
         public List<EntryLink>? EntryLinks { get; set; }
 
         /// <summary>
-        /// Gets or sets the information links.
+        /// Gets or sets the information groups.
         /// </summary>
-        public List<InformationLink>? InformationLinks { get; set; }
+        public List<InformationGroup>? InformationGroups { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is collective or not.
@@ -45,16 +40,6 @@
         /// Gets or sets a flag indicating whether this selection entry is an import or not.
         /// </summary>
         public bool IsImport { get; set; }
-
-        /// <summary>
-        /// Gets or sets the modifier groups.
-        /// </summary>
-        public List<ModifierGroup>? ModifierGroups { get; set; }
-
-        /// <summary>
-        /// Gets or sets the modifiers.
-        /// </summary>
-        public List<Modifier>? Modifiers { get; set; }
 
         /// <summary>
         /// Gets or sets the page number for finding this selection entry.

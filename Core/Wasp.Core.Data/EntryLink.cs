@@ -4,17 +4,12 @@
     /// Defines an entry link.
     /// </summary>
     public class EntryLink
-        : ConfigurationEntry
+        : ConfigurableNamedEntry
     {
         /// <summary>
         /// Gets or sets the category links.
         /// </summary>
         public List<CategoryLink>? CategoryLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets the constraints.
-        /// </summary>
-        public List<Constraint>? Constraints { get; set; }
 
         /// <summary>
         /// Gets or sets the costs.
@@ -25,6 +20,11 @@
         /// Gets or sets the entry links.
         /// </summary>
         public List<EntryLink>? EntryLinks { get; set; }
+
+        /// <summary>
+        /// Gets or sets the information groups.
+        /// </summary>
+        public List<InformationGroup>? InformationGroups { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this entry link is collective or not.
@@ -42,24 +42,24 @@
         public bool IsImport { get; set; }
 
         /// <summary>
-        /// Gets or sets the modifier groups.
-        /// </summary>
-        public List<ModifierGroup>? ModifierGroups { get; set; }
-
-        /// <summary>
-        /// Gets or sets the modifiers.
-        /// </summary>
-        public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
         /// Gets or sets the page.
         /// </summary>
         public string? Page { get; set; }
 
         /// <summary>
+        /// Gets or sets the profiles.
+        /// </summary>
+        public List<Profile>? Profiles { get; set; }
+
+        /// <summary>
         /// Gets or sets the publication id.
         /// </summary>
         public string? PublicationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selection entries.
+        /// </summary>
+        public List<SelectionEntry>? SelectionEntries { get; set; }
 
         /// <summary>
         /// Gets or sets the target id.

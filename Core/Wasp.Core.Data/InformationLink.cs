@@ -4,12 +4,17 @@
     /// Defines an information link.
     /// </summary>
     public class InformationLink
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets a flag indicating whether this information link is hidden or not.
         /// </summary>
         public bool IsHidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modifier groups.
+        /// </summary>
+        public List<ModifierGroup>? ModifierGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the modifiers.

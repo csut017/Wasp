@@ -133,7 +133,7 @@ namespace Wasp.Core.Data.Xml
         }
 
         private static async Task WriteConfigurationEntryAsync<TItem>(XmlWriter xmlWriter, TItem item, Action<XmlWriter, TItem>? writeAttributes = null)
-                                                                            where TItem : ConfigurationEntry
+                                                                            where TItem : NamedEntry
         {
             await CommonSerialization.WriteAttributeAsync(xmlWriter, "id", item.Id);
             await CommonSerialization.WriteAttributeAsync(xmlWriter, "name", item.Name);

@@ -4,12 +4,12 @@
     /// Defines a selection entry group.
     /// </summary>
     public class SelectionEntryGroup
-        : ConfigurationEntry
+        : ConfigurableNamedEntry, ILinkedEntry
     {
         /// <summary>
-        /// Gets or sets the constraints.
+        /// Gets or sets the category links.
         /// </summary>
-        public List<Constraint>? Constraints { get; set; }
+        public List<CategoryLink>? CategoryLinks { get; set; }
 
         /// <summary>
         /// Gets or sets the default selection entry id.
@@ -37,14 +37,14 @@
         public bool IsImport { get; set; }
 
         /// <summary>
-        /// Gets or sets the modifiers.
-        /// </summary>
-        public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
         /// Gets or sets the page number for finding this selection entry.
         /// </summary>
         public string? Page { get; set; }
+
+        /// <summary>
+        /// Gets or sets the profiles.
+        /// </summary>
+        public List<Profile>? Profiles { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the publication this selection entry is from.

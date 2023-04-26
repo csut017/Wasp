@@ -122,10 +122,19 @@ namespace Wasp.UI.DataEditor.ViewModels
                 Name = $"{this.package.Definition.Name} v{this.package.Definition.Revision}"
             };
             this.Items.Add(root);
+            root.Children.Add(ConfigurationItem.New("Catalogue Links", this.package.Definition.CatalogueLinks, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Publications", this.package.Definition.Publications, item => item.FullName));
             root.Children.Add(ConfigurationItem.New("Cost Types", this.package.Definition.CostTypes, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Profile Types", this.package.Definition.ProfileTypes, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Category Entries", this.package.Definition.CategoryEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Force Entries", this.package.Definition.ForceEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", this.package.Definition.SharedSelectionEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", this.package.Definition.SharedSelectionEntryGroups, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Profiles", this.package.Definition.SharedProfiles, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Rules", this.package.Definition.SharedRules, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Info Groups", this.package.Definition.SharedInformationGroups, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Root Selection Entries", this.package.Definition.EntryLinks, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Root Rules", this.package.Definition.Rules, item => item.Name));
         }
     }
 }

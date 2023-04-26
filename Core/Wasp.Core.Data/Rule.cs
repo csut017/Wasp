@@ -4,7 +4,7 @@
     /// Defines a rule.
     /// </summary>
     public class Rule
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the description of the rule.

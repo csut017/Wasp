@@ -256,7 +256,7 @@ namespace Wasp.Core.Data.Xml
                                 await xmlReader.DeserializeArrayAsync(
                                     selection,
                                     "profile",
-                                    async (reader, _) => await CommonDeserialization.DeserializeProfileAsync(reader, selection.Profiles));
+                                    async (reader, _) => await CommonDeserialization.DeserializeProfilesAsync(reader, selection.Profiles));
                                 break;
 
                             case "rules":

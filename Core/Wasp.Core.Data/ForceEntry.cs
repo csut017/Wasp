@@ -4,7 +4,7 @@
     /// Defines a force entry.
     /// </summary>
     public class ForceEntry
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the category links.

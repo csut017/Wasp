@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:app="clr-namespace:Wasp.UI.DataEditor"
         xmlns:data="clr-namespace:Wasp.UI.DataEditor.DataModels"
         mc:Ignorable="d"
         Title="{Binding ApplicationName}" Height="450" Width="800">
@@ -14,6 +15,24 @@
         <CommandBinding Command="ApplicationCommands.SaveAs" Executed="OnSaveFileAs" />
     </Window.CommandBindings>
     <Window.Resources>
+        <app:SortedViewConverter x:Key="sortConverter" />
+
+        <HierarchicalDataTemplate x:Key="childLevel" ItemsSource="{Binding Path=Children}" DataType="{x:Type data:ConfigurationItem}">
+            <Border Padding="5">
+                <TextBlock Text="{Binding Name}" />
+            </Border>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate x:Key="categoryLevel"  ItemsSource="{Binding Path=Children, Converter={StaticResource sortConverter}, ConverterParameter=Name}" ItemTemplate="{StaticResource childLevel}" DataType="{x:Type data:ConfigurationItem}">
+            <Border Padding="5">
+                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            </Border>
+        </HierarchicalDataTemplate>
+        <HierarchicalDataTemplate x:Key="rootLevel" ItemsSource="{Binding Path=Children}" ItemTemplate="{StaticResource categoryLevel}" DataType="{x:Type data:ConfigurationItem}">
+            <Border Padding="5">
+                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+            </Border>
+        </HierarchicalDataTemplate>
+
         <Style TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
             <Setter Property="AlternationCount" Value="2" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -163,19 +182,12 @@
             </ToolBar>
         </ToolBarTray>
 
-        <TreeView Grid.Column="0" Grid.Row="2" ItemsSource="{Binding Path=Items}" BorderThickness="0">
+        <TreeView Grid.Column="0" Grid.Row="2" ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource rootLevel}" BorderThickness="0">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.ItemContainerStyle>
-            <TreeView.Resources>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=Children}" DataType="{x:Type data:ConfigurationItem}">
-                    <Border Padding="5">
-                        <TextBlock Text="{Binding Name}" />
-                    </Border>
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
         </TreeView>
 
         <GridSplitter Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="5" />

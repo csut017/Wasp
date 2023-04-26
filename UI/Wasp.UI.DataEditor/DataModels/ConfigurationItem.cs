@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.DataModels
 {
@@ -42,14 +43,72 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var child in items)
                 {
-                    item.Children.Add(new ConfigurationItem
-                    {
-                        Name = generateName(child) ?? "<Unknown>",
-                        Item = child,
-                    });
+                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty);
                 }
             }
             return item;
+        }
+
+        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name)
+        {
+            if (child == null) return;
+
+            var newItem = new ConfigurationItem
+            {
+                Name = name,
+                Item = child,
+            };
+            item.Children.Add(newItem);
+
+            HandleConfigurableItem(child as IConfigurableEntry, newItem);
+            HandleLinkedEntryItem(child as ILinkedEntry, newItem);
+        }
+
+        private static void HandleConfigurableItem(IConfigurableEntry? item, ConfigurationItem parent)
+        {
+            if (item is null) return;
+
+            var indexedFields = new Dictionary<string, string>();
+            if (item.Constraints != null)
+            {
+                foreach (var constraint in item.Constraints)
+                {
+                    GenerateChildAndAddToParent(constraint, parent, constraint.DisplayName);
+                    if (constraint.Id != null) indexedFields.Add(constraint.Id, constraint.DisplayName);
+                }
+            }
+
+            if (item.Modifiers != null)
+            {
+                foreach (var modifier in item.Modifiers)
+                {
+                    var name = indexedFields.TryGetValue(modifier.Field ?? string.Empty, out var fieldName)
+                        ? $"Set [{fieldName}] to {modifier.Value}"
+                        : $"Set to {modifier.Value}";
+                    GenerateChildAndAddToParent(modifier, parent, name);
+                }
+            }
+
+            if (item.InformationLinks != null)
+            {
+                foreach (var link in item.InformationLinks)
+                {
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty);
+                }
+            }
+        }
+
+        private static void HandleLinkedEntryItem(ILinkedEntry? item, ConfigurationItem parent)
+        {
+            if (item is null) return;
+
+            if (item.EntryLinks != null)
+            {
+                foreach (var link in item.EntryLinks)
+                {
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty);
+                }
+            }
         }
 
         private void NotifyPropertyChanged(string propertyName)

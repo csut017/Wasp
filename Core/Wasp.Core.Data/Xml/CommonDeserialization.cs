@@ -103,7 +103,7 @@ namespace Wasp.Core.Data.Xml
                         else
                         {
                             // Anything else is an error
-                            throw new Exception($"Unexpected element: {xmlReader.Name}");
+                            throw xmlReader.GenerateUnexpectedElementException();
                         }
                         break;
 
@@ -139,6 +139,67 @@ namespace Wasp.Core.Data.Xml
                     if (!setters.TryGetValue(xmlReader.Name, out var setter)) throw xmlReader.GenerateUnexpectedAttributeException(name);
                     await setter(xmlReader, item);
                 } while (xmlReader.MoveToNextAttribute());
+            }
+        }
+
+        /// <summary>
+        /// Deserialize a condition group.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="GameSystemConfiguration"/> to populate.</param>
+        public static async Task DeserializeConditionGroupAsync(XmlReader xmlReader, List<ConditionGroup>? parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new ConditionGroup();
+            await xmlReader.DeserializeAttributesAsync(item, conditionGroupAttributes);
+            if (parent == null) throw new Exception("ConditionGroups has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "conditionGroups":
+                                item.ConditionGroups ??= new List<ConditionGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "conditionGroup",
+                                    async (reader, _) => await DeserializeConditionGroupAsync(reader, item.ConditionGroups));
+                                break;
+
+                            case "conditions":
+                                item.Conditions ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "condition",
+                                    async (reader, _) => await DeserializeConstraint(reader, item.Conditions));
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
             }
         }
 
@@ -239,7 +300,92 @@ namespace Wasp.Core.Data.Xml
 
                             default:
                                 // Anything else is an error
-                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                                throw xmlReader.GenerateUnexpectedElementException();
+                        }
+                        break;
+
+                    case XmlNodeType.EndElement:
+                        // Make sure we've got the correct end element
+                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
+                        isReading = false;
+                        break;
+
+                    default:
+                        // Anything else is an error
+                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserialize a modifier group.
+        /// </summary>
+        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
+        /// <param name="parent">The <see cref="List{ModifierGroup}"/> to populate.</param>
+        public static async Task DeserializeModifierGroupAsync(XmlReader xmlReader, List<ModifierGroup>? parent)
+        {
+            var name = xmlReader.Name;
+            var isReading = !xmlReader.IsEmptyElement;
+            var item = new ModifierGroup();
+            // await xmlReader.DeserializeAttributesAsync(item, modifierGroupAttributes);
+            if (parent == null) throw new Exception("ModifierGroups has not been initialised");
+            parent.Add(item);
+
+            while (isReading && await xmlReader.ReadAsync())
+            {
+                await xmlReader.MoveToContentAsync();
+                switch (xmlReader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        switch (xmlReader.Name)
+                        {
+                            case "comment":
+                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
+                                break;
+
+                            case "conditionGroups":
+                                item.ConditionGroups ??= new List<ConditionGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "conditionGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeConditionGroupAsync(reader, item.ConditionGroups));
+                                break;
+
+                            case "conditions":
+                                item.Conditions ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "condition",
+                                    async (reader, _) => await CommonDeserialization.DeserializeConstraint(reader, item.Conditions));
+                                break;
+
+                            case "modifierGroups":
+                                item.ModifierGroups ??= new List<ModifierGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "modifierGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
+                                break;
+
+                            case "modifiers":
+                                item.Modifiers ??= new List<Modifier>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "modifier",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierAsync(reader, item.Modifiers));
+                                break;
+
+                            case "repeats":
+                                item.Repeats ??= new List<Constraint>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "repeat",
+                                    async (reader, _) => await DeserializeConstraint(reader, item.Repeats));
+                                break;
+
+                            default:
+                                // Anything else is an error
+                                throw xmlReader.GenerateUnexpectedElementException();
                         }
                         break;
 
@@ -261,7 +407,7 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
         /// <param name="parent">The <see cref="List{Profile}"/> to populate.</param>
-        public static async Task DeserializeProfileAsync(XmlReader xmlReader, List<Profile>? parent)
+        public static async Task DeserializeProfilesAsync(XmlReader xmlReader, List<Profile>? parent)
         {
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
@@ -289,6 +435,14 @@ namespace Wasp.Core.Data.Xml
                                 item.Comment = await xmlReader.ReadElementContentAsStringAsync();
                                 break;
 
+                            case "modifierGroups":
+                                item.ModifierGroups ??= new List<ModifierGroup>();
+                                await xmlReader.DeserializeArrayAsync(
+                                    item,
+                                    "modifierGroup",
+                                    async (reader, _) => await CommonDeserialization.DeserializeModifierGroupAsync(reader, item.ModifierGroups));
+                                break;
+
                             case "modifiers":
                                 item.Modifiers ??= new List<Modifier>();
                                 await xmlReader.DeserializeArrayAsync(
@@ -299,7 +453,7 @@ namespace Wasp.Core.Data.Xml
 
                             default:
                                 // Anything else is an error
-                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                                throw xmlReader.GenerateUnexpectedElementException();
                         }
                         break;
 
@@ -401,7 +555,7 @@ namespace Wasp.Core.Data.Xml
 
                             default:
                                 // Anything else is an error
-                                throw new Exception($"Unexpected element: {xmlReader.Name}");
+                                throw xmlReader.GenerateUnexpectedElementException();
                         }
                         break;
 
@@ -507,67 +661,6 @@ namespace Wasp.Core.Data.Xml
                 {
                     case XmlNodeType.Text:
                         item.Value = xmlReader.Value;
-                        break;
-
-                    case XmlNodeType.EndElement:
-                        // Make sure we've got the correct end element
-                        if (xmlReader.Name != name) throw new Exception($"Unexpected end node: expected {name}, found {xmlReader.Name}");
-                        isReading = false;
-                        break;
-
-                    default:
-                        // Anything else is an error
-                        throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deserialize a condition group.
-        /// </summary>
-        /// <param name="xmlReader">The <see cref="XmlReader"/> containing the definition to deserialize.</param>
-        /// <param name="parent">The <see cref="GameSystemConfiguration"/> to populate.</param>
-        private static async Task DeserializeConditionGroupAsync(XmlReader xmlReader, List<ConditionGroup>? parent)
-        {
-            var name = xmlReader.Name;
-            var isReading = !xmlReader.IsEmptyElement;
-            var item = new ConditionGroup();
-            await xmlReader.DeserializeAttributesAsync(item, conditionGroupAttributes);
-            if (parent == null) throw new Exception("ConditionGroups has not been initialised");
-            parent.Add(item);
-
-            while (isReading && await xmlReader.ReadAsync())
-            {
-                await xmlReader.MoveToContentAsync();
-                switch (xmlReader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        switch (xmlReader.Name)
-                        {
-                            case "comment":
-                                item.Comment = await xmlReader.ReadElementContentAsStringAsync();
-                                break;
-
-                            case "conditionGroups":
-                                item.ConditionGroups ??= new List<ConditionGroup>();
-                                await xmlReader.DeserializeArrayAsync(
-                                    item,
-                                    "conditionGroup",
-                                    async (reader, _) => await DeserializeConditionGroupAsync(reader, item.ConditionGroups));
-                                break;
-
-                            case "conditions":
-                                item.Conditions ??= new List<Constraint>();
-                                await xmlReader.DeserializeArrayAsync(
-                                    item,
-                                    "condition",
-                                    async (reader, _) => await DeserializeConstraint(reader, item.Conditions));
-                                break;
-
-                            default:
-                                // Anything else is an error
-                                throw new Exception($"Unexpected element: {xmlReader.Name}");
-                        }
                         break;
 
                     case XmlNodeType.EndElement:

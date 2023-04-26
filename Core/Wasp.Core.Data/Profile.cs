@@ -4,7 +4,7 @@
     /// Defines a profile.
     /// </summary>
     public class Profile
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets the characteristics for this profile.
@@ -15,6 +15,11 @@
         /// Gets or sets a flag indicating whether this rule is hidden or not.
         /// </summary>
         public bool IsHidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets the modifier groups.
+        /// </summary>
+        public List<ModifierGroup>? ModifierGroups { get; set; }
 
         /// <summary>
         /// Gets or sets the modifiers.

@@ -4,7 +4,7 @@
     /// Defines a modifier.
     /// </summary>
     public class Modifier
-        : ConfigurationEntry
+        : CommentedEntry
     {
         /// <summary>
         /// Gets or sets the condition groups.

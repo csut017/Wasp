@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.Diagnostics;
+using System.IO.Compression;
 
 namespace Wasp.Core.Data
 {
@@ -44,7 +45,19 @@ namespace Wasp.Core.Data
 
                 var entry = archive.Entries[0];
                 using var zipStream = entry.Open();
-                package.Definition = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
+                try
+                {
+                    package.Definition = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
+                }
+                catch
+                {
+#if DEBUG
+                    var filename = Path.GetTempFileName();
+                    entry.ExtractToFile(filename, true);
+                    Debug.WriteLine($"Wrote file to {filename}");
+#endif
+                    throw;
+                }
             }
 
             return package;

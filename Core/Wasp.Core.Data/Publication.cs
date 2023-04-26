@@ -4,7 +4,7 @@
     /// Defines a publication.
     /// </summary>
     public class Publication
-        : ConfigurationEntry
+        : NamedEntry
     {
         /// <summary>
         /// Gets or sets the full name of the publication.
