@@ -473,6 +473,11 @@ namespace Wasp.Core.Data.Xml
             return error;
         }
 
+        public static bool? HandleTrueFalse(string value)
+        {
+            return string.IsNullOrEmpty(value) ? null : value == "true";
+        }
+
         /// <summary>
         /// Deserialize a characteristic.
         /// </summary>
@@ -568,11 +573,6 @@ namespace Wasp.Core.Data.Xml
                         throw new Exception($"Unexpected node type: {xmlReader.NodeType} ({xmlReader.Name})");
                 }
             }
-        }
-
-        private static bool? HandleTrueFalse(string value)
-        {
-            return string.IsNullOrEmpty(value) ? null : value == "true";
         }
     }
 }

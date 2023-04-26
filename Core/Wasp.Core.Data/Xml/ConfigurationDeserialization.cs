@@ -28,12 +28,6 @@ namespace Wasp.Core.Data.Xml
             { "name", async (reader, item) => item.Name = await reader.GetValueAsync() },
         };
 
-        private static readonly Dictionary<ConfigurationType, string> configurationTypeRoots = new()
-        {
-            {ConfigurationType.Catalogue, "catalogue" },
-            {ConfigurationType.GameSystem, "gameSystem" },
-        };
-
         private static readonly Dictionary<string, Func<XmlReader, CostType, Task>> costTypeAttributes = new()
         {
             { "defaultCostLimit", async (reader, item) => item.DefaultCostLimit = await reader.GetValueAsync() },
@@ -71,7 +65,7 @@ namespace Wasp.Core.Data.Xml
             { "gameSystemId", async (reader, item) => item.GameSystemId = await reader.GetValueAsync() },
             { "gameSystemRevision", async (reader, item) => item.GameSystemRevision = await reader.GetValueAsync() },
             { "id", async (reader, item) => item.Id = await reader.GetValueAsync() },
-            { "library", async (reader, item) => item.IsLibrary = await reader.GetValueAsync() == "true" },
+            { "library", async (reader, item) => item.IsLibrary = CommonDeserialization.HandleTrueFalse(await reader.GetValueAsync()) },
             { "name", async (reader, item) => item.Name = await reader.GetValueAsync() },
             { "revision", async (reader, item) => item.Revision = await reader.GetValueAsync() },
         };
@@ -135,8 +129,8 @@ namespace Wasp.Core.Data.Xml
                 {
                     case XmlNodeType.Element:
                         // Should only have a gameSystem at the root level
-                        if (!configurationTypeRoots.TryGetValue(configurationType, out var rootName)) throw new Exception($"Unhandled configuration type {configurationType}");
-                        if (xmlReader.Name != rootName) throw new Exception($"Invalid game system definition: expected a {rootName} node, found {xmlReader.Name} instead");
+                        if (!Constants.ConfigurationTypeRoots.TryGetValue(configurationType, out var details)) throw new Exception($"Unhandled configuration type {configurationType}");
+                        if (xmlReader.Name != details.Root) throw new Exception($"Invalid game system definition: expected a {details.Root} node, found {xmlReader.Name} instead");
                         await DeserializeGameSystemConfigurationAsync(xmlReader, gameSystem);
                         break;
 

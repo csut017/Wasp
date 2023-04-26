@@ -58,12 +58,13 @@ namespace Wasp.Core.Data.Xml
         /// Serializes a game system definition to a string.
         /// </summary>
         /// <param name="gameSystem">The <see cref="GameSystemConfiguration"/> instance to serialize.</param>
+        /// <param name="configurationType">Defines the type of configuration to serialize.</param>
         /// <returns>The serialized definition.</returns>
-        public async Task<string> SerializeGameSystemAsync(GameSystemConfiguration gameSystem)
+        public async Task<string> SerializeGameSystemAsync(GameSystemConfiguration gameSystem, ConfigurationType configurationType)
         {
             var builder = new StringBuilder();
             using var writer = new StringWriter(builder);
-            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer);
+            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer, configurationType);
             return builder.ToString();
         }
 
@@ -72,11 +73,12 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="gameSystem">The <see cref="GameSystemConfiguration"/> instance to serialize.</param>
         /// <param name="stream">The <see cref="Stream"/> to serialize to.</param>
+        /// <param name="configurationType">Defines the type of configuration to serialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        public async Task SerializeGameSystemAsync(GameSystemConfiguration gameSystem, Stream stream)
+        public async Task SerializeGameSystemAsync(GameSystemConfiguration gameSystem, Stream stream, ConfigurationType configurationType)
         {
             using var writer = new StreamWriter(stream);
-            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer);
+            await ConfigurationSerialization.SerializeRootAsync(gameSystem, writer, configurationType);
         }
 
         /// <summary>

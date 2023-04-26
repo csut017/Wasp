@@ -27,8 +27,8 @@ namespace Wasp.Utility
             //Process.Start("explorer.exe", report);
 
             //var input = "C:\\Users\\csut017\\BattleScribe\\data\\Warhammer 40,000 9th Edition\\Warhammer 40,000.gst";
-            var input = "C:\\Users\\csut017\\BattleScribe\\data\\Warhammer 40,000 9th Edition\\T'au Empire.cat";
-            var output = "C:\\Users\\csut017\\BattleScribe\\data\\Warhammer 40,000 9th Edition\\T'au Empire-copy.cat";
+            var input = "C:\\Users\\csut017\\BattleScribe\\data\\Warhammer 40,000 9th Edition\\Warhammer 40,000 9th Edition.gst";
+            var output = "C:\\Users\\csut017\\BattleScribe\\data\\Warhammer 40,000 9th Edition\\Warhammer 40,000 9th Edition-copy.gst";
             var package = await ConfigurationPackage.LoadAsync(input);
             await package.SaveAsync(output);
         }

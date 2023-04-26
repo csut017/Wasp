@@ -59,7 +59,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this configuration is a library or not.
         /// </summary>
-        public bool IsLibrary { get; set; }
+        public bool? IsLibrary { get; set; }
 
         /// <summary>
         /// Gets the profile types defined by this configuration.

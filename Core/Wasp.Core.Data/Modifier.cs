@@ -4,12 +4,8 @@
     /// Defines a modifier.
     /// </summary>
     public class Modifier
+        : ConfigurationEntry
     {
-        /// <summary>
-        /// Gets or sets an optional comment for the modifier.
-        /// </summary>
-        public string? Comment { get; set; }
-
         /// <summary>
         /// Gets or sets the condition groups.
         /// </summary>

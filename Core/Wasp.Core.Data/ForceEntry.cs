@@ -4,6 +4,7 @@
     /// Defines a force entry.
     /// </summary>
     public class ForceEntry
+        : ConfigurationEntry
     {
         /// <summary>
         /// Gets or sets the category links.
@@ -21,11 +22,6 @@
         public List<ForceEntry>? ForceEntries { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the force entry.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
         /// Gets or sets a flag indicating whether this force entry is hidden or not.
         /// </summary>
         public bool IsHidden { get; set; }
@@ -34,11 +30,6 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the force entry.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the child rules.

@@ -107,7 +107,7 @@ namespace Wasp.Core.Data
             if (!this.Settings.IsCompressed)
             {
                 // Save directly to the stream
-                await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, stream);
+                await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, stream, this.Settings.ConfigurationType);
                 return;
             }
 
@@ -115,7 +115,7 @@ namespace Wasp.Core.Data
             var filename = this.Settings.Name ?? "data";
             var entry = archive.CreateEntry(filename + ".ros");
             using var zipStream = entry.Open();
-            await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, zipStream);
+            await this.Settings.Format.SerializeGameSystemAsync(this.GameSystem, zipStream, this.Settings.ConfigurationType);
         }
     }
 }

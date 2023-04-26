@@ -61,7 +61,7 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="xmlWriter">The <see cref="XmlWriter"/> to use.</param>
         /// <param name="configuration">The element containing the comment.</param>
-        public static async Task WriteComment(XmlWriter xmlWriter, ConfigurationEntry configuration)
+        public static async Task WriteCommentAsync(XmlWriter xmlWriter, ConfigurationEntry configuration)
         {
             if (configuration.Comment == null) return;
             await xmlWriter.WriteElementStringAsync(null, "comment", null, configuration.Comment);
@@ -81,6 +81,7 @@ namespace Wasp.Core.Data.Xml
             {
                 await xmlWriter.WriteStartElementAsync(null, "conditionGroup", null);
                 await WriteAttributeAsync(xmlWriter, "type", item.Type);
+                await WriteCommentAsync(xmlWriter, item);
                 await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
                 await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
                 await xmlWriter.WriteEndElementAsync();
@@ -116,7 +117,7 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "roundUp", item.ShouldRoundUp);
                 await WriteAttributeAsync(xmlWriter, "id", item.Id);
                 await WriteAttributeAsync(xmlWriter, "type", item.Type);
-                await WriteComment(xmlWriter, item);
+                await WriteCommentAsync(xmlWriter, item);
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
@@ -162,9 +163,10 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "type", item.Type);
                 await WriteAttributeAsync(xmlWriter, "field", item.Field);
                 await WriteAttributeAsync(xmlWriter, "value", item.Value);
+                await WriteCommentAsync(xmlWriter, item);
                 await WriteConditionGroupsAsync(xmlWriter, item.ConditionGroups);
-                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
                 await WriteConstraintsAsync(xmlWriter, item.Repeats, "repeats", "repeat");
+                await WriteConstraintsAsync(xmlWriter, item.Conditions, "conditions", "condition");
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
@@ -220,7 +222,9 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "name", publication.FullName);
                 await WriteAttributeAsync(xmlWriter, "shortName", publication.ShortName);
                 await WriteAttributeAsync(xmlWriter, "publisher", publication.PublisherName);
-                await WriteComment(xmlWriter, publication);
+                await WriteAttributeAsync(xmlWriter, "publicationDate", publication.PublicationDate);
+                await WriteAttributeAsync(xmlWriter, "publisherUrl", publication.PublisherUrl);
+                await WriteCommentAsync(xmlWriter, publication);
                 await xmlWriter.WriteEndElementAsync();
             }
             await xmlWriter.WriteEndElementAsync();
@@ -247,6 +251,7 @@ namespace Wasp.Core.Data.Xml
                 await WriteAttributeAsync(xmlWriter, "publicationId", rule.PublicationId);
                 await WriteAttributeAsync(xmlWriter, "page", rule.Page);
                 await WriteAttributeAsync(xmlWriter, "hidden", rule.IsHidden);
+                await WriteModifiersAsync(xmlWriter, rule.Modifiers);
                 if (rule.Description != null)
                 {
                     await xmlWriter.WriteElementStringAsync(null, "description", null, rule.Description);
