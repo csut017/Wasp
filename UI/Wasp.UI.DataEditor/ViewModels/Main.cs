@@ -144,7 +144,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.package = await Data.ConfigurationPackage.LoadAsync(path);
             this.HasFile = true;
             this.GenerateApplicationName();
-            this.RefreshData();
+            this.RefreshData(true);
         }
 
         public void Redo()
@@ -208,10 +208,15 @@ namespace Wasp.UI.DataEditor.ViewModels
                 : $"{DefaultApplicationName} - {this.package?.Definition?.Name} v{this.package?.Definition?.Revision} {isDirty}";
         }
 
-        private void RefreshData()
+        private void RefreshData(bool clearStacks)
         {
             RefreshItems();
             RefreshPublications();
+            if (clearStacks)
+            {
+                this.UndoStack.Clear();
+                this.RedoStack.Clear();
+            }
         }
 
         private void RefreshItems()

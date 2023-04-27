@@ -1,4 +1,6 @@
-﻿using Wasp.UI.DataEditor.DataModels;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
+using Wasp.UI.DataEditor.DataModels;
 using Data = Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.ViewModels
@@ -38,6 +40,18 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public bool? IsHidden
+        {
+            get => Definition.IsHidden;
+            set
+            {
+                var oldValue = Definition.IsHidden;
+                Definition.IsHidden = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether profile is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
+            }
+        }
+
         public string? Name
         {
             get => Definition.Name;
@@ -47,6 +61,40 @@ namespace Wasp.UI.DataEditor.ViewModels
                 Definition.Name = value;
                 NotifyPropertyChanged();
                 MarkAsDirty(GenerateUndoAction("Change profile full name", () => Definition.Name = oldValue, () => Definition.Name = value));
+            }
+        }
+
+        public string? Page
+        {
+            get => Definition.Page;
+            set
+            {
+                var oldValue = Definition.Page;
+                Definition.Page = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change profile page reference", () => Definition.Page = oldValue, () => Definition.Page = value));
+            }
+        }
+
+        public ObservableCollection<Data.Publication> Publications
+        {
+            get => Main.Publications;
+        }
+
+        public Data.Publication? SelectedPublication
+        {
+            get
+            {
+                var publication = Main.Publications.FirstOrDefault(p => p.Id == Definition.PublicationId);
+                return publication;
+            }
+            set
+            {
+                var oldValue = Definition.PublicationId;
+                var newValue = value?.Id;
+                Definition.PublicationId = newValue;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change profile publication reference", () => Definition.PublicationId = oldValue, () => Definition.PublicationId = newValue));
             }
         }
     }

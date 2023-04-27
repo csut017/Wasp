@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Wasp.UI.DataEditor.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -10,63 +11,20 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.Resources>
-                <Style TargetType="{x:Type GroupBox}">
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="Padding" Value="0,3,0,0" />
-                    <Setter Property="Margin" Value="3,0,3,3" />
-                </Style>
-                <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Padding" Value="2" />
-                    <Setter Property="Margin" Value="3,0,3,3" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="MinHeight" Value="25" />
-                </Style>
                 <Style TargetType="{x:Type Label}">
-                    <Setter Property="Margin" Value="0,0,0,3" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Right" />
                     <Setter Property="Width" Value="70" />
                 </Style>
-                <Style x:Key="LabelCaption" TargetType="{x:Type Label}">
-                    <Setter Property="Margin" Value="0,0,0,3" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Left" />
-                    <Setter Property="HorizontalAlignment" Value="Stretch" />
-                    <Setter Property="FontWeight" Value="Bold" />
-                </Style>
             </Grid.Resources>
-            <GroupBox Grid.Row="0" Header="_Comment">
-                <TextBox Text="{Binding Comment, Mode=TwoWay}" TextWrapping="Wrap" Height="70" AcceptsReturn="True" />
-            </GroupBox>
-            <GroupBox Grid.Row="1" Header="_Basics" Height="Auto">
+            <local:BasicsConfiguration Grid.Row="0" />
+            <GroupBox Grid.Row="1" Header="_Profile Type">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Label Grid.Row="0" Grid.Column="0">Unique Id:</Label>
-                    <Label Grid.Row="1" Grid.Column="0">Name:</Label>
-
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" />
-                </Grid>
-            </GroupBox>
-            <GroupBox Grid.Row="2" Header="_Profile Type">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -76,15 +34,14 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource LabelCaption}">Characteristic Types:</Label>
-                    <Label Grid.Row="4" Grid.ColumnSpan="2" Style="{StaticResource LabelCaption}">Selected Characteristic Type:</Label>
-                    <Label Grid.Row="5" Grid.Column="0">Unique Id:</Label>
-                    <Label Grid.Row="6" Grid.Column="0">Name:</Label>
+                    <Label Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource LabelCaption}" Margin="3,9,3,3">Selected Characteristic Type:</Label>
+                    <Label Grid.Row="4" Grid.Column="0">Unique Id:</Label>
+                    <Label Grid.Row="5" Grid.Column="0">Name:</Label>
 
                     <ListView Grid.Row="2" Grid.ColumnSpan="2" Height="300" HorizontalAlignment="Stretch" Margin="3,0,3,3">
-                        
                     </ListView>
 
-                    <Button Grid.Row="3" Grid.ColumnSpan="2">
+                    <Button Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Top">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Add" />
@@ -92,8 +49,8 @@
                         </Button.Content>
                     </Button>
 
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PublicationDate, Mode=TwoWay}" />
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding PublisherUrl, Mode=TwoWay}" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PublicationDate, Mode=TwoWay}" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PublisherUrl, Mode=TwoWay}" />
                 </Grid>
             </GroupBox>
         </Grid>

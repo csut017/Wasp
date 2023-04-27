@@ -7,6 +7,13 @@
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="Padding" Value="0,3,0,0" />
             <Setter Property="Margin" Value="3,0,3,3" />
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Label Content="{Binding}" FontWeight="Bold" Width="Auto"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="Padding" Value="2" />
