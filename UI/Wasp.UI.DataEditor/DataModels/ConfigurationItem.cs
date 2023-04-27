@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.DataModels
@@ -10,6 +11,7 @@ namespace Wasp.UI.DataEditor.DataModels
         : INotifyPropertyChanged
     {
         private bool isExpanded;
+        private bool isSelected;
 
         public ConfigurationItem()
         {
@@ -25,7 +27,17 @@ namespace Wasp.UI.DataEditor.DataModels
             set
             {
                 this.isExpanded = value;
-                this.NotifyPropertyChanged(nameof(IsExpanded));
+                this.NotifyPropertyChanged();
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => isSelected;
+            set
+            {
+                isSelected = value;
+                this.NotifyPropertyChanged();
             }
         }
 
@@ -33,7 +45,9 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public string Name { get; set; } = "Unknown item";
 
-        public static ConfigurationItem New<TItem>(string name, List<TItem>? items, Func<TItem, string?> generateName)
+        public object? ViewModel { get; set; }
+
+        public static ConfigurationItem New<TItem>(string name, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
         {
             var item = new ConfigurationItem
             {
@@ -43,13 +57,13 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var child in items)
                 {
-                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty);
+                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty, viewModelGenerator);
                 }
             }
             return item;
         }
 
-        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name)
+        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, object? viewModel, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
         {
             if (child == null) return;
 
@@ -58,6 +72,7 @@ namespace Wasp.UI.DataEditor.DataModels
                 Name = name,
                 Item = child,
             };
+            if (viewModelGenerator != null) newItem.ViewModel = viewModelGenerator.Invoke(child, newItem);
             item.Children.Add(newItem);
 
             HandleConfigurableItem(child as IConfigurableEntry, newItem);
@@ -73,7 +88,7 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var constraint in item.Constraints)
                 {
-                    GenerateChildAndAddToParent(constraint, parent, constraint.DisplayName);
+                    GenerateChildAndAddToParent(constraint, parent, constraint.DisplayName, null);
                     if (constraint.Id != null) indexedFields.Add(constraint.Id, constraint.DisplayName);
                 }
             }
@@ -85,7 +100,7 @@ namespace Wasp.UI.DataEditor.DataModels
                     var name = indexedFields.TryGetValue(modifier.Field ?? string.Empty, out var fieldName)
                         ? $"Set [{fieldName}] to {modifier.Value}"
                         : $"Set to {modifier.Value}";
-                    GenerateChildAndAddToParent(modifier, parent, name);
+                    GenerateChildAndAddToParent(modifier, parent, name, null);
                 }
             }
 
@@ -93,7 +108,7 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var link in item.InformationLinks)
                 {
-                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty);
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null);
                 }
             }
         }
@@ -106,12 +121,12 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var link in item.EntryLinks)
                 {
-                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty);
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null);
                 }
             }
         }
 
-        private void NotifyPropertyChanged(string propertyName)
+        private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

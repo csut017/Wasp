@@ -127,5 +127,10 @@ namespace Wasp.Core.Data
         /// Gets or sets the shared selection entry groups.
         /// </summary>
         public List<SelectionEntryGroup>? SharedSelectionEntryGroups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration type.
+        /// </summary>
+        public ConfigurationType Type { get; set; }
     }
 }

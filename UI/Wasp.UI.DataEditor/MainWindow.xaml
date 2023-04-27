@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:app="clr-namespace:Wasp.UI.DataEditor"
         xmlns:data="clr-namespace:Wasp.UI.DataEditor.DataModels"
+        xmlns:vms="clr-namespace:Wasp.UI.DataEditor.ViewModels"
+        xmlns:views="clr-namespace:Wasp.UI.DataEditor.Views"
         mc:Ignorable="d"
         Title="{Binding ApplicationName}" Height="450" Width="800">
     <Window.CommandBindings>
@@ -13,6 +15,8 @@
         <CommandBinding Command="ApplicationCommands.Open" Executed="OnOpenFile" />
         <CommandBinding Command="ApplicationCommands.Save" Executed="OnSaveFile" />
         <CommandBinding Command="ApplicationCommands.SaveAs" Executed="OnSaveFileAs" />
+        <CommandBinding Command="ApplicationCommands.Undo" Executed="OnUndo" CanExecute="OnCanUndo" />
+        <CommandBinding Command="ApplicationCommands.Redo" Executed="OnRedo" CanExecute="OnCanRedo" />
     </Window.CommandBindings>
     <Window.Resources>
         <app:SortedViewConverter x:Key="sortConverter" />
@@ -130,6 +134,13 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <DataTemplate DataType="{x:Type vms:Catalogue}">
+            <views:CatalogueEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:Publication}">
+            <views:PublicationEditor />
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -153,6 +164,10 @@
                 <MenuItem Header="Save _As" Command="ApplicationCommands.SaveAs" />
                 <Separator />
                 <MenuItem Header="E_xit" Command="ApplicationCommands.Close" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo" />
+                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo" />
             </MenuItem>
             <MenuItem Header="_Add">
                 <MenuItem Header="_Catalogue Link" />
@@ -182,14 +197,18 @@
             </ToolBar>
         </ToolBarTray>
 
-        <TreeView Grid.Column="0" Grid.Row="2" ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource rootLevel}" BorderThickness="0">
+        <TreeView Grid.Column="0" Grid.Row="2" ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource rootLevel}" BorderThickness="0"
+                  SelectedItemChanged="OnItemSelected">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 </Style>
             </TreeView.ItemContainerStyle>
         </TreeView>
 
         <GridSplitter Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="5" />
+
+        <ContentControl Grid.Column="2" Grid.Row="2" Content="{Binding CurrentViewModel}" />
     </Grid>
 </Window>

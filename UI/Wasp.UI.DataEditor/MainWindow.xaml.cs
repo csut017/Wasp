@@ -20,9 +20,24 @@ namespace Wasp.UI.DataEditor
             this.DataContext = mainViewModel;
         }
 
+        private void OnCanRedo(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = this.mainViewModel.CanRedo;
+        }
+
+        private void OnCanUndo(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = this.mainViewModel.CanUndo;
+        }
+
         private void OnCloseApplication(object sender, ExecutedRoutedEventArgs e)
         {
             this.mainViewModel.CloseApplication();
+        }
+
+        private void OnItemSelected(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            this.mainViewModel.SelectedItem = (DataModels.ConfigurationItem)e.NewValue;
         }
 
         private void OnNewFile(object sender, ExecutedRoutedEventArgs e)
@@ -37,7 +52,7 @@ namespace Wasp.UI.DataEditor
                 AddExtension = true,
                 CheckFileExists = true,
                 DefaultExt = ".catz",
-                Filter = "Catalogue file (*.catz;*.cat)|*.catz;*.cat|Game definition file (*.gstz;*.gst)|*.gstz;*.gstz|All files (*.*)|*.*",
+                Filter = "Catalogue file (*.catz;*.cat)|*.catz;*.cat|Game definition file (*.gstz;*.gst)|*.gstz;*.gst|All files (*.*)|*.*",
                 FilterIndex = 1,
                 Multiselect = false,
                 Title = "Open File",
@@ -54,6 +69,12 @@ namespace Wasp.UI.DataEditor
                     MessageBox.Show(error.Message, "Unable to open file", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private void OnRedo(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.mainViewModel.Redo();
+            e.Handled = true;
         }
 
         private async void OnSaveFile(object sender, ExecutedRoutedEventArgs e)
@@ -90,6 +111,12 @@ namespace Wasp.UI.DataEditor
             {
                 await mainViewModel.SaveAsync(dialog.FileName);
             }
+        }
+
+        private void OnUndo(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.mainViewModel.Undo();
+            e.Handled = true;
         }
     }
 }

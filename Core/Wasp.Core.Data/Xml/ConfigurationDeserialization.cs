@@ -137,7 +137,7 @@ namespace Wasp.Core.Data.Xml
         /// <returns>A <see cref="GameSystemConfiguration"/> containing the deserialized data.</returns>
         public static async Task<GameSystemConfiguration> DeserializeRootAsync(TextReader reader, ConfigurationType configurationType)
         {
-            var gameSystem = new GameSystemConfiguration();
+            var gameSystem = new GameSystemConfiguration { Type = configurationType };
             var settings = new XmlReaderSettings { Async = true };
             using var xmlReader = XmlReader.Create(reader, settings);
             while (await xmlReader.ReadAsync())
