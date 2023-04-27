@@ -14,7 +14,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this rule is hidden or not.
         /// </summary>
-        public bool IsHidden { get; set; }
+        public bool? IsHidden { get; set; }
 
         /// <summary>
         /// Gets or sets the modifiers.

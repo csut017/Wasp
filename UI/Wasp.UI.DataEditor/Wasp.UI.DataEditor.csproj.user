@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\BasicsConfiguration.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\CatalogueEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,12 +25,18 @@
     <Compile Update="Views\PublicationEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\ReferenceConfiguration.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\RuleEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\BasicsConfiguration.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CatalogueEditor.xaml">
@@ -43,6 +52,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\PublicationEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ReferenceConfiguration.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\RuleEditor.xaml">

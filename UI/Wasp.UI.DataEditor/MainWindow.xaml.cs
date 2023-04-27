@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Wasp.UI.DataEditor.ViewModels;
@@ -18,6 +19,18 @@ namespace Wasp.UI.DataEditor
         {
             InitializeComponent();
             this.DataContext = mainViewModel;
+        }
+
+        public async Task OpenFileAsync(string fileName)
+        {
+            try
+            {
+                await mainViewModel.OpenAsync(fileName);
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.Message, "Unable to open file", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void OnCanRedo(object sender, CanExecuteRoutedEventArgs e)
@@ -60,14 +73,7 @@ namespace Wasp.UI.DataEditor
             };
             if (dialog.ShowDialog(this).GetValueOrDefault(false))
             {
-                try
-                {
-                    await mainViewModel.OpenAsync(dialog.FileName);
-                }
-                catch (Exception error)
-                {
-                    MessageBox.Show(error.Message, "Unable to open file", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                await OpenFileAsync(dialog.FileName);
             }
         }
 

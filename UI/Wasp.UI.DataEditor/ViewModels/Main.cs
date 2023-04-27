@@ -6,8 +6,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using Wasp.Core.Data;
 using Wasp.UI.DataEditor.DataModels;
+
+using Data = Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.ViewModels
 {
@@ -22,7 +23,7 @@ namespace Wasp.UI.DataEditor.ViewModels
         private object? currentViewModel;
         private string? filePath;
         private int numberOfChanges;
-        private ConfigurationPackage? package;
+        private Data.ConfigurationPackage? package;
         private ConfigurationItem? selectedItem;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -57,11 +58,16 @@ namespace Wasp.UI.DataEditor.ViewModels
             {
                 return (this.package?.Settings.ConfigurationType) switch
                 {
-                    ConfigurationType.Catalogue => ".catz",
-                    ConfigurationType.GameSystem => ".gstz",
+                    Data.ConfigurationType.Catalogue => ".catz",
+                    Data.ConfigurationType.GameSystem => ".gstz",
                     _ => throw new ApplicationException($"Unknown configuration type: {this.package?.Settings.ConfigurationType}"),
                 };
             }
+        }
+
+        public Data.GameSystemConfiguration? Definition
+        {
+            get => this.package?.Definition;
         }
 
         public string? FileName
@@ -75,8 +81,8 @@ namespace Wasp.UI.DataEditor.ViewModels
             {
                 return (this.package?.Settings.ConfigurationType) switch
                 {
-                    ConfigurationType.Catalogue => "Catalogue (*.catz))|*.catz|Uncompressed catalogue (*.cat))|*.cat",
-                    ConfigurationType.GameSystem => "Game definition (*.gstz)|*.gstz|Uncompressed game definition (*.gst)|*.gst",
+                    Data.ConfigurationType.Catalogue => "Catalogue (*.catz))|*.catz|Uncompressed catalogue (*.cat))|*.cat",
+                    Data.ConfigurationType.GameSystem => "Game definition (*.gstz)|*.gstz|Uncompressed game definition (*.gst)|*.gst",
                     _ => throw new ApplicationException($"Unknown configuration type: {this.package?.Settings.ConfigurationType}"),
                 };
             }
@@ -91,6 +97,8 @@ namespace Wasp.UI.DataEditor.ViewModels
 
         public ObservableCollection<ConfigurationItem> Items { get; } = new();
 
+        public ObservableCollection<Data.Publication> Publications { get; } = new();
+
         public Stack<UndoAction> RedoStack { get; } = new();
 
         public ConfigurationItem? SelectedItem
@@ -104,7 +112,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
-        public PackageSettings? Settings
+        public Data.PackageSettings? Settings
         {
             get => this.package?.Settings;
         }
@@ -133,10 +141,10 @@ namespace Wasp.UI.DataEditor.ViewModels
         public async Task OpenAsync(string path)
         {
             this.filePath = path;
-            this.package = await ConfigurationPackage.LoadAsync(path);
+            this.package = await Data.ConfigurationPackage.LoadAsync(path);
             this.HasFile = true;
             this.GenerateApplicationName();
-            this.RefreshItems();
+            this.RefreshData();
         }
 
         public void Redo()
@@ -200,6 +208,12 @@ namespace Wasp.UI.DataEditor.ViewModels
                 : $"{DefaultApplicationName} - {this.package?.Definition?.Name} v{this.package?.Definition?.Revision} {isDirty}";
         }
 
+        private void RefreshData()
+        {
+            RefreshItems();
+            RefreshPublications();
+        }
+
         private void RefreshItems()
         {
             this.Items.Clear();
@@ -214,7 +228,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.Items.Add(root);
 
             var definitionType = this.package.Definition.Type;
-            if (definitionType == ConfigurationType.Catalogue) root.Children.Add(ConfigurationItem.New("Catalogue Links", this.package.Definition.CatalogueLinks, item => item.Name));
+            if (definitionType == Data.ConfigurationType.Catalogue) root.Children.Add(ConfigurationItem.New("Catalogue Links", this.package.Definition.CatalogueLinks, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Publications", this.package.Definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item)));
             root.Children.Add(ConfigurationItem.New("Cost Types", this.package.Definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item)));
             root.Children.Add(ConfigurationItem.New("Profile Types", this.package.Definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item)));
@@ -227,6 +241,17 @@ namespace Wasp.UI.DataEditor.ViewModels
             root.Children.Add(ConfigurationItem.New("Shared Info Groups", this.package.Definition.SharedInformationGroups, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Root Selection Entries", this.package.Definition.EntryLinks, item => item.Name));
             root.Children.Add(ConfigurationItem.New("Root Rules", this.package.Definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item)));
+        }
+
+        private void RefreshPublications()
+        {
+            this.Publications.Clear();
+            if (this.Definition?.Publications == null) return;
+
+            foreach (var publication in this.Definition.Publications)
+            {
+                this.Publications.Add(publication);
+            }
         }
     }
 }

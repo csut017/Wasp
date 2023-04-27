@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
 
 namespace Wasp.UI.DataEditor
@@ -13,5 +8,22 @@ namespace Wasp.UI.DataEditor
     /// </summary>
     public partial class App : Application
     {
+        private async void OnStartUp(object sender, StartupEventArgs e)
+        {
+            var main = new MainWindow();
+            if (e.Args.Length > 0)
+            {
+                var fileName = e.Args[0];
+                if (File.Exists(fileName))
+                {
+                    await main.OpenFileAsync(fileName);
+                }
+                else
+                {
+                    MessageBox.Show($"Could not find {fileName}", "Unable to Open File", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            main.Show();
+        }
     }
 }

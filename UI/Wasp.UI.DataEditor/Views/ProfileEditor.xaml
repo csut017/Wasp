@@ -15,21 +15,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.Resources>
-                <Style TargetType="{x:Type GroupBox}">
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="Padding" Value="0,3,0,0" />
-                    <Setter Property="Margin" Value="3,0,3,3" />
-                </Style>
-                <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Padding" Value="2" />
-                    <Setter Property="Margin" Value="3,0,3,3" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="MinHeight" Value="25" />
-                </Style>
                 <Style TargetType="{x:Type Label}">
-                    <Setter Property="Margin" Value="0,0,0,3" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Right" />
                     <Setter Property="Width" Value="80" />
                 </Style>
             </Grid.Resources>
@@ -71,7 +57,7 @@
                     <Label Grid.Row="0" Grid.Column="0">Publication:</Label>
                     <Label Grid.Row="1" Grid.Column="0">Page:</Label>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False"></ComboBox>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Name, Mode=TwoWay}" />
                 </Grid>
             </GroupBox>
@@ -86,6 +72,8 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0">Is Hidden:</Label>
+
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsHidden, Mode=TwoWay}" VerticalAlignment="Center" Margin="3" />
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="4" Header="C_haracteristics" Height="Auto">
@@ -103,10 +91,19 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0">Profile Type:</Label>
-                    
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" />
+
+                    <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False"></ComboBox>
                     <GroupBox Grid.Row="1" Grid.ColumnSpan="2">
-                            
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Width="71">Description:</Label>
+
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" Height="80" AcceptsReturn="True" TextWrapping="Wrap" />
+                        </Grid>
                     </GroupBox>
                 </Grid>
             </GroupBox>
