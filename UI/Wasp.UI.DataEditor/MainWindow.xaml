@@ -138,8 +138,20 @@
         <DataTemplate DataType="{x:Type vms:Catalogue}">
             <views:CatalogueEditor />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:CostType}">
+            <views:CostTypeEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:Profile}">
+            <views:ProfileEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:ProfileType}">
+            <views:ProfileTypeEditor />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vms:Publication}">
             <views:PublicationEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:Rule}">
+            <views:RuleEditor />
         </DataTemplate>
     </Window.Resources>
     <Grid>

@@ -63,7 +63,7 @@ namespace Wasp.UI.DataEditor.DataModels
             return item;
         }
 
-        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, object? viewModel, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
+        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, Func<TItem, ConfigurationItem, object>? viewModelGenerator)
         {
             if (child == null) return;
 

@@ -10,7 +10,19 @@
     <Compile Update="Views\CatalogueEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CostTypeEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ProfileEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ProfileTypeEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\PublicationEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\RuleEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -21,7 +33,19 @@
     <Page Update="Views\CatalogueEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\CostTypeEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ProfileEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ProfileTypeEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\PublicationEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\RuleEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
