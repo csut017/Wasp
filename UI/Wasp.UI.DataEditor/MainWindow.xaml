@@ -222,5 +222,18 @@
         <GridSplitter Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="5" />
 
         <ContentControl Grid.Column="2" Grid.Row="2" Content="{Binding CurrentViewModel}" />
+
+        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding LoadingVisibility}">
+            <Border.Background>
+                <SolidColorBrush Color="White" Opacity="0.75"/>
+            </Border.Background>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderThickness="2" BorderBrush="Black" Padding="20" CornerRadius="5" Background="WhiteSmoke">
+                <StackPanel>
+                    <TextBlock Text="Loading, please wait..." HorizontalAlignment="Center" Margin="3" />
+                    
+                    <ProgressBar Height="25" Width="150" Margin="3"/>
+                </StackPanel>
+            </Border>
+        </Border>
     </Grid>
 </Window>

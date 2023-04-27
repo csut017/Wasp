@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
-using System;
+using System.ComponentModel;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Wasp.UI.DataEditor.ViewModels;
@@ -21,16 +20,17 @@ namespace Wasp.UI.DataEditor
             this.DataContext = mainViewModel;
         }
 
-        public async Task OpenFileAsync(string fileName)
+        public void OpenFile(string fileName)
         {
-            try
+            var worker = new BackgroundWorker
             {
-                await mainViewModel.OpenAsync(fileName);
-            }
-            catch (Exception error)
-            {
-                MessageBox.Show(error.Message, "Unable to open file", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                WorkerReportsProgress = true,
+            };
+            worker.DoWork += OnOpenFileDoWork;
+            worker.ProgressChanged += OnOpenFileProgressChanged;
+            worker.RunWorkerCompleted += OnOpenFileRunWorkerCompleted;
+            this.mainViewModel.LoadingVisibility = Visibility.Visible;
+            worker.RunWorkerAsync(fileName);
         }
 
         private void OnCanRedo(object sender, CanExecuteRoutedEventArgs e)
@@ -58,7 +58,7 @@ namespace Wasp.UI.DataEditor
             MessageBox.Show("TODO");
         }
 
-        private async void OnOpenFile(object sender, ExecutedRoutedEventArgs e)
+        private void OnOpenFile(object sender, ExecutedRoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
             {
@@ -71,10 +71,37 @@ namespace Wasp.UI.DataEditor
                 Title = "Open File",
                 ValidateNames = true,
             };
+            this.mainViewModel.LoadingVisibility = Visibility.Visible;
             if (dialog.ShowDialog(this).GetValueOrDefault(false))
             {
-                await OpenFileAsync(dialog.FileName);
+                OpenFile(dialog.FileName);
+            }else
+            {
+                this.mainViewModel.LoadingVisibility = Visibility.Collapsed;
             }
+        }
+
+        private void OnOpenFileDoWork(object? sender, DoWorkEventArgs e)
+        {
+            var fileName = e.Argument as string;
+            mainViewModel.OpenAsync(fileName!).Wait();
+        }
+
+        private void OnOpenFileProgressChanged(object? sender, ProgressChangedEventArgs e)
+        {
+            // TODO
+        }
+
+        private void OnOpenFileRunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            this.mainViewModel.LoadingVisibility = Visibility.Collapsed;
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message, "Unable to open file", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            mainViewModel.Refresh();
         }
 
         private void OnRedo(object sender, ExecutedRoutedEventArgs e)

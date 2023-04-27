@@ -8,7 +8,7 @@ namespace Wasp.UI.DataEditor
     /// </summary>
     public partial class App : Application
     {
-        private async void OnStartUp(object sender, StartupEventArgs e)
+        private void OnStartUp(object sender, StartupEventArgs e)
         {
             var main = new MainWindow();
             if (e.Args.Length > 0)
@@ -16,7 +16,7 @@ namespace Wasp.UI.DataEditor
                 var fileName = e.Args[0];
                 if (File.Exists(fileName))
                 {
-                    await main.OpenFileAsync(fileName);
+                    main.OpenFile(fileName);
                 }
                 else
                 {

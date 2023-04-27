@@ -22,6 +22,7 @@ namespace Wasp.UI.DataEditor.ViewModels
         private string applicationName = DefaultApplicationName;
         private object? currentViewModel;
         private string? filePath;
+        private Visibility loadingVisibility = Visibility.Collapsed;
         private int numberOfChanges;
         private Data.ConfigurationPackage? package;
         private ConfigurationItem? selectedItem;
@@ -97,6 +98,16 @@ namespace Wasp.UI.DataEditor.ViewModels
 
         public ObservableCollection<ConfigurationItem> Items { get; } = new();
 
+        public Visibility LoadingVisibility
+        {
+            get => loadingVisibility;
+            set
+            {
+                loadingVisibility = value;
+                this.NotifyPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Data.Publication> Publications { get; } = new();
 
         public Stack<UndoAction> RedoStack { get; } = new();
@@ -143,8 +154,6 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.filePath = path;
             this.package = await Data.ConfigurationPackage.LoadAsync(path);
             this.HasFile = true;
-            this.GenerateApplicationName();
-            this.RefreshData(true);
         }
 
         public void Redo()
@@ -160,6 +169,12 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.CurrentViewModel = action.ViewModel;
             if (action.ViewModel is ViewModel viewModel) this.SelectedItem = viewModel.Item;
             this.UndoStack.Push(action);
+        }
+
+        public void Refresh()
+        {
+            this.GenerateApplicationName();
+            this.RefreshData(true);
         }
 
         public async Task SaveAsync()
