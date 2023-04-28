@@ -28,7 +28,9 @@ namespace Wasp.UI.DataEditor.ViewModels
         private Visibility loadingVisibility = Visibility.Collapsed;
         private int numberOfChanges;
         private Data.ConfigurationPackage? package;
+        private ConfigurationItem? rootNode;
         private ConfigurationItem? selectedItem;
+        private bool showImportedEntries;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -140,6 +142,18 @@ namespace Wasp.UI.DataEditor.ViewModels
             get => this.package?.Settings;
         }
 
+        public bool ShowImportedEntries
+        {
+            get => showImportedEntries;
+            set
+            {
+                if (showImportedEntries == value) return;
+                showImportedEntries = value;
+                UpdatedImportedItems();
+                NotifyPropertyChanged();
+            }
+        }
+
         public Stack<UndoAction> UndoStack { get; } = new();
 
         public void CloseApplication()
@@ -203,7 +217,7 @@ namespace Wasp.UI.DataEditor.ViewModels
         public void Refresh()
         {
             this.GenerateApplicationName();
-            this.RefreshData(true);
+            this.RefreshData(true, true);
         }
 
         public async Task SaveAsync()
@@ -244,12 +258,70 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private static ConfigurationItem FindOrAddChild(ConfigurationItem root, bool isImported, string name, string? image)
+        {
+            var item = root.Children.FirstOrDefault(c => c.Name == name);
+            if (item != null) return item;
+
+            item = ConfigurationItem.New(isImported, name, image);
+            root.Children.Add(item);
+            return item;
+        }
+
+        private static void RemoveImportedItems(ConfigurationItem nodeToProcess)
+        {
+            var importedNodes = nodeToProcess.Children.Where(n => n.IsImported).ToList();
+            foreach (var node in importedNodes)
+            {
+                nodeToProcess.Children.Remove(node);
+            }
+
+            foreach (var node in nodeToProcess.Children)
+            {
+                RemoveImportedItems(node);
+            }
+        }
+
         private void GenerateApplicationName()
         {
             var isDirty = IsDirty ? "*" : string.Empty;
             this.ApplicationName = this.package == null
                 ? DefaultApplicationName
                 : $"{DefaultApplicationName} - {this.package?.Definition?.Name} v{this.package?.Definition?.Revision} {isDirty}";
+        }
+
+        private void LoadItemsFromDefinition(ConfigurationItem root, Data.GameSystemConfiguration definition, bool isImported)
+        {
+            if (definition.Type == Data.ConfigurationType.Catalogue)
+            {
+                FindOrAddChild(root, isImported, "Catalogue Links", "catalogue_link")
+                    .PopulateChildren(isImported, "catalogue_link", definition.CatalogueLinks, item => item.Name);
+            }
+
+            FindOrAddChild(root, isImported, "Publications", "publication")
+                .PopulateChildren(isImported, "publication", definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item));
+            FindOrAddChild(root, isImported, "Cost Types", "cost_type")
+                .PopulateChildren(isImported, "cost_type", definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item));
+            FindOrAddChild(root, isImported, "Profile Types", "profile_type")
+                .PopulateChildren(isImported, "profile_type", definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item));
+            FindOrAddChild(root, isImported, "Category Entries", "catalogue_entry")
+                .PopulateChildren(isImported, "catalogue_entry", definition.CategoryEntries, item => item.Name, (entity, item) => new CategoryEntry(entity, this, item));
+            FindOrAddChild(root, isImported, "Force Entries", "force_entry")
+                .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name);
+            FindOrAddChild(root, isImported, "Shared Selection Entries", "shared_selection_entry")
+                .PopulateChildren(isImported, "selection_entry", definition.SharedSelectionEntries, item => item.Name, (entity, item) => new SelectionEntry(entity, this, item));
+            FindOrAddChild(root, isImported, "Shared Selection Entry Groups", "shared_selection_entry_group")
+                .PopulateChildren(isImported, "selection_entry_group", definition.SharedSelectionEntryGroups, item => item.Name, (entity, item) => new SelectionEntryGroup(entity, this, item));
+            FindOrAddChild(root, isImported, "Shared Profiles", "shared_profile")
+                .PopulateChildren(isImported, "profile", definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item));
+            FindOrAddChild(root, isImported, "Shared Rules", "shared_rule")
+                .PopulateChildren(isImported, "rule", definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item));
+            FindOrAddChild(root, isImported, "Shared Info Groups", "shared_info")
+                .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name);
+            FindOrAddChild(root, isImported, "Root Selection Entries", "selection_entry")
+                .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name);
+            FindOrAddChild(root, isImported, "Root Rules", "rule")
+                .PopulateChildren(isImported, "rule", definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item));
         }
 
         private void RefreshCategoryEntries()
@@ -280,11 +352,15 @@ namespace Wasp.UI.DataEditor.ViewModels
                 .ToDictionary(ce => ce.Id!);
         }
 
-        private void RefreshData(bool clearStacks)
+        private void RefreshData(bool clearStacks, bool clearData)
         {
-            RefreshPublications();
-            RefreshProfileTypes();
-            RefreshCategoryEntries();
+            if (clearData)
+            {
+                RefreshPublications();
+                RefreshProfileTypes();
+                RefreshCategoryEntries();
+            }
+
             if (clearStacks)
             {
                 this.UndoStack.Clear();
@@ -292,37 +368,12 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
 
             // Load the view models last
-            RefreshItems();
-        }
-
-        private void RefreshItems()
-        {
-            this.Items.Clear();
-            if (this.package?.Definition == null) return;
-            var definitionType = this.package.Definition.Type;
-            var root = new ConfigurationItem
+            if (clearData)
             {
-                IsExpanded = true,
-                Item = this.package.Definition,
-                Name = $"{this.package.Definition.Name} v{this.package.Definition.Revision}",
-            };
-            root.ChangeImage("catalogue");
-            root.ViewModel = new Catalogue(this.package.Definition, this, root);
-            this.Items.Add(root);
+                ReloadItems();
+            }
 
-            if (definitionType == Data.ConfigurationType.Catalogue) root.Children.Add(ConfigurationItem.New("Catalogue Links", "catalogue_link", this.package.Definition.CatalogueLinks, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Publications", "publication", this.package.Definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Cost Types", "cost_type", this.package.Definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Profile Types", "profile_type", this.package.Definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Category Entries", "catalogue_entry", this.package.Definition.CategoryEntries, item => item.Name, (entity, item) => new CategoryEntry(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Force Entries", "force_entry", this.package.Definition.ForceEntries, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", "selection_entry", this.package.Definition.SharedSelectionEntries, item => item.Name, (entity, item) => new SelectionEntry(entity, this, item)).ChangeImage("shared_selection_entry"));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", "selection_entry_group", this.package.Definition.SharedSelectionEntryGroups, item => item.Name, (entity, item) => new SelectionEntryGroup(entity, this, item)).ChangeImage("shared_selection_entry_group"));
-            root.Children.Add(ConfigurationItem.New("Shared Profiles", "profile", this.package.Definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item)).ChangeImage("shared_profile"));
-            root.Children.Add(ConfigurationItem.New("Shared Rules", "rule", this.package.Definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item)).ChangeImage("shared_rule"));
-            root.Children.Add(ConfigurationItem.New("Shared Info Groups", "info", this.package.Definition.SharedInformationGroups, item => item.Name).ChangeImage("shared_info"));
-            root.Children.Add(ConfigurationItem.New("Root Selection Entries", "selection_entry", this.package.Definition.EntryLinks, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Root Rules", "rule", this.package.Definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item)));
+            UpdatedImportedItems();
         }
 
         private void RefreshProfileTypes()
@@ -370,6 +421,31 @@ namespace Wasp.UI.DataEditor.ViewModels
                     publication.DisplayName = $"{publication.FullName} [{systemName}]";
                     this.Publications.Add(publication);
                 }
+            }
+        }
+
+        private void ReloadItems()
+        {
+            this.Items.Clear();
+            if (this.package?.Definition == null) return;
+            rootNode = ConfigurationItem.New(false, $"{this.package.Definition.Name} v{this.package.Definition.Revision}", "catalogue");
+            rootNode.IsExpanded = true;
+            rootNode.Item = this.package.Definition;
+            rootNode.ViewModel = new Catalogue(this.package.Definition, this, rootNode);
+            this.Items.Add(rootNode);
+            LoadItemsFromDefinition(rootNode, this.package.Definition, false);
+        }
+
+        private void UpdatedImportedItems()
+        {
+            if (rootNode == null) throw new Exception("Must initialise root node first");
+            if (this.showImportedEntries)
+            {
+                if (this.gameSystem?.Definition != null) LoadItemsFromDefinition(this.rootNode, this.gameSystem.Definition, true);
+            }
+            else
+            {
+                RemoveImportedItems(rootNode);
             }
         }
     }

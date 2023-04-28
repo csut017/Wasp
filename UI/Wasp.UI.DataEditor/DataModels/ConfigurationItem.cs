@@ -13,7 +13,7 @@ namespace Wasp.UI.DataEditor.DataModels
         private bool isExpanded;
         private bool isSelected;
 
-        public ConfigurationItem()
+        private ConfigurationItem()
         {
         }
 
@@ -33,6 +33,8 @@ namespace Wasp.UI.DataEditor.DataModels
             }
         }
 
+        public bool IsImported { get; private set; }
+
         public bool IsSelected
         {
             get => isSelected;
@@ -49,32 +51,32 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public object? ViewModel { get; set; }
 
-        public static ConfigurationItem New<TItem>(string name, string? image, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
+        public static ConfigurationItem New(bool isImported, string name, string? image)
         {
             var item = new ConfigurationItem
             {
                 Image = $"images\\{image ?? "unknown"}.png",
+                IsImported = isImported,
                 Name = name,
             };
-            if (items != null)
-            {
-                foreach (var child in items)
-                {
-                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty, image, viewModelGenerator);
-                }
-            }
             return item;
         }
 
-        public ConfigurationItem ChangeImage(string? image)
+        public ConfigurationItem PopulateChildren<TItem>(bool isImported, string? image, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
         {
-            this.Image = $"images\\{image ?? "unknown"}.png";
+            if (items == null) return this;
+
+            foreach (var child in items)
+            {
+                var newItem = GenerateChildAndAddToParent(child, this, generateName(child) ?? string.Empty, image, viewModelGenerator);
+                if (newItem != null) newItem.IsImported = isImported;
+            }
             return this;
         }
 
-        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, string? image, Func<TItem, ConfigurationItem, object>? viewModelGenerator)
+        private static ConfigurationItem? GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, string? image, Func<TItem, ConfigurationItem, object>? viewModelGenerator)
         {
-            if (child == null) return;
+            if (child == null) return null;
 
             var newItem = new ConfigurationItem
             {
@@ -87,6 +89,7 @@ namespace Wasp.UI.DataEditor.DataModels
 
             HandleConfigurableItem(child as IConfigurableEntry, newItem);
             HandleLinkedEntryItem(child as ILinkedEntry, newItem);
+            return newItem;
         }
 
         private static void HandleConfigurableItem(IConfigurableEntry? item, ConfigurationItem parent)
