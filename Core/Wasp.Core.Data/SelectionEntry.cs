@@ -4,7 +4,7 @@
     /// Defines a selection entry.
     /// </summary>
     public class SelectionEntry
-        : ConfigurableNamedEntry
+        : ConfigurableNamedEntry, ICategoryLinkable
     {
         /// <summary>
         /// Gets or sets the category links.

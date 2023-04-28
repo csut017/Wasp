@@ -29,7 +29,7 @@
             <Border Padding="5">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="{Binding Image}" Width="20" Height="20" Style="{StaticResource treeImage}" />
-                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Name}" />
                 </StackPanel>
             </Border>
         </HierarchicalDataTemplate>

@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="Wasp.UI.DataEditor.Views.CategoryLinkSelector"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:app="clr-namespace:Wasp.UI.DataEditor"
+             mc:Ignorable="d"
+             d:DesignHeight="200" d:DesignWidth="800">
+    <UserControl.Resources>
+        <app:BoolToFontWeightConverter x:Key="fontWeightConverter" />
+    </UserControl.Resources>
+    <GroupBox Grid.Row="5" Header="C_ategories">
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="{x:Static SystemColors.ControlDarkBrush}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="Margin" Value="3" />
+                    <Setter Property="MaxHeight" Value="300" />
+                    <Setter Property="MinHeight" Value="28" />
+                    <Setter Property="Padding" Value="4" />
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0">
+                <ItemsControl ItemsSource="{Binding SelectedCategoryLinksView}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="SeparatorTextBlock" Text=", " />
+                                <TextBlock Text="{Binding DisplayName}" FontWeight="{Binding IsPrimary, Converter={StaticResource fontWeightConverter}}" />
+                            </StackPanel>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                    <Setter Property="Visibility" TargetName="SeparatorTextBlock" Value="Collapsed" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+
+            <xctk:WatermarkTextBox Grid.Row="1" Margin="3,0" Watermark="Filter Categories..." Text="{Binding FilterString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Border Grid.Row="2">
+                <ScrollViewer>
+                    <StackPanel>
+                        <RadioButton Content="No Primary" Margin="0,0,0,5" IsChecked="{Binding HasNoPrimary}" />
+                        <ItemsControl ItemsSource="{Binding CategoryLinksView}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <RadioButton Content="Primary" Margin="0,0,10,0" IsChecked="{Binding IsPrimary}" />
+                                        <CheckBox Content="{Binding DisplayName}" IsChecked="{Binding IsSelected}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </GroupBox>
+</UserControl>

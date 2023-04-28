@@ -1,13 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Wasp.UI.DataEditor.DataModels;
+using Data = Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.ViewModels
 {
     public abstract class ViewModel
-        : INotifyPropertyChanged
+        : ViewModelBase
     {
         private bool isDirty;
 
@@ -17,8 +17,6 @@ namespace Wasp.UI.DataEditor.ViewModels
             Item = item;
             GenerateIdCommand = new SimpleCommand(OnGenerateId);
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand GenerateIdCommand { get; }
 
@@ -48,17 +46,11 @@ namespace Wasp.UI.DataEditor.ViewModels
             return new UndoAction(name, onUndo, onRedo, () => this.NotifyPropertyChanged(propertyName), this);
         }
 
-        protected void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         protected abstract void UpdateId(string newId);
 
         private void OnGenerateId(object? obj)
         {
-            var guid = Guid.NewGuid();
-            var id = guid.ToString("D").Substring(4, 19);
+            var id = Data.NamedEntry.GenerateId();
             UpdateId(id);
         }
     }

@@ -20,5 +20,16 @@
         /// Gets or sets the name.
         /// </summary>
         public virtual string? Name { get; set; }
+
+        /// <summary>
+        /// Generates a new identifier.
+        /// </summary>
+        /// <returns></returns>
+        public static string GenerateId()
+        {
+            var guid = Guid.NewGuid();
+            var id = guid.ToString("D").Substring(4, 19);
+            return id;
+        }
     }
 }

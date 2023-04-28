@@ -4,7 +4,7 @@
     /// Defines a selection entry group.
     /// </summary>
     public class SelectionEntryGroup
-        : ConfigurableNamedEntry, ILinkedEntry
+        : ConfigurableNamedEntry, ILinkedEntry, ICategoryLinkable
     {
         /// <summary>
         /// Gets or sets the category links.

@@ -21,6 +21,7 @@ namespace Wasp.UI.DataEditor.ViewModels
     {
         private const string DefaultApplicationName = "WASP: Data Editor 0.01";
         private string applicationName = DefaultApplicationName;
+        private Dictionary<string, Data.CategoryEntry> categoryEntryMap = new();
         private object? currentViewModel;
         private string? filePath;
         private Data.ConfigurationPackage? gameSystem;
@@ -44,6 +45,8 @@ namespace Wasp.UI.DataEditor.ViewModels
         public bool CanRedo { get => this.RedoStack.Any(); }
 
         public bool CanUndo { get => this.UndoStack.Any(); }
+
+        public ObservableCollection<Data.CategoryEntry> CategoryEntries { get; } = new();
 
         public object? CurrentViewModel
         {
@@ -144,6 +147,14 @@ namespace Wasp.UI.DataEditor.ViewModels
             Application.Current.Shutdown();
         }
 
+        public void EnsureCategoryIsNamed(Data.CategoryLink category)
+        {
+            if ((category.TargetId != null) && categoryEntryMap.TryGetValue(category.TargetId, out var entry))
+            {
+                category.DisplayName = entry.Name;
+            }
+        }
+
         public void MarkAsDirty(UndoAction? undo = null)
         {
             this.numberOfChanges++;
@@ -241,16 +252,47 @@ namespace Wasp.UI.DataEditor.ViewModels
                 : $"{DefaultApplicationName} - {this.package?.Definition?.Name} v{this.package?.Definition?.Revision} {isDirty}";
         }
 
+        private void RefreshCategoryEntries()
+        {
+            this.CategoryEntries.Clear();
+            this.CategoryEntries.Add(new Data.CategoryEntry());
+            if (this.Definition?.CategoryEntries != null)
+            {
+                foreach (var categoryEntry in this.Definition.CategoryEntries.OrderBy(p => p.Name))
+                {
+                    categoryEntry.DisplayName = categoryEntry.Name;
+                    this.CategoryEntries.Add(categoryEntry);
+                }
+            }
+
+            if (this.gameSystem?.Definition?.CategoryEntries != null)
+            {
+                var systemName = this.gameSystem?.Definition.Name;
+                foreach (var categoryEntry in this.gameSystem!.Definition.CategoryEntries.OrderBy(p => p.Name))
+                {
+                    categoryEntry.DisplayName = $"{categoryEntry.Name} [{systemName}]";
+                    this.CategoryEntries.Add(categoryEntry);
+                }
+            }
+
+            this.categoryEntryMap = this.CategoryEntries
+                .Where(ce => ce?.Id != null)
+                .ToDictionary(ce => ce.Id!);
+        }
+
         private void RefreshData(bool clearStacks)
         {
-            RefreshItems();
             RefreshPublications();
             RefreshProfileTypes();
+            RefreshCategoryEntries();
             if (clearStacks)
             {
                 this.UndoStack.Clear();
                 this.RedoStack.Clear();
             }
+
+            // Load the view models last
+            RefreshItems();
         }
 
         private void RefreshItems()
@@ -287,20 +329,23 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             this.ProfileTypes.Clear();
             this.ProfileTypes.Add(new Data.ProfileType());
-            if (this.Definition?.ProfileTypes == null) return;
-
-            foreach (var profileType in this.Definition.ProfileTypes.OrderBy(p => p.Name))
+            if (this.Definition?.ProfileTypes != null)
             {
-                profileType.DisplayName = profileType.Name;
-                this.ProfileTypes.Add(profileType);
+                foreach (var profileType in this.Definition.ProfileTypes.OrderBy(p => p.Name))
+                {
+                    profileType.DisplayName = profileType.Name;
+                    this.ProfileTypes.Add(profileType);
+                }
             }
 
-            if (this.gameSystem?.Definition?.ProfileTypes == null) return;
-            var systemName = this.gameSystem?.Definition.Name;
-            foreach (var profileType in this.gameSystem!.Definition.ProfileTypes.OrderBy(p => p.Name))
+            if (this.gameSystem?.Definition?.ProfileTypes != null)
             {
-                profileType.DisplayName = $"{profileType.Name} [{systemName}]";
-                this.ProfileTypes.Add(profileType);
+                var systemName = this.gameSystem?.Definition.Name;
+                foreach (var profileType in this.gameSystem!.Definition.ProfileTypes.OrderBy(p => p.Name))
+                {
+                    profileType.DisplayName = $"{profileType.Name} [{systemName}]";
+                    this.ProfileTypes.Add(profileType);
+                }
             }
         }
 
@@ -308,20 +353,23 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             this.Publications.Clear();
             this.Publications.Add(new Data.Publication());
-            if (this.Definition?.Publications == null) return;
-
-            foreach (var publication in this.Definition.Publications.OrderBy(p => p.FullName))
+            if (this.Definition?.Publications != null)
             {
-                publication.DisplayName = publication.FullName;
-                this.Publications.Add(publication);
+                foreach (var publication in this.Definition.Publications.OrderBy(p => p.FullName))
+                {
+                    publication.DisplayName = publication.FullName;
+                    this.Publications.Add(publication);
+                }
             }
 
-            if (this.gameSystem?.Definition?.Publications == null) return;
-            var systemName = this.gameSystem?.Definition.Name;
-            foreach (var publication in this.gameSystem!.Definition.Publications.OrderBy(p => p.FullName))
+            if (this.gameSystem?.Definition?.Publications != null)
             {
-                publication.DisplayName = $"{publication.FullName} [{systemName}]";
-                this.Publications.Add(publication);
+                var systemName = this.gameSystem?.Definition.Name;
+                foreach (var publication in this.gameSystem!.Definition.Publications.OrderBy(p => p.FullName))
+                {
+                    publication.DisplayName = $"{publication.FullName} [{systemName}]";
+                    this.Publications.Add(publication);
+                }
             }
         }
     }

@@ -6,10 +6,10 @@ using Data = Wasp.Core.Data;
 namespace Wasp.UI.DataEditor.ViewModels
 {
     public class SelectionEntryGroup
-        : ViewModel
+        : CategoryLinkableViewModel
     {
         public SelectionEntryGroup(Data.SelectionEntryGroup definition, Main main, ConfigurationItem item)
-            : base(main, item)
+            : base(definition, main, item)
         {
             this.Definition = definition;
         }

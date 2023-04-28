@@ -78,20 +78,20 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Header="C_ategories">
-            </GroupBox>
+            <local:CategoryLinkSelector Grid.Row="4" />
 
             <GroupBox Grid.Row="5" Header="_Quick Constraints">
                 <Grid>
                     <Grid.Resources>
                         <Style TargetType="Image">
-                            <Setter Property="Height" Value="16"/>
-                            <Setter Property="Width" Value="16"/>
-                            <Setter Property="Margin" Value="5,3"/>
+                            <Setter Property="Height" Value="16" />
+                            <Setter Property="Width" Value="16" />
+                            <Setter Property="Margin" Value="5,3" />
                         </Style>
                         <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Margin" Value="0,0,0,2" />
+                            <Setter Property="MinWidth" Value="85" />
                         </Style>
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
