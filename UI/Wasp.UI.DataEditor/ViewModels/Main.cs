@@ -290,38 +290,38 @@ namespace Wasp.UI.DataEditor.ViewModels
                 : $"{DefaultApplicationName} - {this.package?.Definition?.Name} v{this.package?.Definition?.Revision} {isDirty}";
         }
 
-        private void LoadItemsFromDefinition(ConfigurationItem root, Data.GameSystemConfiguration definition, bool isImported)
+        private void LoadItemsFromDefinition(ConfigurationItem root, Data.GameSystemConfiguration definition, bool isImported, string suffix = "")
         {
             if (definition.Type == Data.ConfigurationType.Catalogue)
             {
                 FindOrAddChild(root, isImported, "Catalogue Links", "catalogue_link")
-                    .PopulateChildren(isImported, "catalogue_link", definition.CatalogueLinks, item => item.Name);
+                    .PopulateChildren(isImported, "catalogue_link", definition.CatalogueLinks, item => item.Name + suffix);
             }
 
             FindOrAddChild(root, isImported, "Publications", "publication")
-                .PopulateChildren(isImported, "publication", definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item));
+                .PopulateChildren(isImported, "publication", definition.Publications, item => item.FullName + suffix, (entity, item) => new Publication(entity, this, item));
             FindOrAddChild(root, isImported, "Cost Types", "cost_type")
-                .PopulateChildren(isImported, "cost_type", definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item));
+                .PopulateChildren(isImported, "cost_type", definition.CostTypes, item => item.Name + suffix, (entity, item) => new CostType(entity, this, item));
             FindOrAddChild(root, isImported, "Profile Types", "profile_type")
-                .PopulateChildren(isImported, "profile_type", definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item));
+                .PopulateChildren(isImported, "profile_type", definition.ProfileTypes, item => item.Name + suffix, (entity, item) => new ProfileType(entity, this, item));
             FindOrAddChild(root, isImported, "Category Entries", "catalogue_entry")
-                .PopulateChildren(isImported, "catalogue_entry", definition.CategoryEntries, item => item.Name, (entity, item) => new CategoryEntry(entity, this, item));
+                .PopulateChildren(isImported, "catalogue_entry", definition.CategoryEntries, item => item.Name + suffix, (entity, item) => new CategoryEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Force Entries", "force_entry")
-                .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name);
+                .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name + suffix);
             FindOrAddChild(root, isImported, "Shared Selection Entries", "shared_selection_entry")
-                .PopulateChildren(isImported, "selection_entry", definition.SharedSelectionEntries, item => item.Name, (entity, item) => new SelectionEntry(entity, this, item));
+                .PopulateChildren(isImported, "selection_entry", definition.SharedSelectionEntries, item => item.Name + suffix, (entity, item) => new SelectionEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Selection Entry Groups", "shared_selection_entry_group")
-                .PopulateChildren(isImported, "selection_entry_group", definition.SharedSelectionEntryGroups, item => item.Name, (entity, item) => new SelectionEntryGroup(entity, this, item));
+                .PopulateChildren(isImported, "selection_entry_group", definition.SharedSelectionEntryGroups, item => item.Name + suffix, (entity, item) => new SelectionEntryGroup(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Profiles", "shared_profile")
-                .PopulateChildren(isImported, "profile", definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item));
+                .PopulateChildren(isImported, "profile", definition.SharedProfiles, item => item.Name + suffix, (entity, item) => new Profile(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Rules", "shared_rule")
-                .PopulateChildren(isImported, "rule", definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item));
+                .PopulateChildren(isImported, "rule", definition.SharedRules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Info Groups", "shared_info")
-                .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name);
+                .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name + suffix);
             FindOrAddChild(root, isImported, "Root Selection Entries", "selection_entry")
-                .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name);
+                .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name + suffix);
             FindOrAddChild(root, isImported, "Root Rules", "rule")
-                .PopulateChildren(isImported, "rule", definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item));
+                .PopulateChildren(isImported, "rule", definition.Rules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
         }
 
         private void RefreshCategoryEntries()
@@ -441,7 +441,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             if (rootNode == null) throw new Exception("Must initialise root node first");
             if (this.showImportedEntries)
             {
-                if (this.gameSystem?.Definition != null) LoadItemsFromDefinition(this.rootNode, this.gameSystem.Definition, true);
+                if (this.gameSystem?.Definition != null) LoadItemsFromDefinition(this.rootNode, this.gameSystem.Definition, true, $" [{this.gameSystem.Definition.Name}]");
             }
             else
             {
