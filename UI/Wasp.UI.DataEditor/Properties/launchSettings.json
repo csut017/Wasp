@@ -2,7 +2,7 @@
   "profiles": {
     "Wasp.UI.DataEditor": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Temp\\T'au Empire.catz\""
+      "commandLineArgs": "\"C:\\Temp\\Warhammer 40,000 9th Edition.gstz\""
     }
   }
 }

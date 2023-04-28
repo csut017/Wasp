@@ -74,6 +74,11 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public bool IsCatalogue
+        {
+            get => Definition.Type == Data.ConfigurationType.Catalogue;
+        }
+
         public bool? IsLibrary
         {
             get => Definition.IsLibrary;
