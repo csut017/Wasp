@@ -11,7 +11,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <GroupBox Grid.Row="0" Header="_Comment">
-            <TextBox Text="{Binding Comment, Mode=TwoWay}" TextWrapping="Wrap" Height="70" AcceptsReturn="True" />
+            <TextBox Text="{Binding Comment, Mode=TwoWay}"  Style="{StaticResource MultiLine}" />
         </GroupBox>
         <GroupBox Grid.Row="1" Header="_Basics" Height="Auto">
             <Grid>

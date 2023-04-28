@@ -12,6 +12,15 @@
         public string? FullName { get; set; }
 
         /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public override string? Name
+        {
+            get => FullName;
+            set => FullName = value;
+        }
+
+        /// <summary>
         /// Gets or sets the date of publication.
         /// </summary>
         public string? PublicationDate { get; set; }

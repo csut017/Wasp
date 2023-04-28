@@ -8,11 +8,79 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Images\" />
+    <None Remove="Images\add.png" />
+    <None Remove="Images\catalogue.png" />
+    <None Remove="Images\catalogue_entry.png" />
+    <None Remove="Images\catalogue_link.png" />
+    <None Remove="Images\close.png" />
+    <None Remove="Images\copy.png" />
+    <None Remove="Images\cost_type.png" />
+    <None Remove="Images\cut.png" />
+    <None Remove="Images\entry.png" />
+    <None Remove="Images\entry_link.png" />
+    <None Remove="Images\force_entry.png" />
+    <None Remove="Images\info.png" />
+    <None Remove="Images\info_link.png" />
+    <None Remove="Images\new.png" />
+    <None Remove="Images\open.png" />
+    <None Remove="Images\paste.png" />
+    <None Remove="Images\profile.png" />
+    <None Remove="Images\profile_type.png" />
+    <None Remove="Images\publication.png" />
+    <None Remove="Images\readme.txt" />
+    <None Remove="Images\redo.png" />
+    <None Remove="Images\rule.png" />
+    <None Remove="Images\rule_link.png" />
+    <None Remove="Images\save.png" />
+    <None Remove="Images\selection_entry.png" />
+    <None Remove="Images\selection_entry_group.png" />
+    <None Remove="Images\shared_info.png" />
+    <None Remove="Images\shared_profile.png" />
+    <None Remove="Images\shared_rule.png" />
+    <None Remove="Images\shared_selection_entry.png" />
+    <None Remove="Images\shared_selection_entry_group.png" />
+    <None Remove="Images\undo.png" />
+    <None Remove="Images\unknown.png" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Wasp.Core.Data\Wasp.Core.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\catalogue.png" />
+    <Resource Include="Images\catalogue_link.png" />
+    <Resource Include="Images\catalogue_entry.png" />
+    <Resource Include="Images\close.png" />
+    <Resource Include="Images\copy.png" />
+    <Resource Include="Images\cost_type.png" />
+    <Resource Include="Images\cut.png" />
+    <Resource Include="Images\entry.png" />
+    <Resource Include="Images\entry_link.png" />
+    <Resource Include="Images\force_entry.png" />
+    <Resource Include="Images\info.png" />
+    <Resource Include="Images\info_link.png" />
+    <Resource Include="Images\new.png" />
+    <Resource Include="Images\open.png" />
+    <Resource Include="Images\paste.png" />
+    <Resource Include="Images\profile.png" />
+    <Resource Include="Images\profile_type.png" />
+    <Resource Include="Images\publication.png" />
+    <Resource Include="Images\readme.txt" />
+    <Resource Include="Images\redo.png" />
+    <Resource Include="Images\rule.png" />
+    <Resource Include="Images\rule_link.png" />
+    <Resource Include="Images\save.png" />
+    <Resource Include="Images\selection_entry.png" />
+    <Resource Include="Images\selection_entry_group.png" />
+    <Resource Include="Images\shared_info.png" />
+    <Resource Include="Images\shared_profile.png" />
+    <Resource Include="Images\shared_rule.png" />
+    <Resource Include="Images\shared_selection_entry.png" />
+    <Resource Include="Images\shared_selection_entry_group.png" />
+    <Resource Include="Images\undo.png" />
+    <Resource Include="Images\unknown.png" />
   </ItemGroup>
 
 </Project>

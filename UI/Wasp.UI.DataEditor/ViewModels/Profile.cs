@@ -12,7 +12,16 @@ namespace Wasp.UI.DataEditor.ViewModels
             : base(main, item)
         {
             this.Definition = definition;
+            if (definition.Characteristics != null)
+            {
+                foreach (var characteristic in definition.Characteristics)
+                {
+                    this.Characteristics.Add(characteristic.Clone());
+                }
+            }
         }
+
+        public ObservableCollection<Data.Characteristic> Characteristics { get; } = new();
 
         public string? Comment
         {
@@ -76,9 +85,31 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public ObservableCollection<Data.ProfileType> ProfileTypes
+        {
+            get => Main.ProfileTypes;
+        }
+
         public ObservableCollection<Data.Publication> Publications
         {
             get => Main.Publications;
+        }
+
+        public Data.ProfileType? SelectedProfileType
+        {
+            get
+            {
+                var profileType = Main.ProfileTypes.FirstOrDefault(p => p.Id == Definition.TypeId);
+                return profileType;
+            }
+            set
+            {
+                var oldValue = Definition.TypeId;
+                var newValue = value?.Id;
+                Definition.TypeId = newValue;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change profile characteristics type", () => Definition.TypeId = oldValue, () => Definition.TypeId = newValue));
+            }
         }
 
         public Data.Publication? SelectedPublication

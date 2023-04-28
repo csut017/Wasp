@@ -52,18 +52,31 @@
 
                     <Label Grid.Row="0" Grid.Column="0">Profile Type:</Label>
 
-                    <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False"></ComboBox>
-                    <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Header="Settings">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" ItemsSource="{Binding ProfileTypes}" SelectedItem="{Binding SelectedProfileType}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Header="Values" HorizontalContentAlignment="Stretch">
+                        <ItemsControl ItemsSource="{Binding Characteristics}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="70" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name, StringFormat={}{0}:}" HorizontalAlignment="Right" />
+                                        <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" Style="{StaticResource MultiLine}" />
+                                    </Grid>
+                                </DataTemplate>
 
-                            <Label Grid.Row="0" Grid.Column="0" Width="71">Description:</Label>
-
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" Height="80" AcceptsReturn="True" TextWrapping="Wrap" />
-                        </Grid>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </GroupBox>
                 </Grid>
             </GroupBox>

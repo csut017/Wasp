@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Xml;
 
 namespace Wasp.Core.Data.Xml
 {
@@ -30,6 +31,25 @@ namespace Wasp.Core.Data.Xml
         {
             using var reader = new StreamReader(stream);
             return await ConfigurationDeserialization.DeserializeRootAsync(reader, configurationType);
+        }
+
+        /// <summary>
+        /// Attempts to deserialize the identifier from a definition in a <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream"/> containing the definition to deserialize.</param>
+        /// <returns>The identifier if found; null otherwise.</returns>
+        public async Task<string?> DeserializeIdAsync(Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            var settings = new XmlReaderSettings { Async = true };
+            using var xmlReader = XmlReader.Create(reader, settings);
+            await xmlReader.MoveToContentAsync();
+            if ((xmlReader.NodeType == XmlNodeType.Element) && xmlReader.MoveToAttribute("id"))
+            {
+                return xmlReader.Value;
+            }
+
+            return null;
         }
 
         /// <summary>

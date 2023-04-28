@@ -22,6 +22,13 @@
         Task<GameSystemConfiguration> DeserializeConfigurationAsync(Stream stream, ConfigurationType configurationType);
 
         /// <summary>
+        /// Attempts to deserialize the identifier from a definition in a <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The <see cref="Stream"/> containing the definition to deserialize.</param>
+        /// <returns>The identifier if found; null otherwise.</returns>
+        Task<string?> DeserializeIdAsync(Stream stream);
+
+        /// <summary>
         /// Deserializes a roster definition from a string.
         /// </summary>
         /// <param name="definition">The definition to deserialize.</param>

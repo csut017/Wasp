@@ -10,7 +10,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -23,21 +22,16 @@
             <Label Grid.Row="0" Grid.Column="0">Publication:</Label>
             <Label Grid.Row="1" Grid.Column="0">Page:</Label>
 
-            <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" ItemsSource="{Binding Publications}" SelectedItem="{Binding SelectedPublication}" x:Name="publicationSelector">
+            <ComboBox Grid.Row="0" Grid.Column="1" IsEditable="False" ItemsSource="{Binding Publications}" SelectedItem="{Binding SelectedPublication}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding FullName}" />
+                            <TextBlock Text="{Binding DisplayName}" />
                         </StackPanel>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Grid.Row="0" Grid.Column="2" Click="OnClick">
-                <Button.Content>
-                    <TextBlock Text="Clear" />
-                </Button.Content>
-            </Button>
-            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Page, Mode=TwoWay}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Page, Mode=TwoWay}" />
         </Grid>
     </GroupBox>
 </UserControl>

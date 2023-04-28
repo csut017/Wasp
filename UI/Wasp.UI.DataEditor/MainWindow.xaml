@@ -20,20 +20,33 @@
     </Window.CommandBindings>
     <Window.Resources>
         <app:SortedViewConverter x:Key="sortConverter" />
-
+        <Style x:Key="treeImage" TargetType="Image">
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Width" Value="20" />
+        </Style>
         <HierarchicalDataTemplate x:Key="childLevel" ItemsSource="{Binding Path=Children}" DataType="{x:Type data:ConfigurationItem}">
             <Border Padding="5">
-                <TextBlock Text="{Binding Name}" />
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Image}" Width="20" Height="20" Style="{StaticResource treeImage}" />
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                </StackPanel>
             </Border>
         </HierarchicalDataTemplate>
         <HierarchicalDataTemplate x:Key="categoryLevel"  ItemsSource="{Binding Path=Children, Converter={StaticResource sortConverter}, ConverterParameter=Name}" ItemTemplate="{StaticResource childLevel}" DataType="{x:Type data:ConfigurationItem}">
             <Border Padding="5">
-                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Image}" Width="20" Height="20" Style="{StaticResource treeImage}" />
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                </StackPanel>
             </Border>
         </HierarchicalDataTemplate>
         <HierarchicalDataTemplate x:Key="rootLevel" ItemsSource="{Binding Path=Children}" ItemTemplate="{StaticResource categoryLevel}" DataType="{x:Type data:ConfigurationItem}">
             <Border Padding="5">
-                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Image}" Width="20" Height="20" Style="{StaticResource treeImage}" />
+                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                </StackPanel>
             </Border>
         </HierarchicalDataTemplate>
 
@@ -169,43 +182,185 @@
 
         <Menu Grid.Row="0" Grid.ColumnSpan="3">
             <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="ApplicationCommands.New" />
-                <MenuItem Header="_Open" Command="ApplicationCommands.Open" />
+                <MenuItem Header="_New" Command="ApplicationCommands.New">
+                    <MenuItem.Icon>
+                        <Image Source="images\new.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Open" Command="ApplicationCommands.Open">
+                    <MenuItem.Icon>
+                        <Image Source="images\open.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
-                <MenuItem Header="_Save" Command="ApplicationCommands.Save" />
+                <MenuItem Header="_Save" Command="ApplicationCommands.Save">
+                    <MenuItem.Icon>
+                        <Image Source="images\save.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Save _As" Command="ApplicationCommands.SaveAs" />
                 <Separator />
                 <MenuItem Header="E_xit" Command="ApplicationCommands.Close" />
             </MenuItem>
             <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo" />
-                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo" />
+                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo">
+                    <MenuItem.Icon>
+                        <Image Source="images\undo.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo">
+                    <MenuItem.Icon>
+                        <Image Source="images\redo.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Add">
-                <MenuItem Header="_Catalogue Link" />
-                <MenuItem Header="_Publication" />
-                <MenuItem Header="Cost _Type" />
-                <MenuItem Header="Pr_ofile Type" />
-                <MenuItem Header="C_ategory Entry" />
-                <MenuItem Header="_Force Entry" />
+                <MenuItem Header="_Catalogue Link">
+                    <MenuItem.Icon>
+                        <Image Source="images\catalogue.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Publication">
+                    <MenuItem.Icon>
+                        <Image Source="images\publication.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Cost _Type">
+                    <MenuItem.Icon>
+                        <Image Source="images\cost_type.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Pr_ofile Type">
+                    <MenuItem.Icon>
+                        <Image Source="images\profile_type.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="C_ategory Entry">
+                    <MenuItem.Icon>
+                        <Image Source="images\catalogue_entry.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Force Entry">
+                    <MenuItem.Icon>
+                        <Image Source="images\force_entry.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
-                <MenuItem Header="Se_lection Entry" />
-                <MenuItem Header="_Entry Link" />
-                <MenuItem Header="_Rule" />
-                <MenuItem Header="_Info Link" />
+                <MenuItem Header="Se_lection Entry">
+                    <MenuItem.Icon>
+                        <Image Source="images\selection_entry.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Entry Link">
+                    <MenuItem.Icon>
+                        <Image Source="images\entry.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Rule">
+                    <MenuItem.Icon>
+                        <Image Source="images\rule.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Info Link">
+                    <MenuItem.Icon>
+                        <Image Source="images\info.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="_Shared">
-                    <MenuItem Header="Selection _Entry" />
-                    <MenuItem Header="Selection Entry _Group" />
-                    <MenuItem Header="_Profile" />
-                    <MenuItem Header="_Rule" />
-                    <MenuItem Header="_Info Group" />
+                    <MenuItem Header="Selection _Entry">
+                        <MenuItem.Icon>
+                            <Image Source="images\shared_selection_entry.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Selection Entry _Group">
+                        <MenuItem.Icon>
+                            <Image Source="images\shared_selection_entry_group.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Profile">
+                        <MenuItem.Icon>
+                            <Image Source="images\shared_profile.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Rule">
+                        <MenuItem.Icon>
+                            <Image Source="images\shared_rule.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Info Group">
+                        <MenuItem.Icon>
+                            <Image Source="images\shared_info.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
         </Menu>
 
         <ToolBarTray Grid.Row="1" Grid.ColumnSpan="3" IsLocked="True">
             <ToolBar>
+                <Button Command="ApplicationCommands.New">
+                    <Button.Content>
+                        <Image Source="images\new.png" Height="20" Width="20" />
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <StackPanel Width="200">
+                            <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5" Text="New" />
+                            <Separator />
+                            <TextBlock Text="Starts a new configuration." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+                <Button Command="ApplicationCommands.Open">
+                    <Button.Content>
+                        <Image Source="images\open.png" Height="20" Width="20" />
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <StackPanel Width="200">
+                            <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5" Text="Open" />
+                            <Separator />
+                            <TextBlock Text="Opens an existing configuration file." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+                <Separator />
+                <Button Command="ApplicationCommands.Save">
+                    <Button.Content>
+                        <Image Source="images\save.png" Height="20" Width="20" />
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <StackPanel Width="200">
+                            <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5" Text="Save" />
+                            <Separator />
+                            <TextBlock Text="Saves the current configuration, updating the current version." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+                <Separator />
+                <Button Command="ApplicationCommands.Undo">
+                    <Button.Content>
+                        <Image Source="images\undo.png" Height="20" Width="20" />
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <StackPanel Width="200">
+                            <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5" Text="Undo" />
+                            <Separator />
+                            <TextBlock Text="Undoes the last edit." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
+                <Button Command="ApplicationCommands.Redo">
+                    <Button.Content>
+                        <Image Source="images\redo.png" Height="20" Width="20" />
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <StackPanel Width="200">
+                            <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,0,5" Text="Redo" />
+                            <Separator />
+                            <TextBlock Text="Redoes the last edit that was undone." TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button.ToolTip>
+                </Button>
             </ToolBar>
         </ToolBarTray>
 
@@ -225,13 +380,13 @@
 
         <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding LoadingVisibility}">
             <Border.Background>
-                <SolidColorBrush Color="White" Opacity="0.75"/>
+                <SolidColorBrush Color="White" Opacity="0.75" />
             </Border.Background>
             <Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderThickness="2" BorderBrush="Black" Padding="20" CornerRadius="5" Background="WhiteSmoke">
                 <StackPanel>
                     <TextBlock Text="Loading, please wait..." HorizontalAlignment="Center" Margin="3" />
-                    
-                    <ProgressBar Height="25" Width="150" Margin="3"/>
+
+                    <ProgressBar Height="25" Width="150" Margin="3" />
                 </StackPanel>
             </Border>
         </Border>

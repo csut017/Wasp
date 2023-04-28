@@ -21,6 +21,8 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public ObservableCollection<ConfigurationItem> Children { get; } = new();
 
+        public string? Image { get; set; }
+
         public bool IsExpanded
         {
             get => this.isExpanded;
@@ -47,30 +49,38 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public object? ViewModel { get; set; }
 
-        public static ConfigurationItem New<TItem>(string name, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
+        public static ConfigurationItem New<TItem>(string name, string? image, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
         {
             var item = new ConfigurationItem
             {
+                Image = $"images\\{image ?? "unknown"}.png",
                 Name = name,
             };
             if (items != null)
             {
                 foreach (var child in items)
                 {
-                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty, viewModelGenerator);
+                    GenerateChildAndAddToParent(child, item, generateName(child) ?? string.Empty, image, viewModelGenerator);
                 }
             }
             return item;
         }
 
-        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, Func<TItem, ConfigurationItem, object>? viewModelGenerator)
+        public ConfigurationItem ChangeImage(string? image)
+        {
+            this.Image = $"images\\{image ?? "unknown"}.png";
+            return this;
+        }
+
+        private static void GenerateChildAndAddToParent<TItem>(TItem? child, ConfigurationItem item, string name, string? image, Func<TItem, ConfigurationItem, object>? viewModelGenerator)
         {
             if (child == null) return;
 
             var newItem = new ConfigurationItem
             {
-                Name = name,
+                Image = $"images\\{image ?? "unknown"}.png",
                 Item = child,
+                Name = name,
             };
             if (viewModelGenerator != null) newItem.ViewModel = viewModelGenerator.Invoke(child, newItem);
             item.Children.Add(newItem);
@@ -88,7 +98,7 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var constraint in item.Constraints)
                 {
-                    GenerateChildAndAddToParent(constraint, parent, constraint.DisplayName, null);
+                    GenerateChildAndAddToParent(constraint, parent, constraint.DisplayName, null, null);
                     if (constraint.Id != null) indexedFields.Add(constraint.Id, constraint.DisplayName);
                 }
             }
@@ -100,7 +110,7 @@ namespace Wasp.UI.DataEditor.DataModels
                     var name = indexedFields.TryGetValue(modifier.Field ?? string.Empty, out var fieldName)
                         ? $"Set [{fieldName}] to {modifier.Value}"
                         : $"Set to {modifier.Value}";
-                    GenerateChildAndAddToParent(modifier, parent, name, null);
+                    GenerateChildAndAddToParent(modifier, parent, name, null, null);
                 }
             }
 
@@ -108,7 +118,7 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var link in item.InformationLinks)
                 {
-                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null);
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null, null);
                 }
             }
         }
@@ -121,7 +131,7 @@ namespace Wasp.UI.DataEditor.DataModels
             {
                 foreach (var link in item.EntryLinks)
                 {
-                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null);
+                    GenerateChildAndAddToParent(link, parent, link.Name ?? string.Empty, null, null);
                 }
             }
         }

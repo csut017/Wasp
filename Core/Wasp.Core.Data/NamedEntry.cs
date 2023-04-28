@@ -7,6 +7,11 @@
         : CommentedEntry
     {
         /// <summary>
+        /// Gets or sets the display name.
+        /// </summary>
+        public string? DisplayName { get; set; }
+
+        /// <summary>
         /// Gets or sets the id of the configuration entry.
         /// </summary>
         public string? Id { get; set; }
@@ -14,6 +19,6 @@
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        public string? Name { get; set; }
+        public virtual string? Name { get; set; }
     }
 }

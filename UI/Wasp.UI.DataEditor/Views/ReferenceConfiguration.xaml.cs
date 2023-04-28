@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Wasp.UI.DataEditor.Views
 {
@@ -11,11 +10,6 @@ namespace Wasp.UI.DataEditor.Views
         public ReferenceConfiguration()
         {
             InitializeComponent();
-        }
-
-        private void OnClick(object sender, RoutedEventArgs e)
-        {
-            publicationSelector.SelectedItem = null;
         }
     }
 }

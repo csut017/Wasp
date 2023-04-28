@@ -69,9 +69,9 @@
                     <Label Grid.Row="3" Grid.Column="0">ReadMe:</Label>
 
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AuthorName, Mode=TwoWay}" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AuthorContact, Mode=TwoWay}" Height="70" TextWrapping="Wrap" AcceptsReturn="True" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AuthorContact, Mode=TwoWay}" Style="{StaticResource MultiLine}" />
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding AuthorUrl, Mode=TwoWay}" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ReadMe, Mode=TwoWay}" Height="100" TextWrapping="Wrap" AcceptsReturn="True" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ReadMe, Mode=TwoWay}" Style="{StaticResource MultiLine}" />
                 </Grid>
             </GroupBox>
         </Grid>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Wasp.UI.DataEditor.ViewModels
         private string applicationName = DefaultApplicationName;
         private object? currentViewModel;
         private string? filePath;
+        private Data.ConfigurationPackage? gameSystem;
         private Visibility loadingVisibility = Visibility.Collapsed;
         private int numberOfChanges;
         private Data.ConfigurationPackage? package;
@@ -89,6 +91,11 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public Data.GameSystemConfiguration? GameSystem
+        {
+            get => this.gameSystem?.Definition;
+        }
+
         public bool HasFile { get; private set; }
 
         public bool IsDirty
@@ -107,6 +114,8 @@ namespace Wasp.UI.DataEditor.ViewModels
                 this.NotifyPropertyChanged();
             }
         }
+
+        public ObservableCollection<Data.ProfileType> ProfileTypes { get; } = new();
 
         public ObservableCollection<Data.Publication> Publications { get; } = new();
 
@@ -153,6 +162,15 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             this.filePath = path;
             this.package = await Data.ConfigurationPackage.LoadAsync(path);
+            if ((this.package?.Definition != null)
+                && (this.package?.Definition?.Type != Data.ConfigurationType.GameSystem)
+                && !string.IsNullOrEmpty(this.package?.Definition?.GameSystemId)
+                && (this.gameSystem?.Definition?.Id != this.package?.Definition?.GameSystemId))
+            {
+                // Need to load the game system
+                var pathToSearch = Path.GetDirectoryName(path) ?? throw new Exception("Invalid directory path");
+                this.gameSystem = await this.package!.LoadAssociatedGameSystemAsync(pathToSearch);
+            }
             this.HasFile = true;
         }
 
@@ -227,6 +245,7 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             RefreshItems();
             RefreshPublications();
+            RefreshProfileTypes();
             if (clearStacks)
             {
                 this.UndoStack.Clear();
@@ -238,38 +257,70 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             this.Items.Clear();
             if (this.package?.Definition == null) return;
+            var definitionType = this.package.Definition.Type;
             var root = new ConfigurationItem
             {
-                Item = this.package.Definition,
                 IsExpanded = true,
+                Item = this.package.Definition,
                 Name = $"{this.package.Definition.Name} v{this.package.Definition.Revision}",
             };
+            root.ChangeImage("catalogue");
             root.ViewModel = new Catalogue(this.package.Definition, this, root);
             this.Items.Add(root);
 
-            var definitionType = this.package.Definition.Type;
-            if (definitionType == Data.ConfigurationType.Catalogue) root.Children.Add(ConfigurationItem.New("Catalogue Links", this.package.Definition.CatalogueLinks, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Publications", this.package.Definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Cost Types", this.package.Definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Profile Types", this.package.Definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Category Entries", this.package.Definition.CategoryEntries, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Force Entries", this.package.Definition.ForceEntries, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", this.package.Definition.SharedSelectionEntries, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", this.package.Definition.SharedSelectionEntryGroups, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Shared Profiles", this.package.Definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Shared Rules", this.package.Definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Shared Info Groups", this.package.Definition.SharedInformationGroups, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Root Selection Entries", this.package.Definition.EntryLinks, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Root Rules", this.package.Definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item)));
+            if (definitionType == Data.ConfigurationType.Catalogue) root.Children.Add(ConfigurationItem.New("Catalogue Links", "catalogue_link", this.package.Definition.CatalogueLinks, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Publications", "publication", this.package.Definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item)));
+            root.Children.Add(ConfigurationItem.New("Cost Types", "cost_type", this.package.Definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item)));
+            root.Children.Add(ConfigurationItem.New("Profile Types", "profile_type", this.package.Definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item)));
+            root.Children.Add(ConfigurationItem.New("Category Entries", "catalogue_entry", this.package.Definition.CategoryEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Force Entries", "force_entry", this.package.Definition.ForceEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", "selection_entry", this.package.Definition.SharedSelectionEntries, item => item.Name).ChangeImage("shared_selection_entry"));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", "selection_entry_group", this.package.Definition.SharedSelectionEntryGroups, item => item.Name).ChangeImage("shared_selection_entry_group"));
+            root.Children.Add(ConfigurationItem.New("Shared Profiles", "profile", this.package.Definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item)).ChangeImage("shared_profile"));
+            root.Children.Add(ConfigurationItem.New("Shared Rules", "rule", this.package.Definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item)).ChangeImage("shared_rule"));
+            root.Children.Add(ConfigurationItem.New("Shared Info Groups", "info", this.package.Definition.SharedInformationGroups, item => item.Name).ChangeImage("shared_info"));
+            root.Children.Add(ConfigurationItem.New("Root Selection Entries", "selection_entry", this.package.Definition.EntryLinks, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Root Rules", "rule", this.package.Definition.Rules, item => item.Name, (entity, item) => new Rule(entity, this, item)));
+        }
+
+        private void RefreshProfileTypes()
+        {
+            this.ProfileTypes.Clear();
+            this.ProfileTypes.Add(new Data.ProfileType());
+            if (this.Definition?.ProfileTypes == null) return;
+
+            foreach (var profileType in this.Definition.ProfileTypes.OrderBy(p => p.Name))
+            {
+                profileType.DisplayName = profileType.Name;
+                this.ProfileTypes.Add(profileType);
+            }
+
+            if (this.gameSystem?.Definition?.ProfileTypes == null) return;
+            var systemName = this.gameSystem?.Definition.Name;
+            foreach (var profileType in this.gameSystem!.Definition.ProfileTypes.OrderBy(p => p.Name))
+            {
+                profileType.DisplayName = $"{profileType.Name} [{systemName}]";
+                this.ProfileTypes.Add(profileType);
+            }
         }
 
         private void RefreshPublications()
         {
             this.Publications.Clear();
+            this.Publications.Add(new Data.Publication());
             if (this.Definition?.Publications == null) return;
 
-            foreach (var publication in this.Definition.Publications)
+            foreach (var publication in this.Definition.Publications.OrderBy(p => p.FullName))
             {
+                publication.DisplayName = publication.FullName;
+                this.Publications.Add(publication);
+            }
+
+            if (this.gameSystem?.Definition?.Publications == null) return;
+            var systemName = this.gameSystem?.Definition.Name;
+            foreach (var publication in this.gameSystem!.Definition.Publications.OrderBy(p => p.FullName))
+            {
+                publication.DisplayName = $"{publication.FullName} [{systemName}]";
                 this.Publications.Add(publication);
             }
         }

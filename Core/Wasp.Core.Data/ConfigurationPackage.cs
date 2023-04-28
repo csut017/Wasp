@@ -101,6 +101,50 @@ namespace Wasp.Core.Data
         }
 
         /// <summary>
+        /// Loads an associated game system definition.
+        /// </summary>
+        /// <param name="pathToSearch">The path to search for the game system definition.</param>
+        /// <returns>A <see cref="ConfigurationPackage"/> containing the associated game system if found; null otherwise.</returns>
+        public async Task<ConfigurationPackage?> LoadAssociatedGameSystemAsync(string pathToSearch)
+        {
+            if (this.Definition == null) throw new Exception("Definition not loaded");
+            // Get the candidate files
+            var files = Directory.GetFiles(pathToSearch, "*.gst*", SearchOption.TopDirectoryOnly);
+            foreach (var file in files.Where(f => f.EndsWith(".gst") || f.EndsWith(".gstz")))
+            {
+                var gameSystemId = await LoadIdAsync(file);
+                if (this.Definition.GameSystemId != gameSystemId) continue;
+
+                // We've found the right file, so let's load it
+                var gameSystem = await ConfigurationPackage.LoadAsync(file);
+                return gameSystem;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Loads the id of a definition from a file.
+        /// </summary>
+        /// <param name="filePath">The path of the file.</param>
+        /// <returns>The id of the contained definition if found; null otherwise.</returns>
+        public async Task<string?> LoadIdAsync(string filePath)
+        {
+            using var stream = File.Open(filePath, FileMode.Open);
+            if (!filePath.EndsWith("z"))
+            {
+                return await this.Settings.Format.DeserializeIdAsync(stream);
+            }
+
+            using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+            if (archive.Entries.Count > 1) throw new InvalidOperationException("Invalid package file");
+
+            var entry = archive.Entries[0];
+            using var zipStream = entry.Open();
+            return await this.Settings.Format.DeserializeIdAsync(zipStream);
+        }
+
+        /// <summary>
         /// Saves the package.
         /// </summary>
         /// <param name="path">The path to save the package to.</param>
