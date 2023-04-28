@@ -38,6 +38,18 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public bool? IsHidden
+        {
+            get => Definition.IsHidden;
+            set
+            {
+                var oldValue = Definition.IsHidden;
+                Definition.IsHidden = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether cost type is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
+            }
+        }
+
         public string? Name
         {
             get => Definition.Name;

@@ -14,6 +14,6 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this cost type is hidden or not.
         /// </summary>
-        public bool IsHidden { get; set; }
+        public bool? IsHidden { get; set; }
     }
 }

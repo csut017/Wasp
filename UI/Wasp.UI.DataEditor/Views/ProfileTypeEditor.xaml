@@ -38,7 +38,22 @@
                     <Label Grid.Row="4" Grid.Column="0">Unique Id:</Label>
                     <Label Grid.Row="5" Grid.Column="0">Name:</Label>
 
-                    <ListView Grid.Row="2" Grid.ColumnSpan="2" Height="300" HorizontalAlignment="Stretch" Margin="3,0,3,3">
+                    <ListView Grid.Row="2" Grid.ColumnSpan="2" Height="300" HorizontalAlignment="Stretch" Margin="3,0,3,3" ItemsSource="{Binding CharacteristicTypes}"
+                              SelectedItem="{Binding SelectedCharacteristicType}" HorizontalContentAlignment="Stretch">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" HorizontalAlignment="Stretch" />
+                                    <Button Grid.Column="1" BorderThickness="0" Background="Transparent">
+                                        <Image Source="\images\close.png" Height="16" />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
                     </ListView>
 
                     <Button Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Top">
@@ -50,8 +65,8 @@
                         </Button.Content>
                     </Button>
 
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PublicationDate, Mode=TwoWay}" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PublisherUrl, Mode=TwoWay}" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedCharacteristicType.Id, Mode=TwoWay}" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SelectedCharacteristicType.Name, Mode=TwoWay}" />
                 </Grid>
             </GroupBox>
         </Grid>

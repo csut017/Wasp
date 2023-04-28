@@ -3,9 +3,36 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Wasp.UI.DataEditor.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="Cost type editor" />
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Width" Value="80" />
+                </Style>
+            </Grid.Resources>
+            <local:BasicsConfiguration Grid.Row="0" />
+            <GroupBox Grid.Row="1" Header="C_ost Type">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0">Is Hidden:</Label>
+
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsHidden, Mode=TwoWay}" VerticalAlignment="Center" Margin="3" />
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
