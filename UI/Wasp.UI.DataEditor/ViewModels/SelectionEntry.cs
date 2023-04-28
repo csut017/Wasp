@@ -5,23 +5,14 @@ using Data = Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.ViewModels
 {
-    public class Profile
+    public class SelectionEntry
         : ViewModel
     {
-        public Profile(Data.Profile definition, Main main, ConfigurationItem item)
+        public SelectionEntry(Data.SelectionEntry definition, Main main, ConfigurationItem item)
             : base(main, item)
         {
             this.Definition = definition;
-            if (definition.Characteristics != null)
-            {
-                foreach (var characteristic in definition.Characteristics)
-                {
-                    this.Characteristics.Add(characteristic.Clone());
-                }
-            }
         }
-
-        public ObservableCollection<Data.Characteristic> Characteristics { get; } = new();
 
         public string? Comment
         {
@@ -31,11 +22,11 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var oldValue = Definition.Comment;
                 Definition.Comment = value;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile comment", () => Definition.Comment = oldValue, () => Definition.Comment = value));
+                MarkAsDirty(GenerateUndoAction("Change selection entry comment", () => Definition.Comment = oldValue, () => Definition.Comment = value));
             }
         }
 
-        public Data.Profile Definition { get; private set; }
+        public Data.SelectionEntry Definition { get; private set; }
 
         public string? Id
         {
@@ -45,7 +36,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var oldValue = Definition.Id;
                 Definition.Id = value;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile id", () => Definition.Id = oldValue, () => Definition.Id = value));
+                MarkAsDirty(GenerateUndoAction("Change selection entry id", () => Definition.Id = oldValue, () => Definition.Id = value));
             }
         }
 
@@ -57,7 +48,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var oldValue = Definition.IsHidden;
                 Definition.IsHidden = value;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change whether profile is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
+                MarkAsDirty(GenerateUndoAction("Change whether selection entry is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
             }
         }
 
@@ -69,7 +60,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var oldValue = Definition.Name;
                 Definition.Name = value;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile full name", () => Definition.Name = oldValue, () => Definition.Name = value));
+                MarkAsDirty(GenerateUndoAction("Change selection entry full name", () => Definition.Name = oldValue, () => Definition.Name = value));
             }
         }
 
@@ -81,35 +72,13 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var oldValue = Definition.Page;
                 Definition.Page = value;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile page reference", () => Definition.Page = oldValue, () => Definition.Page = value));
+                MarkAsDirty(GenerateUndoAction("Change selection entry page reference", () => Definition.Page = oldValue, () => Definition.Page = value));
             }
-        }
-
-        public ObservableCollection<Data.ProfileType> ProfileTypes
-        {
-            get => Main.ProfileTypes;
         }
 
         public ObservableCollection<Data.Publication> Publications
         {
             get => Main.Publications;
-        }
-
-        public Data.ProfileType? SelectedProfileType
-        {
-            get
-            {
-                var profileType = Main.ProfileTypes.FirstOrDefault(p => p.Id == Definition.TypeId);
-                return profileType;
-            }
-            set
-            {
-                var oldValue = Definition.TypeId;
-                var newValue = value?.Id;
-                Definition.TypeId = newValue;
-                NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile characteristics type", () => Definition.TypeId = oldValue, () => Definition.TypeId = newValue));
-            }
         }
 
         public Data.Publication? SelectedPublication
@@ -125,7 +94,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var newValue = value?.Id;
                 Definition.PublicationId = newValue;
                 NotifyPropertyChanged();
-                MarkAsDirty(GenerateUndoAction("Change profile publication reference", () => Definition.PublicationId = oldValue, () => Definition.PublicationId = newValue));
+                MarkAsDirty(GenerateUndoAction("Change selection entry publication reference", () => Definition.PublicationId = oldValue, () => Definition.PublicationId = newValue));
             }
         }
 

@@ -97,5 +97,10 @@ namespace Wasp.UI.DataEditor.ViewModels
                 MarkAsDirty(GenerateUndoAction("Change publication short name", () => Definition.ShortName = oldValue, () => Definition.ShortName = value));
             }
         }
+
+        protected override void UpdateId(string newId)
+        {
+            this.Id = newId;
+        }
     }
 }

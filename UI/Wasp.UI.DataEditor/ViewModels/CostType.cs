@@ -49,5 +49,10 @@ namespace Wasp.UI.DataEditor.ViewModels
                 MarkAsDirty(GenerateUndoAction("Change cost type full name", () => Definition.Name = oldValue, () => Definition.Name = value));
             }
         }
+
+        protected override void UpdateId(string newId)
+        {
+            this.Id = newId;
+        }
     }
 }

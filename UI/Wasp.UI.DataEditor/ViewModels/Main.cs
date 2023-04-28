@@ -272,10 +272,10 @@ namespace Wasp.UI.DataEditor.ViewModels
             root.Children.Add(ConfigurationItem.New("Publications", "publication", this.package.Definition.Publications, item => item.FullName, (entity, item) => new Publication(entity, this, item)));
             root.Children.Add(ConfigurationItem.New("Cost Types", "cost_type", this.package.Definition.CostTypes, item => item.Name, (entity, item) => new CostType(entity, this, item)));
             root.Children.Add(ConfigurationItem.New("Profile Types", "profile_type", this.package.Definition.ProfileTypes, item => item.Name, (entity, item) => new ProfileType(entity, this, item)));
-            root.Children.Add(ConfigurationItem.New("Category Entries", "catalogue_entry", this.package.Definition.CategoryEntries, item => item.Name));
+            root.Children.Add(ConfigurationItem.New("Category Entries", "catalogue_entry", this.package.Definition.CategoryEntries, item => item.Name, (entity, item) => new CategoryEntry(entity, this, item)));
             root.Children.Add(ConfigurationItem.New("Force Entries", "force_entry", this.package.Definition.ForceEntries, item => item.Name));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", "selection_entry", this.package.Definition.SharedSelectionEntries, item => item.Name).ChangeImage("shared_selection_entry"));
-            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", "selection_entry_group", this.package.Definition.SharedSelectionEntryGroups, item => item.Name).ChangeImage("shared_selection_entry_group"));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entries", "selection_entry", this.package.Definition.SharedSelectionEntries, item => item.Name, (entity, item) => new SelectionEntry(entity, this, item)).ChangeImage("shared_selection_entry"));
+            root.Children.Add(ConfigurationItem.New("Shared Selection Entry Groups", "selection_entry_group", this.package.Definition.SharedSelectionEntryGroups, item => item.Name, (entity, item) => new SelectionEntryGroup(entity, this, item)).ChangeImage("shared_selection_entry_group"));
             root.Children.Add(ConfigurationItem.New("Shared Profiles", "profile", this.package.Definition.SharedProfiles, item => item.Name, (entity, item) => new Profile(entity, this, item)).ChangeImage("shared_profile"));
             root.Children.Add(ConfigurationItem.New("Shared Rules", "rule", this.package.Definition.SharedRules, item => item.Name, (entity, item) => new Rule(entity, this, item)).ChangeImage("shared_rule"));
             root.Children.Add(ConfigurationItem.New("Shared Info Groups", "info", this.package.Definition.SharedInformationGroups, item => item.Name).ChangeImage("shared_info"));

@@ -13,6 +13,9 @@
     <Compile Update="Views\CatalogueEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CategoryEntryEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\CostTypeEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -31,6 +34,12 @@
     <Compile Update="Views\RuleEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\SelectionEntryEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SelectionEntryGroupEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="MainWindow.xaml">
@@ -40,6 +49,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CatalogueEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\CategoryEntryEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CostTypeEditor.xaml">
@@ -58,6 +70,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\RuleEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\SelectionEntryEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\SelectionEntryGroupEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -109,5 +109,10 @@ namespace Wasp.UI.DataEditor.ViewModels
                 MarkAsDirty(GenerateUndoAction("Change rule publication reference", () => Definition.PublicationId = oldValue, () => Definition.PublicationId = newValue));
             }
         }
+
+        protected override void UpdateId(string newId)
+        {
+            this.Id = newId;
+        }
     }
 }

@@ -34,7 +34,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is hidden or not.
         /// </summary>
-        public bool IsHidden { get; set; }
+        public bool? IsHidden { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is an import or not.

@@ -121,5 +121,10 @@ namespace Wasp.UI.DataEditor.ViewModels
                 MarkAsDirty(GenerateUndoAction("Change catalogue revision", () => Definition.Revision = oldValue, () => Definition.Revision = value));
             }
         }
+
+        protected override void UpdateId(string newId)
+        {
+            this.Id = newId;
+        }
     }
 }

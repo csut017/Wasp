@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Wasp.UI.DataEditor.DataModels;
 
 namespace Wasp.UI.DataEditor.ViewModels
@@ -14,9 +15,12 @@ namespace Wasp.UI.DataEditor.ViewModels
         {
             this.Main = main;
             Item = item;
+            GenerateIdCommand = new SimpleCommand(OnGenerateId);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ICommand GenerateIdCommand { get; }
 
         public bool IsDirty
         {
@@ -47,6 +51,15 @@ namespace Wasp.UI.DataEditor.ViewModels
         protected void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected abstract void UpdateId(string newId);
+
+        private void OnGenerateId(object? obj)
+        {
+            var guid = Guid.NewGuid();
+            var id = guid.ToString("D").Substring(4, 19);
+            UpdateId(id);
         }
     }
 }

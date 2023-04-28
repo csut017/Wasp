@@ -44,7 +44,8 @@
                     <Button Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Top">
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Add" />
+                                <Image Source="\images\add.png" Width="16" Height="16"/>
+                                <TextBlock Text="Add" VerticalAlignment="Center" Margin="3,0" />
                             </StackPanel>
                         </Button.Content>
                     </Button>

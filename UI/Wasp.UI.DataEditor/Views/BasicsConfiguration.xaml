@@ -30,9 +30,9 @@
 
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Id, Mode=TwoWay}" />
                 <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Name, Mode=TwoWay}" />
-                <Button Grid.Row="0" Grid.Column="2">
+                <Button Grid.Row="0" Grid.Column="2" Height="22" Command="{Binding GenerateIdCommand}">
                     <Button.Content>
-                        <TextBlock Text="Refresh" />
+                        <Image Source="\images\generate_id.png" Height="12" Width="12" Margin="5,0" />
                     </Button.Content>
                 </Button>
             </Grid>
