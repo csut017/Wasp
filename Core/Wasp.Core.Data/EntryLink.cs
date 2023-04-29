@@ -4,7 +4,7 @@
     /// Defines an entry link.
     /// </summary>
     public class EntryLink
-        : ConfigurableNamedEntry
+        : ConfigurableNamedEntry, ICategoryLinkable
     {
         /// <summary>
         /// Gets or sets the category links.
@@ -29,7 +29,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this entry link is collective or not.
         /// </summary>
-        public bool IsCollective { get; set; }
+        public bool? IsCollective { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this entry link is hidden or not.
@@ -39,7 +39,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this entry link is an import or not.
         /// </summary>
-        public bool IsImport { get; set; }
+        public bool? IsImport { get; set; }
 
         /// <summary>
         /// Gets or sets the page.

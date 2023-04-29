@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using Wasp.UI.DataEditor.DataModels;
+
 using Data = Wasp.Core.Data;
 
 namespace Wasp.UI.DataEditor.ViewModels
@@ -12,6 +13,11 @@ namespace Wasp.UI.DataEditor.ViewModels
                             : base(definition, main, item)
         {
             this.Definition = definition;
+
+            foreach (var cost in Main.PopulateCosts(definition.Costs))
+            {
+                this.Costs.Add(cost);
+            }
         }
 
         public string? Comment
@@ -25,6 +31,8 @@ namespace Wasp.UI.DataEditor.ViewModels
                 MarkAsDirty(GenerateUndoAction("Change selection entry comment", () => Definition.Comment = oldValue, () => Definition.Comment = value));
             }
         }
+
+        public ObservableCollection<Data.ItemCost> Costs { get; } = new();
 
         public Data.SelectionEntry Definition { get; private set; }
 
@@ -40,6 +48,18 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public bool? IsCollective
+        {
+            get => Definition.IsCollective;
+            set
+            {
+                var oldValue = Definition.IsCollective;
+                Definition.IsCollective = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether entry link is a collective", () => Definition.IsCollective = oldValue, () => Definition.IsCollective = value));
+            }
+        }
+
         public bool? IsHidden
         {
             get => Definition.IsHidden;
@@ -49,6 +69,18 @@ namespace Wasp.UI.DataEditor.ViewModels
                 Definition.IsHidden = value;
                 NotifyPropertyChanged();
                 MarkAsDirty(GenerateUndoAction("Change whether selection entry is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
+            }
+        }
+
+        public bool? IsImport
+        {
+            get => Definition.IsImport;
+            set
+            {
+                var oldValue = Definition.IsImport;
+                Definition.IsImport = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether entry link is an import", () => Definition.IsImport = oldValue, () => Definition.IsImport = value));
             }
         }
 

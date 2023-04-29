@@ -40,6 +40,18 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public bool? IsCollective
+        {
+            get => Definition.IsCollective;
+            set
+            {
+                var oldValue = Definition.IsCollective;
+                Definition.IsCollective = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether entry link is a collective", () => Definition.IsCollective = oldValue, () => Definition.IsCollective = value));
+            }
+        }
+
         public bool? IsHidden
         {
             get => Definition.IsHidden;
@@ -49,6 +61,18 @@ namespace Wasp.UI.DataEditor.ViewModels
                 Definition.IsHidden = value;
                 NotifyPropertyChanged();
                 MarkAsDirty(GenerateUndoAction("Change whether selection entry group is hidden", () => Definition.IsHidden = oldValue, () => Definition.IsHidden = value));
+            }
+        }
+
+        public bool? IsImport
+        {
+            get => Definition.IsImport;
+            set
+            {
+                var oldValue = Definition.IsImport;
+                Definition.IsImport = value;
+                NotifyPropertyChanged();
+                MarkAsDirty(GenerateUndoAction("Change whether entry link is an import", () => Definition.IsImport = oldValue, () => Definition.IsImport = value));
             }
         }
 

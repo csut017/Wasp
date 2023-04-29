@@ -41,7 +41,7 @@
         <Style TargetType="{x:Type Label}">
             <Setter Property="Margin" Value="0,0,0,3" />
             <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="HorizontalContentAlignment" Value="Right" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style x:Key="LabelCaption" TargetType="{x:Type Label}">
             <Setter Property="Margin" Value="0,0,0,3" />

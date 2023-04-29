@@ -19,6 +19,9 @@
     <Compile Update="Views\CategoryLinkSelector.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Costs.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\CostTypeEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -67,6 +70,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CategoryLinkSelector.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Costs.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CostTypeEditor.xaml">

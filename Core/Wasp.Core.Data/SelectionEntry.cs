@@ -29,7 +29,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is collective or not.
         /// </summary>
-        public bool IsCollective { get; set; }
+        public bool? IsCollective { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is hidden or not.
@@ -39,7 +39,7 @@
         /// <summary>
         /// Gets or sets a flag indicating whether this selection entry is an import or not.
         /// </summary>
-        public bool IsImport { get; set; }
+        public bool? IsImport { get; set; }
 
         /// <summary>
         /// Gets or sets the page number for finding this selection entry.

@@ -55,8 +55,7 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Grid.Row="3" Header="_Costs">
-            </GroupBox>
+            <local:Costs Grid.Row="3" />
 
             <GroupBox Grid.Row="4" Header="_Entry">
                 <Grid>

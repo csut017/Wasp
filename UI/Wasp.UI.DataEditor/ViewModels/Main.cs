@@ -50,6 +50,8 @@ namespace Wasp.UI.DataEditor.ViewModels
 
         public ObservableCollection<Data.CategoryEntry> CategoryEntries { get; } = new();
 
+        public ObservableCollection<Data.CostType> CostTypes { get; } = new();
+
         public object? CurrentViewModel
         {
             get => this.currentViewModel;
@@ -197,6 +199,23 @@ namespace Wasp.UI.DataEditor.ViewModels
                 this.gameSystem = await this.package!.LoadAssociatedGameSystemAsync(pathToSearch);
             }
             this.HasFile = true;
+        }
+
+        public IEnumerable<Data.ItemCost> PopulateCosts(List<Data.ItemCost>? costs)
+        {
+            var working = CostTypes
+                .Where(c => !string.IsNullOrEmpty(c.Id))
+                .ToDictionary(c => c.Id!, c => new Data.ItemCost { Name = c.Name, Value = "0", });
+
+            if (costs != null)
+            {
+                foreach (var cost in costs.Where(c => !string.IsNullOrEmpty(c.TypeId)))
+                {
+                    if (working.TryGetValue(cost.TypeId!, out var costItem)) costItem!.Value = cost.Value;
+                }
+            }
+
+            return working.Values.OrderBy(c => c.Name);
         }
 
         public void Redo()
@@ -352,10 +371,35 @@ namespace Wasp.UI.DataEditor.ViewModels
                 .ToDictionary(ce => ce.Id!);
         }
 
+        private void RefreshCostTypes()
+        {
+            this.CostTypes.Clear();
+            this.CostTypes.Add(new Data.CostType());
+            if (this.Definition?.CostTypes != null)
+            {
+                foreach (var costType in this.Definition.CostTypes.OrderBy(p => p.Name))
+                {
+                    costType.DisplayName = costType.Name;
+                    this.CostTypes.Add(costType);
+                }
+            }
+
+            if (this.gameSystem?.Definition?.CostTypes != null)
+            {
+                var systemName = this.gameSystem?.Definition.Name;
+                foreach (var costType in this.gameSystem!.Definition.CostTypes.OrderBy(p => p.Name))
+                {
+                    costType.DisplayName = $"{costType.Name} [{systemName}]";
+                    this.CostTypes.Add(costType);
+                }
+            }
+        }
+
         private void RefreshData(bool clearStacks, bool clearData)
         {
             if (clearData)
             {
+                RefreshCostTypes();
                 RefreshPublications();
                 RefreshProfileTypes();
                 RefreshCategoryEntries();
