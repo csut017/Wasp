@@ -22,6 +22,15 @@
     <Compile Update="Views\CostTypeEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\EntryLinkEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ForceEntryEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\InformationGroupEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\ProfileEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -61,6 +70,15 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\CostTypeEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\EntryLinkEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ForceEntryEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\InformationGroupEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ProfileEditor.xaml">

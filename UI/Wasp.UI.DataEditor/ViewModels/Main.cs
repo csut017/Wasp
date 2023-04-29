@@ -307,7 +307,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             FindOrAddChild(root, isImported, "Category Entries", "catalogue_entry")
                 .PopulateChildren(isImported, "catalogue_entry", definition.CategoryEntries, item => item.Name + suffix, (entity, item) => new CategoryEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Force Entries", "force_entry")
-                .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name + suffix);
+                .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name + suffix, (entity, item) => new ForceEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Selection Entries", "shared_selection_entry")
                 .PopulateChildren(isImported, "selection_entry", definition.SharedSelectionEntries, item => item.Name + suffix, (entity, item) => new SelectionEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Selection Entry Groups", "shared_selection_entry_group")
@@ -317,9 +317,9 @@ namespace Wasp.UI.DataEditor.ViewModels
             FindOrAddChild(root, isImported, "Shared Rules", "shared_rule")
                 .PopulateChildren(isImported, "rule", definition.SharedRules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Info Groups", "shared_info")
-                .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name + suffix);
+                .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name + suffix, (entity, item) => new InformationGroup(entity, this, item));
             FindOrAddChild(root, isImported, "Root Selection Entries", "selection_entry")
-                .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name + suffix);
+                .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name + suffix, (entity, item) => new EntryLink(entity, this, item));
             FindOrAddChild(root, isImported, "Root Rules", "rule")
                 .PopulateChildren(isImported, "rule", definition.Rules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
         }

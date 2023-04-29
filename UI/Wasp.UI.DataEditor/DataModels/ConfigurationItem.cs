@@ -23,6 +23,8 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public string? Image { get; set; }
 
+        public bool IsEditable { get => !this.IsImported; }
+
         public bool IsExpanded
         {
             get => this.isExpanded;

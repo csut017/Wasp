@@ -27,6 +27,15 @@
         </Style>
         <HierarchicalDataTemplate x:Key="childLevel" ItemsSource="{Binding Path=Children}" DataType="{x:Type data:ConfigurationItem}">
             <Border Padding="5">
+                <Border.Resources>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsImported}" Value="true">
+                                <Setter Property="Opacity" Value="0.67" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Resources>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="{Binding Image}" Width="20" Height="20" Style="{StaticResource treeImage}" />
                     <TextBlock Text="{Binding Name}" />
@@ -74,6 +83,15 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vms:CategoryEntry}">
             <views:CategoryEntryEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:ForceEntry}">
+            <views:ForceEntryEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:InformationGroup}">
+            <views:InformationGroupEditor />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vms:EntryLink}">
+            <views:EntryLinkEditor />
         </DataTemplate>
         <DataTemplate DataType="{x:Type vms:SelectionEntry}">
             <views:SelectionEntryEditor />
@@ -306,7 +324,7 @@
 
         <GridSplitter Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" ShowsPreview="True" Width="5" TabIndex="1" />
 
-        <ContentControl Grid.Column="2" Grid.Row="2" Grid.RowSpan="2" Content="{Binding CurrentViewModel}" TabIndex="2" />
+        <ContentControl Grid.Column="2" Grid.Row="2" Grid.RowSpan="2" Content="{Binding CurrentViewModel}" TabIndex="2" IsEnabled="{Binding SelectedItem.IsEditable}" />
 
         <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="3" Visibility="{Binding LoadingVisibility}">
             <Border.Background>

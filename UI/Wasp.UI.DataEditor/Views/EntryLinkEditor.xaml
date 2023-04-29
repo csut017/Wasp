@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="Wasp.UI.DataEditor.Views.EntryLinkEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Wasp.UI.DataEditor.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Width" Value="80" />
+                </Style>
+            </Grid.Resources>
+            <local:BasicsConfiguration Grid.Row="0" />
+            <local:ReferenceConfiguration Grid.Row="1" />
+            <GroupBox Grid.Row="2" Header="_Constraints">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0">Is Hidden:</Label>
+
+                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsHidden, Mode=TwoWay}" VerticalAlignment="Center" Margin="3" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="3" Header="_Description" Height="Auto">
+                <TextBox Text="{Binding Description, Mode=TwoWay}" Height="150" AcceptsReturn="True" TextWrapping="Wrap" />
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
