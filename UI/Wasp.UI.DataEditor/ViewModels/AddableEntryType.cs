@@ -18,7 +18,13 @@ namespace Wasp.UI.DataEditor.ViewModels
         Rule = 256,
         InfoLink = 512,
         SharedSelectionEntry = 1024,
+        SharedSelectionEntryGroup = 2048,
+        SharedProfile = 4096,
+        SharedRule = 8192,
+        SharedInfoGroup = 16384,
 
-        CatalogueEntries = CatalogueLink + Publication + CostType + ProfileType + CategoryEntry + ForceEntry + SelectionEntry + EntryLink + Rule + InfoLink + SharedSelectionEntry,
+        CatalogueEntries = CatalogueLink | Publication | CostType | ProfileType | CategoryEntry | ForceEntry
+            | SelectionEntry | EntryLink | Rule | InfoLink
+            | SharedSelectionEntry | SharedSelectionEntryGroup | SharedProfile | SharedRule | SharedInfoGroup,
     }
 }

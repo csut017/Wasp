@@ -291,16 +291,6 @@ namespace Wasp.UI.DataEditor.ViewModels
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private static ConfigurationItem FindOrAddChild(ConfigurationItem root, bool isImported, string name, string? image)
-        {
-            var item = root.Children.FirstOrDefault(c => c.Name == name);
-            if (item != null) return item;
-
-            item = ConfigurationItem.New(isImported, name, image);
-            root.Children.Add(item);
-            return item;
-        }
-
         private static void RemoveImportedItems(ConfigurationItem nodeToProcess)
         {
             var importedNodes = nodeToProcess.Children.Where(n => n.IsImported).ToList();
@@ -313,6 +303,17 @@ namespace Wasp.UI.DataEditor.ViewModels
             {
                 RemoveImportedItems(node);
             }
+        }
+
+        private ConfigurationItem FindOrAddChild(ConfigurationItem root, bool isImported, string name, string? image)
+        {
+            var item = root.Children.FirstOrDefault(c => c.Name == name);
+            if (item != null) return item;
+
+            item = ConfigurationItem.New(isImported, name, image);
+            item.Item = this.package?.Definition;
+            root.Children.Add(item);
+            return item;
         }
 
         private void GenerateApplicationName()
@@ -328,32 +329,45 @@ namespace Wasp.UI.DataEditor.ViewModels
             if (definition.Type == Data.ConfigurationType.Catalogue)
             {
                 FindOrAddChild(root, isImported, "Catalogue Links", "catalogue_link")
+                    .AddAllowEntryTypes(AddableEntryType.CatalogueLink)
                     .PopulateChildren(isImported, "catalogue_link", definition.CatalogueLinks, item => item.Name + suffix);
             }
 
             FindOrAddChild(root, isImported, "Publications", "publication")
+                .AddAllowEntryTypes(AddableEntryType.Publication)
                 .PopulateChildren(isImported, "publication", definition.Publications, item => item.FullName + suffix, (entity, item) => new Publication(entity, this, item));
             FindOrAddChild(root, isImported, "Cost Types", "cost_type")
+                .AddAllowEntryTypes(AddableEntryType.CostType)
                 .PopulateChildren(isImported, "cost_type", definition.CostTypes, item => item.Name + suffix, (entity, item) => new CostType(entity, this, item));
             FindOrAddChild(root, isImported, "Profile Types", "profile_type")
+                .AddAllowEntryTypes(AddableEntryType.ProfileType)
                 .PopulateChildren(isImported, "profile_type", definition.ProfileTypes, item => item.Name + suffix, (entity, item) => new ProfileType(entity, this, item));
             FindOrAddChild(root, isImported, "Category Entries", "catalogue_entry")
+                .AddAllowEntryTypes(AddableEntryType.CategoryEntry)
                 .PopulateChildren(isImported, "catalogue_entry", definition.CategoryEntries, item => item.Name + suffix, (entity, item) => new CategoryEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Force Entries", "force_entry")
+                .AddAllowEntryTypes(AddableEntryType.ForceEntry)
                 .PopulateChildren(isImported, "force_entry", definition.ForceEntries, item => item.Name + suffix, (entity, item) => new ForceEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Selection Entries", "shared_selection_entry")
+                .AddAllowEntryTypes(AddableEntryType.SharedSelectionEntry)
                 .PopulateChildren(isImported, "selection_entry", definition.SharedSelectionEntries, item => item.Name + suffix, (entity, item) => new SelectionEntry(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Selection Entry Groups", "shared_selection_entry_group")
+                .AddAllowEntryTypes(AddableEntryType.SharedSelectionEntryGroup)
                 .PopulateChildren(isImported, "selection_entry_group", definition.SharedSelectionEntryGroups, item => item.Name + suffix, (entity, item) => new SelectionEntryGroup(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Profiles", "shared_profile")
+                .AddAllowEntryTypes(AddableEntryType.SharedProfile)
                 .PopulateChildren(isImported, "profile", definition.SharedProfiles, item => item.Name + suffix, (entity, item) => new Profile(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Rules", "shared_rule")
+                .AddAllowEntryTypes(AddableEntryType.SharedRule)
                 .PopulateChildren(isImported, "rule", definition.SharedRules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
             FindOrAddChild(root, isImported, "Shared Info Groups", "shared_info")
+                .AddAllowEntryTypes(AddableEntryType.SharedInfoGroup)
                 .PopulateChildren(isImported, "info", definition.SharedInformationGroups, item => item.Name + suffix, (entity, item) => new InformationGroup(entity, this, item));
             FindOrAddChild(root, isImported, "Root Selection Entries", "selection_entry")
+                .AddAllowEntryTypes(AddableEntryType.SelectionEntry | AddableEntryType.EntryLink)
                 .PopulateChildren(isImported, "selection_entry", definition.EntryLinks, item => item.Name + suffix, (entity, item) => new EntryLink(entity, this, item));
             FindOrAddChild(root, isImported, "Root Rules", "rule")
+                .AddAllowEntryTypes(AddableEntryType.Rule | AddableEntryType.InfoLink)
                 .PopulateChildren(isImported, "rule", definition.Rules, item => item.Name + suffix, (entity, item) => new Rule(entity, this, item));
         }
 

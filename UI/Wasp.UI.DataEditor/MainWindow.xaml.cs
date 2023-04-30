@@ -73,9 +73,9 @@ namespace Wasp.UI.DataEditor
                 }
 
                 var menuItem = new MenuItem { Header = entity.Name, Command = entity.Command };
-                if (entity.Image != null)
+                if (entity.ImageName != null)
                 {
-                    var uri = new Uri($"pack://application:,,,/images/{entity.Image ?? "unknown"}.png");
+                    var uri = new Uri($"pack://application:,,,/images/{entity.ImageName ?? "unknown"}.png");
                     var image = new Image
                     {
                         Height = 16,

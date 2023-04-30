@@ -69,7 +69,7 @@ namespace Wasp.UI.DataEditor.DataModels
             return item;
         }
 
-        public ConfigurationItem AllowEntryTypes(AddableEntryType addableEntryTypes)
+        public ConfigurationItem AddAllowEntryTypes(AddableEntryType addableEntryTypes)
         {
             AddableEntryTypes = addableEntryTypes;
             return this;

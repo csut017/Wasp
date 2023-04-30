@@ -148,84 +148,18 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="_Add">
-                    <MenuItem Header="_Catalogue Link">
-                        <MenuItem.Icon>
-                            <Image Source="images\catalogue_link.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Publication">
-                        <MenuItem.Icon>
-                            <Image Source="images\publication.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Cost _Type">
-                        <MenuItem.Icon>
-                            <Image Source="images\cost_type.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Pr_ofile Type">
-                        <MenuItem.Icon>
-                            <Image Source="images\profile_type.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="C_ategory Entry">
-                        <MenuItem.Icon>
-                            <Image Source="images\catalogue_entry.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Force Entry">
-                        <MenuItem.Icon>
-                            <Image Source="images\force_entry.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator />
-                    <MenuItem Header="Se_lection Entry">
-                        <MenuItem.Icon>
-                            <Image Source="images\selection_entry.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Entry Link">
-                        <MenuItem.Icon>
-                            <Image Source="images\entry.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Rule">
-                        <MenuItem.Icon>
-                            <Image Source="images\rule.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Info Link">
-                        <MenuItem.Icon>
-                            <Image Source="images\info.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <Separator />
-                    <MenuItem Header="Selection _Entry">
-                        <MenuItem.Icon>
-                            <Image Source="images\shared_selection_entry.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Selection Entry _Group">
-                        <MenuItem.Icon>
-                            <Image Source="images\shared_selection_entry_group.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Profile">
-                        <MenuItem.Icon>
-                            <Image Source="images\shared_profile.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Rule">
-                        <MenuItem.Icon>
-                            <Image Source="images\shared_rule.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="_Info Group">
-                        <MenuItem.Icon>
-                            <Image Source="images\shared_info.png" />
-                        </MenuItem.Icon>
-                    </MenuItem>
+                <MenuItem Header="_Add" ItemsSource="{Binding MenuItemsForAddingEntries}">
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Icon" Value="{Binding Image}" />
+                            <Setter Property="Command" Value="{Binding Command}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
                 </MenuItem>
             </MenuItem>
         </Menu>
