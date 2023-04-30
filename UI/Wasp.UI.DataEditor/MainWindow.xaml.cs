@@ -1,8 +1,11 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Wasp.UI.DataEditor.ViewModels;
 
 namespace Wasp.UI.DataEditor
@@ -53,6 +56,40 @@ namespace Wasp.UI.DataEditor
             this.mainViewModel.SelectedItem = (DataModels.ConfigurationItem)e.NewValue;
         }
 
+        private void OnMenuOpen(object sender, RoutedEventArgs e)
+        {
+            var element = sender as DropdownButton;
+            var contextMenu = element?.DropdownMenu;
+            if (contextMenu == null) return;
+            contextMenu.Items.Clear();
+
+            var groupCount = 0;
+            foreach (var entity in mainViewModel.MenuItemsForAddingEntries)
+            {
+                if (entity.StartNewGroup && (groupCount > 0))
+                {
+                    contextMenu.Items.Add(new Separator());
+                    groupCount = 0;
+                }
+
+                var menuItem = new MenuItem { Header = entity.Name, Command = entity.Command };
+                if (entity.Image != null)
+                {
+                    var uri = new Uri($"pack://application:,,,/images/{entity.Image ?? "unknown"}.png");
+                    var image = new Image
+                    {
+                        Height = 16,
+                        Width = 16,
+                        Source = new BitmapImage(uri),
+                        Stretch = System.Windows.Media.Stretch.Fill,
+                    };
+                    menuItem.Icon = image;
+                }
+                contextMenu.Items.Add(menuItem);
+                groupCount++;
+            }
+        }
+
         private void OnNewFile(object sender, ExecutedRoutedEventArgs e)
         {
             MessageBox.Show("TODO");
@@ -75,7 +112,8 @@ namespace Wasp.UI.DataEditor
             if (dialog.ShowDialog(this).GetValueOrDefault(false))
             {
                 OpenFile(dialog.FileName);
-            }else
+            }
+            else
             {
                 this.mainViewModel.LoadingVisibility = Visibility.Collapsed;
             }

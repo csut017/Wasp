@@ -32,7 +32,14 @@ namespace Wasp.UI.DataEditor.ViewModels
         private ConfigurationItem? selectedItem;
         private bool showImportedEntries;
 
+        public Main()
+        {
+            this.AddCommands = new(this);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public AddCommands AddCommands { get; }
 
         public string ApplicationName
         {
@@ -122,6 +129,8 @@ namespace Wasp.UI.DataEditor.ViewModels
             }
         }
 
+        public ObservableCollection<DynamicMenuItem> MenuItemsForAddingEntries { get; } = new();
+
         public ObservableCollection<Data.ProfileType> ProfileTypes { get; } = new();
 
         public ObservableCollection<Data.Publication> Publications { get; } = new();
@@ -133,9 +142,13 @@ namespace Wasp.UI.DataEditor.ViewModels
             get => selectedItem;
             set
             {
+                if (object.ReferenceEquals(selectedItem, value)) return;
+                if (selectedItem != null) selectedItem.IsSelected = false;
                 selectedItem = value;
+                if (selectedItem != null) selectedItem.IsSelected = true;
                 this.NotifyPropertyChanged();
                 this.CurrentViewModel = value?.ViewModel;
+                this.AddCommands.PopulateMenuOptions(this.MenuItemsForAddingEntries);
             }
         }
 
@@ -198,6 +211,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                 var pathToSearch = Path.GetDirectoryName(path) ?? throw new Exception("Invalid directory path");
                 this.gameSystem = await this.package!.LoadAssociatedGameSystemAsync(pathToSearch);
             }
+
             this.HasFile = true;
         }
 
@@ -415,6 +429,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             if (clearData)
             {
                 ReloadItems();
+                this.SelectedItem = rootNode;
             }
 
             UpdatedImportedItems();
@@ -476,6 +491,7 @@ namespace Wasp.UI.DataEditor.ViewModels
             rootNode.IsExpanded = true;
             rootNode.Item = this.package.Definition;
             rootNode.ViewModel = new Catalogue(this.package.Definition, this, rootNode);
+            rootNode.AddableEntryTypes = AddableEntryType.CatalogueEntries;
             this.Items.Add(rootNode);
             LoadItemsFromDefinition(rootNode, this.package.Definition, false);
         }

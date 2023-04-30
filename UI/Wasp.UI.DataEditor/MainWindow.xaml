@@ -151,7 +151,7 @@
                 <MenuItem Header="_Add">
                     <MenuItem Header="_Catalogue Link">
                         <MenuItem.Icon>
-                            <Image Source="images\catalogue.png" />
+                            <Image Source="images\catalogue_link.png" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="_Publication">
@@ -238,11 +238,15 @@
                 <Style TargetType="Button">
                     <Setter Property="IsTabStop" Value="False" />
                 </Style>
+                <Style TargetType="Image">
+                    <Setter Property="Width" Value="20" />
+                    <Setter Property="Height" Value="20" />
+                </Style>
             </ToolBarTray.Resources>
             <ToolBar>
                 <Button Command="ApplicationCommands.New">
                     <Button.Content>
-                        <Image Source="images\new.png" Height="20" Width="20" />
+                        <Image Source="images\new.png" />
                     </Button.Content>
                     <Button.ToolTip>
                         <StackPanel Width="200">
@@ -254,7 +258,7 @@
                 </Button>
                 <Button Command="ApplicationCommands.Open">
                     <Button.Content>
-                        <Image Source="images\open.png" Height="20" Width="20" />
+                        <Image Source="images\open.png" />
                     </Button.Content>
                     <Button.ToolTip>
                         <StackPanel Width="200">
@@ -267,7 +271,7 @@
                 <Separator />
                 <Button Command="ApplicationCommands.Save">
                     <Button.Content>
-                        <Image Source="images\save.png" Height="20" Width="20" />
+                        <Image Source="images\save.png" />
                     </Button.Content>
                     <Button.ToolTip>
                         <StackPanel Width="200">
@@ -280,7 +284,7 @@
                 <Separator />
                 <Button Command="ApplicationCommands.Undo">
                     <Button.Content>
-                        <Image Source="images\undo.png" Height="20" Width="20" />
+                        <Image Source="images\undo.png" />
                     </Button.Content>
                     <Button.ToolTip>
                         <StackPanel Width="200">
@@ -292,7 +296,7 @@
                 </Button>
                 <Button Command="ApplicationCommands.Redo">
                     <Button.Content>
-                        <Image Source="images\redo.png" Height="20" Width="20" />
+                        <Image Source="images\redo.png" />
                     </Button.Content>
                     <Button.ToolTip>
                         <StackPanel Width="200">
@@ -302,6 +306,18 @@
                         </StackPanel>
                     </Button.ToolTip>
                 </Button>
+                <Separator />
+                <app:DropdownButton Checked="OnMenuOpen">
+                    <app:DropdownButton.Content>
+                        <Image Source="images\add.png" />
+                    </app:DropdownButton.Content>
+                    <app:DropdownButton.DropdownMenu>
+                        <ContextMenu>
+                            <MenuItem Header="One" />
+                            <MenuItem Header="Two" />
+                        </ContextMenu>
+                    </app:DropdownButton.DropdownMenu>
+                </app:DropdownButton>
             </ToolBar>
         </ToolBarTray>
 

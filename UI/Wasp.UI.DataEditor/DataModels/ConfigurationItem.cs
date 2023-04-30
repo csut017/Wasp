@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Wasp.Core.Data;
+using Wasp.UI.DataEditor.ViewModels;
 
 namespace Wasp.UI.DataEditor.DataModels
 {
@@ -19,6 +20,8 @@ namespace Wasp.UI.DataEditor.DataModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public AddableEntryType AddableEntryTypes { get; set; }
+
         public ObservableCollection<ConfigurationItem> Children { get; } = new();
 
         public string? Image { get; set; }
@@ -30,6 +33,7 @@ namespace Wasp.UI.DataEditor.DataModels
             get => this.isExpanded;
             set
             {
+                if (this.isExpanded == value) return;
                 this.isExpanded = value;
                 this.NotifyPropertyChanged();
             }
@@ -42,6 +46,7 @@ namespace Wasp.UI.DataEditor.DataModels
             get => isSelected;
             set
             {
+                if (isSelected == value) return;
                 isSelected = value;
                 this.NotifyPropertyChanged();
             }
@@ -62,6 +67,17 @@ namespace Wasp.UI.DataEditor.DataModels
                 Name = name,
             };
             return item;
+        }
+
+        public ConfigurationItem AllowEntryTypes(AddableEntryType addableEntryTypes)
+        {
+            AddableEntryTypes = addableEntryTypes;
+            return this;
+        }
+
+        public bool IsEntryTypeAddable(AddableEntryType entryType)
+        {
+            return (AddableEntryTypes & entryType) == entryType;
         }
 
         public ConfigurationItem PopulateChildren<TItem>(bool isImported, string? image, List<TItem>? items, Func<TItem, string?> generateName, Func<TItem, ConfigurationItem, object>? viewModelGenerator = null)
