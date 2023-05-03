@@ -4,6 +4,7 @@
     /// Defines a force in a roster.
     /// </summary>
     public class Force
+        : EntryBase
     {
         /// <summary>
         /// Gets or sets the catalogue id.
@@ -29,16 +30,6 @@
         /// Gets or sets the entry id.
         /// </summary>
         public string? EntryId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the force.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the force.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets the publications referenced by this force.

@@ -50,7 +50,7 @@ namespace Wasp.UI.DataEditor.ViewModels
 
         private void OnGenerateId(object? obj)
         {
-            var id = Data.NamedEntry.GenerateId();
+            var id = Data.Entry.GenerateId();
             UpdateId(id);
         }
     }

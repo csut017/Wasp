@@ -56,7 +56,7 @@ namespace Wasp.UI.DataEditor.ViewModels
 
         private void AddCostType(object? parameter)
         {
-            var costType = new Data.CostType { Name = "New CostType", Id = Data.NamedEntry.GenerateId() };
+            var costType = new Data.CostType { Name = "New CostType", Id = Data.Entry.GenerateId() };
             var treeItem = ConfigurationItem.New(false, costType.Name, "cost_type");
             treeItem.Item = costType;
             treeItem.ViewModel = new CostType(costType, main, treeItem);

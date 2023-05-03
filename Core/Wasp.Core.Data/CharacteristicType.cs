@@ -4,7 +4,7 @@
     /// Defines a characteristic type.
     /// </summary>
     public class CharacteristicType
-        : NamedEntry
+        : GameSystemEntryBase
     {
     }
 }

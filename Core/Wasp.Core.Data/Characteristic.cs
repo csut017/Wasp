@@ -4,12 +4,8 @@
     /// Defines a characteristic.
     /// </summary>
     public class Characteristic
+        : EntryBase
     {
-        /// <summary>
-        /// Gets or sets the name of the characteristic.
-        /// </summary>
-        public string? Name { get; set; }
-
         /// <summary>
         /// Gets or sets the type of the characteristic.
         /// </summary>

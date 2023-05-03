@@ -4,7 +4,7 @@
     /// Defines a type of profile
     /// </summary>
     public class ProfileType
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the characteristic types.

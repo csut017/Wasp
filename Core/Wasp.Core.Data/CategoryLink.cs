@@ -4,7 +4,7 @@
     /// Defines a category link.
     /// </summary>
     public class CategoryLink
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the constraints in the category link.

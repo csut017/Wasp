@@ -4,7 +4,7 @@
     /// Defines a modifier.
     /// </summary>
     public class Modifier
-        : CommentedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the condition groups.

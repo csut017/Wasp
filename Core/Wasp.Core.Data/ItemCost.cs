@@ -4,12 +4,8 @@
     /// Defines a cost of an item.
     /// </summary>
     public class ItemCost
+        : EntryBase
     {
-        /// <summary>
-        /// Gets or sets the name of the cost.
-        /// </summary>
-        public string? Name { get; set; }
-
         /// <summary>
         /// Gets or sets the value as a number.
         /// </summary>

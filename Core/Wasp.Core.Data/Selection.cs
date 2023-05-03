@@ -4,6 +4,7 @@
     /// Defines a selection.
     /// </summary>
     public class Selection
+        : EntryBase
     {
         /// <summary>
         /// Gets the categories in the selection.
@@ -34,16 +35,6 @@
         /// Gets or sets the entry id.
         /// </summary>
         public string? EntryId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the selection.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the selection.
-        /// </summary>
-        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the number for the selection.

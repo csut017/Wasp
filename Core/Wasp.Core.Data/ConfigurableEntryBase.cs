@@ -3,8 +3,8 @@
     /// <summary>
     /// Defines an entry that can be configured.
     /// </summary>
-    public abstract class ConfigurableNamedEntry
-        : NamedEntry, IConfigurableEntry
+    public abstract class ConfigurableEntryBase
+        : PublicationEntryBase, IConfigurableEntry
     {
         /// <summary>
         /// Gets or sets the constraints.

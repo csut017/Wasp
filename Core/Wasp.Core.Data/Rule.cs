@@ -4,7 +4,7 @@
     /// Defines a rule.
     /// </summary>
     public class Rule
-        : NamedEntry
+        : PublicationEntryBase
     {
         /// <summary>
         /// Gets or sets the description of the rule.
@@ -20,15 +20,5 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the page number for finding this rule.
-        /// </summary>
-        public string? Page { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the publication this rule is from.
-        /// </summary>
-        public string? PublicationId { get; set; }
     }
 }

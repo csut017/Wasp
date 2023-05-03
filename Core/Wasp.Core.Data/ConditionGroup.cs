@@ -4,7 +4,7 @@
     /// Defines a condition group.
     /// </summary>
     public class ConditionGroup
-        : CommentedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the condition groups.

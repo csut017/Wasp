@@ -1,12 +1,10 @@
-﻿using Wasp.Core.Data.Xml;
-
-namespace Wasp.Core.Data
+﻿namespace Wasp.Core.Data
 {
     /// <summary>
     /// Contains the configuration for a game system.
     /// </summary>
     public class GameSystemConfiguration
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the contact details for the author.

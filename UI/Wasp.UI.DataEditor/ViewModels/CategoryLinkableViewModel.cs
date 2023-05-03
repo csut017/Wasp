@@ -167,7 +167,7 @@ namespace Wasp.UI.DataEditor.ViewModels
                     if (IsSelected == value) return;
                     if (value)
                     {
-                        var id = Data.NamedEntry.GenerateId();
+                        var id = Data.Entry.GenerateId();
                         link = new Data.CategoryLink
                         {
                             Id = id,

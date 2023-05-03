@@ -4,6 +4,7 @@
     /// Defines a roster (army list).
     /// </summary>
     public class Roster
+        : EntryBase
     {
         /// <summary>
         /// Gets or sets the version of BattleScribe used to generate this roster.
@@ -39,15 +40,5 @@
         /// Gets or sets the revision of the game system this roster is for.
         /// </summary>
         public string? GameSystemRevision { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the roster.
-        /// </summary>
-        public string? Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the roster.
-        /// </summary>
-        public string? Name { get; set; }
     }
 }

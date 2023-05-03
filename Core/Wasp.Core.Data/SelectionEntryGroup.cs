@@ -4,7 +4,7 @@
     /// Defines a selection entry group.
     /// </summary>
     public class SelectionEntryGroup
-        : ConfigurableNamedEntry, ILinkedEntry, ICategoryLinkable
+        : ConfigurableEntryBase, ILinkedEntry, ICategoryLinkable
     {
         /// <summary>
         /// Gets or sets the category links.
@@ -37,19 +37,9 @@
         public bool? IsImport { get; set; }
 
         /// <summary>
-        /// Gets or sets the page number for finding this selection entry.
-        /// </summary>
-        public string? Page { get; set; }
-
-        /// <summary>
         /// Gets or sets the profiles.
         /// </summary>
         public List<Profile>? Profiles { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the publication this selection entry is from.
-        /// </summary>
-        public string? PublicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the selection entries.

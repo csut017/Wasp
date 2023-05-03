@@ -6,7 +6,7 @@ namespace Wasp.Core.Data
     /// Defines a constraint.
     /// </summary>
     public class Constraint
-        : CommentedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the child id.
@@ -16,7 +16,7 @@ namespace Wasp.Core.Data
         /// <summary>
         /// Gets the display name for this constraint.
         /// </summary>
-        public string DisplayName
+        public override string DisplayName
         {
             get => $"{Type.ApplyCase(LetterCasing.Title)} {Value:#,##0} {Field.ApplyCase(LetterCasing.Title)} in {Scope.ApplyCase(LetterCasing.Title)}";
         }
@@ -25,11 +25,6 @@ namespace Wasp.Core.Data
         /// Gets or sets the field.
         /// </summary>
         public string? Field { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the constraint.
-        /// </summary>
-        public string? Id { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether child forces should be included.

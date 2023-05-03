@@ -4,7 +4,7 @@
     /// Defines a profile.
     /// </summary>
     public class Profile
-        : NamedEntry
+        : PublicationEntryBase
     {
         /// <summary>
         /// Gets the characteristics for this profile.
@@ -25,16 +25,6 @@
         /// Gets or sets the modifiers.
         /// </summary>
         public List<Modifier>? Modifiers { get; set; }
-
-        /// <summary>
-        /// Gets or sets the page number for finding this rule.
-        /// </summary>
-        public string? Page { get; set; }
-
-        /// <summary>
-        /// Gets or sets the id of the publication this profile is from.
-        /// </summary>
-        public string? PublicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the profile type.

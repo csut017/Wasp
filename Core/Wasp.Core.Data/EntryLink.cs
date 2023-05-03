@@ -4,7 +4,7 @@
     /// Defines an entry link.
     /// </summary>
     public class EntryLink
-        : ConfigurableNamedEntry, ICategoryLinkable
+        : ConfigurableEntryBase, ICategoryLinkable
     {
         /// <summary>
         /// Gets or sets the category links.
@@ -42,19 +42,9 @@
         public bool? IsImport { get; set; }
 
         /// <summary>
-        /// Gets or sets the page.
-        /// </summary>
-        public string? Page { get; set; }
-
-        /// <summary>
         /// Gets or sets the profiles.
         /// </summary>
         public List<Profile>? Profiles { get; set; }
-
-        /// <summary>
-        /// Gets or sets the publication id.
-        /// </summary>
-        public string? PublicationId { get; set; }
 
         /// <summary>
         /// Gets or sets the selection entries.

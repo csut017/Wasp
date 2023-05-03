@@ -1,10 +1,10 @@
-﻿namespace Wasp.Core.Data.Xml
+﻿namespace Wasp.Core.Data
 {
     /// <summary>
     /// Defines a catalogue link
     /// </summary>
     public class CatalogueLink
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets a flag indicating whether to import the root entries.

@@ -4,7 +4,7 @@
     /// Defines a publication.
     /// </summary>
     public class Publication
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the full name of the publication.

@@ -12,7 +12,9 @@ namespace Wasp.Core.Data.Xml
             { "entryId", async (reader, category) => category.EntryId = await reader.GetValueAsync() },
             { "id", async (reader, category) => category.Id = await reader.GetValueAsync() },
             { "name", async (reader, category) => category.Name = await reader.GetValueAsync() },
+            { "page", async (reader, selection) => selection.Page = await reader.GetValueAsync() },
             { "primary", async (reader, category) => category.IsPrimary = await reader.GetValueAsync() == "true" },
+            { "publicationId",  async (reader, selection) => selection.PublicationId = await reader.GetValueAsync() },
         };
 
         private static readonly Dictionary<string, Func<XmlReader, Force, Task>> forceAttributes = new()

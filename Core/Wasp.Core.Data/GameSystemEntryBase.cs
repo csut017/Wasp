@@ -1,9 +1,10 @@
 ﻿namespace Wasp.Core.Data
 {
     /// <summary>
-    /// Defines an entry with a comment.
+    /// Defines the base game system entry type. All configuration entries must derive from this class.
     /// </summary>
-    public abstract class CommentedEntry
+    public abstract class GameSystemEntryBase
+        : EntryBase
     {
         /// <summary>
         /// Gets or sets an optional comment on this configuration entry.

@@ -4,12 +4,8 @@
     /// Defines a modifier group.
     /// </summary>
     public class ModifierGroup
+        : GameSystemEntryBase
     {
-        /// <summary>
-        /// Gets or sets an optional comment.
-        /// </summary>
-        public string? Comment { get; set; }
-
         /// <summary>
         /// Gets or sets the condition groups.
         /// </summary>

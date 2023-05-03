@@ -4,7 +4,7 @@
     /// Defines a force entry.
     /// </summary>
     public class ForceEntry
-        : NamedEntry
+        : GameSystemEntryBase
     {
         /// <summary>
         /// Gets or sets the category links.
