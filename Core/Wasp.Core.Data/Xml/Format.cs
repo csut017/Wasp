@@ -14,11 +14,12 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="definition">The definition to deserialize.</param>
         /// <param name="configurationType">Defines the type of configuration to serialize.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        public async Task<GameSystemConfiguration> DeserializeConfigurationAsync(string definition, ConfigurationType configurationType)
+        public async Task<GameSystemConfiguration> DeserializeConfigurationAsync(string definition, ConfigurationType configurationType, ConfigurationLevel level = ConfigurationLevel.All)
         {
             using var reader = new StringReader(definition);
-            return await ConfigurationDeserialization.DeserializeRootAsync(reader, configurationType);
+            return await ConfigurationDeserialization.DeserializeRootAsync(reader, configurationType, level);
         }
 
         /// <summary>
@@ -26,11 +27,12 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> containing the definition to deserialize.</param>
         /// <param name="configurationType">Defines the type of configuration to serialize.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        public async Task<GameSystemConfiguration> DeserializeConfigurationAsync(Stream stream, ConfigurationType configurationType)
+        public async Task<GameSystemConfiguration> DeserializeConfigurationAsync(Stream stream, ConfigurationType configurationType, ConfigurationLevel level = ConfigurationLevel.All)
         {
             using var reader = new StreamReader(stream);
-            return await ConfigurationDeserialization.DeserializeRootAsync(reader, configurationType);
+            return await ConfigurationDeserialization.DeserializeRootAsync(reader, configurationType, level);
         }
 
         /// <summary>

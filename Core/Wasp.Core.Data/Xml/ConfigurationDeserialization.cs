@@ -134,8 +134,9 @@ namespace Wasp.Core.Data.Xml
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> containing the definition to deserialize.</param>
         /// <param name="configurationType">Defines the type of configuration the deserialisation should handle.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> containing the deserialized data.</returns>
-        public static async Task<GameSystemConfiguration> DeserializeRootAsync(TextReader reader, ConfigurationType configurationType)
+        public static async Task<GameSystemConfiguration> DeserializeRootAsync(TextReader reader, ConfigurationType configurationType, ConfigurationLevel level)
         {
             var gameSystem = new GameSystemConfiguration { Type = configurationType };
             var settings = new XmlReaderSettings { Async = true };
@@ -149,7 +150,7 @@ namespace Wasp.Core.Data.Xml
                         // Should only have a gameSystem at the root level
                         if (!Constants.ConfigurationTypeRoots.TryGetValue(configurationType, out var details)) throw new Exception($"Unhandled configuration type {configurationType}");
                         if (xmlReader.Name != details.Root) throw new Exception($"Invalid game system definition: expected a {details.Root} node, found {xmlReader.Name} instead");
-                        await DeserializeGameSystemConfigurationAsync(xmlReader, gameSystem);
+                        await DeserializeGameSystemConfigurationAsync(xmlReader, gameSystem, level);
                         break;
 
                     default:
@@ -594,7 +595,7 @@ namespace Wasp.Core.Data.Xml
             }
         }
 
-        private static async Task DeserializeGameSystemConfigurationAsync(XmlReader xmlReader, GameSystemConfiguration item)
+        private static async Task DeserializeGameSystemConfigurationAsync(XmlReader xmlReader, GameSystemConfiguration item, ConfigurationLevel level)
         {
             var name = xmlReader.Name;
             var isReading = !xmlReader.IsEmptyElement;
@@ -609,6 +610,12 @@ namespace Wasp.Core.Data.Xml
                         switch (xmlReader.Name)
                         {
                             case "categoryEntries":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.CategoryEntries ??= new List<CategoryEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -617,6 +624,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "catalogueLinks":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.CatalogueLinks ??= new List<CatalogueLink>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -629,6 +642,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "costTypes":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.CostTypes ??= new List<CostType>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -637,6 +656,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "entryLinks":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.EntryLinks ??= new List<EntryLink>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -645,6 +670,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "forceEntries":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.ForceEntries ??= new List<ForceEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -653,6 +684,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "infoLinks":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.InformationLinks ??= new List<InformationLink>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -661,6 +698,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "profileTypes":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.ProfileTypes ??= new List<ProfileType>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -669,6 +712,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "publications":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.Publications ??= new List<Publication>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -681,6 +730,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "rules":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.Rules ??= new List<Rule>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -689,6 +744,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "selectionEntries":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SelectionEntries ??= new List<SelectionEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -697,6 +758,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "sharedInfoGroups":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SharedInformationGroups ??= new List<InformationGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -705,6 +772,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "sharedProfiles":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SharedProfiles ??= new List<Profile>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -713,6 +786,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "sharedRules":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SharedRules ??= new List<Rule>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -721,6 +800,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "sharedSelectionEntries":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SharedSelectionEntries ??= new List<SelectionEntry>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,
@@ -729,6 +814,12 @@ namespace Wasp.Core.Data.Xml
                                 break;
 
                             case "sharedSelectionEntryGroups":
+                                if (level == ConfigurationLevel.Root)
+                                {
+                                    await xmlReader.SkipAsync();
+                                    continue;
+                                }
+
                                 item.SharedSelectionEntryGroups ??= new List<SelectionEntryGroup>();
                                 await xmlReader.DeserializeArrayAsync(
                                     item,

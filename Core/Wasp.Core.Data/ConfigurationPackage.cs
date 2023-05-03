@@ -28,13 +28,14 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>The new <see cref="ConfigurationPackage"/> instance.</returns>
-        public static async Task<ConfigurationPackage> LoadAsync(Stream stream, PackageSettings settings)
+        public static async Task<ConfigurationPackage> LoadAsync(Stream stream, PackageSettings settings, ConfigurationLevel level = ConfigurationLevel.All)
         {
             var package = new ConfigurationPackage(settings);
             if (!settings.IsCompressed)
             {
-                package.Definition = await settings.Format.DeserializeConfigurationAsync(stream, settings.ConfigurationType);
+                package.Definition = await settings.Format.DeserializeConfigurationAsync(stream, settings.ConfigurationType, level);
             }
             else
             {
@@ -47,7 +48,7 @@ namespace Wasp.Core.Data
                 using var zipStream = entry.Open();
                 try
                 {
-                    package.Definition = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType);
+                    package.Definition = await settings.Format.DeserializeConfigurationAsync(zipStream, settings.ConfigurationType, level);
                 }
                 catch
                 {
@@ -68,8 +69,9 @@ namespace Wasp.Core.Data
         /// </summary>
         /// <param name="path">The path to load from.</param>
         /// <param name="settings">The <see cref="PackageSettings"/> instance to use.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>The new <see cref="ConfigurationPackage"/> instance.</returns>
-        public static async Task<ConfigurationPackage> LoadAsync(string path, PackageSettings? settings = null)
+        public static async Task<ConfigurationPackage> LoadAsync(string path, PackageSettings? settings = null, ConfigurationLevel level = ConfigurationLevel.All)
         {
             var fileType = Path.GetExtension(path);
             var settingsToUse = settings ?? new PackageSettings
@@ -88,7 +90,7 @@ namespace Wasp.Core.Data
             }
 
             using var stream = File.OpenRead(path);
-            return await LoadAsync(stream, settingsToUse);
+            return await LoadAsync(stream, settingsToUse, level);
         }
 
         /// <summary>

@@ -4,28 +4,8 @@
     /// Contains the configuration for a game system.
     /// </summary>
     public class GameSystemConfiguration
-        : GameSystemEntryBase
+        : GameSystemIndex
     {
-        /// <summary>
-        /// Gets or sets the contact details for the author.
-        /// </summary>
-        public string? AuthorContact { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the author.
-        /// </summary>
-        public string? AuthorName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL of the author.
-        /// </summary>
-        public string? AuthorUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the version of BattleScribe used to generate this configuration.
-        /// </summary>
-        public string? BattleScribeVersion { get; set; }
-
         /// <summary>
         /// Gets or sets the catalogue links.
         /// </summary>
@@ -52,24 +32,9 @@
         public List<ForceEntry>? ForceEntries { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the owning game system.
-        /// </summary>
-        public string? GameSystemId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the revision number of the owning game system.
-        /// </summary>
-        public string? GameSystemRevision { get; set; }
-
-        /// <summary>
         /// Gets or sets the information links.
         /// </summary>
         public List<InformationLink>? InformationLinks { get; set; }
-
-        /// <summary>
-        /// Gets or sets a flag indicating whether this configuration is a library or not.
-        /// </summary>
-        public bool? IsLibrary { get; set; }
 
         /// <summary>
         /// Gets the profile types defined by this configuration.
@@ -80,16 +45,6 @@
         /// Gets the publications referenced by this configuration.
         /// </summary>
         public List<Publication>? Publications { get; set; }
-
-        /// <summary>
-        /// Gets or sets the readme text for the configuration.
-        /// </summary>
-        public string? ReadMe { get; set; }
-
-        /// <summary>
-        /// Gets or sets the revision of the configuration.
-        /// </summary>
-        public string? Revision { get; set; }
 
         /// <summary>
         /// Gets or sets the rules.
@@ -125,10 +80,5 @@
         /// Gets or sets the shared selection entry groups.
         /// </summary>
         public List<SelectionEntryGroup>? SharedSelectionEntryGroups { get; set; }
-
-        /// <summary>
-        /// Gets or sets the configuration type.
-        /// </summary>
-        public ConfigurationType Type { get; set; }
     }
 }

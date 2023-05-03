@@ -10,16 +10,18 @@
         /// </summary>
         /// <param name="definition">The definition to deserialize.</param>
         /// <param name="configurationType">Defines the type of configuration to deserialize.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        Task<GameSystemConfiguration> DeserializeConfigurationAsync(string definition, ConfigurationType configurationType);
+        Task<GameSystemConfiguration> DeserializeConfigurationAsync(string definition, ConfigurationType configurationType, ConfigurationLevel level = ConfigurationLevel.All);
 
         /// <summary>
         /// Deserializes a configuration definition from a <see cref="Stream"/>.
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> containing the definition to deserialize.</param>
         /// <param name="configurationType">Defines the type of configuration to deserialize.</param>
+        /// <param name="level">How much of the definition to deserialize.</param>
         /// <returns>A <see cref="GameSystemConfiguration"/> definition.</returns>
-        Task<GameSystemConfiguration> DeserializeConfigurationAsync(Stream stream, ConfigurationType configurationType);
+        Task<GameSystemConfiguration> DeserializeConfigurationAsync(Stream stream, ConfigurationType configurationType, ConfigurationLevel level = ConfigurationLevel.All);
 
         /// <summary>
         /// Attempts to deserialize the identifier from a definition in a <see cref="Stream"/>.
