@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using Wasp.Core.Data;
@@ -19,6 +20,7 @@ namespace Wasp.UI.Windows
         private readonly Dictionary<string, ItemModel> itemMappings = new();
         private readonly Dictionary<string, Selection> selectionMappings = new();
         private readonly List<Roster> sourceRosters = new();
+        private ItemModel? currentArmy;
         private Roster orderOfBattle = new();
         private RosterPackage? package;
 
@@ -35,19 +37,46 @@ namespace Wasp.UI.Windows
 
         public ObservableCollection<ItemModel> AvailableUnits { get; } = new();
 
-        public string? FilePath { get; set; }
+        public ItemModel? CurrentArmy
+        {
+            get => currentArmy;
+            set
+            {
+                if (ReferenceEquals(currentArmy, value)) return;
+                currentArmy = value;
+                NotifyPropertyChanged();
+            }
+        }
 
-        public double SelectedPoints { get; set; }
+        public string? FilePath { get; set; }
 
         public ObservableCollection<ItemModel> SelectedUnits { get; }
 
         public CollectionView SelectedUnitsView { get; }
 
+        public void AddArmy(string name)
+        {
+            CurrentArmy = new CostedItemModel(Guid.NewGuid().ToString()) { Name = name };
+            SelectedUnits.Add(CurrentArmy);
+        }
+
         public void Deselect(ItemModel item)
         {
-            (item.Parent?.Items ?? this.AvailableUnits).Add(item);
-            this.SelectedUnits.Remove(item);
-            this.CalculatePoints();
+            if (item.ArmyRoster is null)
+            {
+                foreach (var unit in item.Items.ToArray())
+                {
+                    RemoveItemFromArmy(unit);
+                }
+
+                SelectedUnits.Remove(item);
+            }
+            else
+            {
+                RemoveItemFromArmy(item);
+            }
+
+            CalculatePoints();
         }
 
         public void GenerateReport<TReport>(string fileName)
@@ -114,9 +143,29 @@ namespace Wasp.UI.Windows
 
         public void Select(ItemModel item)
         {
-            (item.Parent?.Items ?? this.AvailableUnits).Remove(item);
-            this.SelectedUnits.Add(item);
-            this.CalculatePoints();
+            if (CurrentArmy is null) AddArmy("New Army");
+            (item.SourceRoster?.Items ?? this.AvailableUnits).Remove(item);
+            CurrentArmy!.Items.Add(item);
+            item.ArmyRoster = CurrentArmy;
+            CalculatePoints();
+        }
+
+        internal void SelectArmy(ItemModel? newItem)
+        {
+            if (newItem?.ArmyRoster is null)
+            {
+                CurrentArmy = newItem;
+            }
+            else
+            {
+                SelectArmy(newItem?.ArmyRoster);
+            }
+        }
+
+        protected void NotifyPropertyChanged([CallerMemberName] string caller = "")
+        {
+            if (string.IsNullOrEmpty(caller)) return;
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
         }
 
         private static double CalculateTotalCost(Selection? item)
@@ -146,9 +195,21 @@ namespace Wasp.UI.Windows
         private void CalculatePoints()
         {
             this.AvailablePoints = this.AvailableUnits.Sum(CalculateTotalCost);
-            this.SelectedPoints = this.SelectedUnits.Sum(CalculateTotalCost);
+            foreach (var item in SelectedUnits.Cast<CostedItemModel>())
+            {
+                if (item is null) continue;
+                item.Cost = 0;
+                item.Cost = CalculateTotalCost(item);
+            }
+
+            var maxArmyCost = SelectedUnits.Max(a => (a as CostedItemModel)?.Cost ?? 0);
+            foreach (var item in SelectedUnits.Cast<CostedItemModel>())
+            {
+                if (item is null) continue;
+                item.CostDifference = item.Cost - maxArmyCost;
+            }
+
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AvailablePoints)));
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedPoints)));
         }
 
         private void ClearAll()
@@ -209,7 +270,7 @@ namespace Wasp.UI.Windows
                         {
                             Cost = cost,
                             Name = selection.Name + (string.IsNullOrEmpty(selection.CustomName) ? string.Empty : $" [{selection.CustomName}]"),
-                            Parent = forceItem,
+                            SourceRoster = forceItem,
                         };
                         forceItem.Items.Add(unitItem);
                         if (!string.IsNullOrEmpty(selection.Id))
@@ -223,6 +284,13 @@ namespace Wasp.UI.Windows
             }
 
             this.CalculatePoints();
+        }
+
+        private void RemoveItemFromArmy(ItemModel item)
+        {
+            (item.SourceRoster?.Items ?? this.AvailableUnits).Add(item);
+            item.ArmyRoster?.Items.Remove(item);
+            item.ArmyRoster = null;
         }
     }
 }

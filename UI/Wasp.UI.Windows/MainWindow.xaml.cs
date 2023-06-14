@@ -25,6 +25,11 @@ namespace Wasp.UI.Windows
             e.CanExecute = dataModel.SelectedUnits.Any();
         }
 
+        private void OnAddArmy(object sender, ExecutedRoutedEventArgs e)
+        {
+            dataModel.AddArmy("New Army");
+        }
+
         private void OnClose(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -118,6 +123,12 @@ namespace Wasp.UI.Windows
             {
                 await dataModel.SaveAsync();
             }
+        }
+
+        private void OnSelectArmyUnit(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var newItem = e.NewValue as ItemModel;
+            this.dataModel.SelectArmy(newItem);
         }
 
         private void OnSelectUnit(object sender, ExecutedRoutedEventArgs e)

@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 
 namespace Wasp.UI.Windows
 {
     public class ItemModel
+        : INotifyPropertyChanged
     {
         public ItemModel(string id)
         {
@@ -14,6 +16,10 @@ namespace Wasp.UI.Windows
             Id = id;
         }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ItemModel? ArmyRoster { get; set; }
+
         public string Id { get; set; }
 
         public ObservableCollection<ItemModel> Items { get; }
@@ -22,6 +28,12 @@ namespace Wasp.UI.Windows
 
         public string? Name { get; set; }
 
-        public ItemModel? Parent { get; set; }
+        public ItemModel? SourceRoster { get; set; }
+
+        protected void NotifyPropertyChanged([CallerMemberName] string caller = "")
+        {
+            if (string.IsNullOrEmpty(caller)) return;
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
+        }
     }
 }

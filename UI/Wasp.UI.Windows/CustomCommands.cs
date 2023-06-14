@@ -4,8 +4,15 @@ namespace Wasp.UI.Windows
 {
     public static class CustomCommands
     {
+        public static readonly RoutedUICommand AddArmy = new(
+                        "AddArmy",
+                        "AddArmy",
+                        typeof(CustomCommands),
+                        new InputGestureCollection()
+                    );
+
         public static readonly RoutedUICommand DeselectUnit = new(
-                        "DeselectUnit",
+                                "DeselectUnit",
                         "DeselectUnit",
                         typeof(CustomCommands),
                         new InputGestureCollection
